@@ -2,7 +2,7 @@
 package com.atomicedit.backend.chunk;
 
 import com.atomicedit.backend.BlockCoord;
-import com.atomicedit.backend.BlockEntity.BlockEntity;
+import com.atomicedit.backend.blockentity.BlockEntity;
 import com.atomicedit.backend.BlockStateProperty;
 import com.atomicedit.backend.BlockType;
 import com.atomicedit.backend.ChunkSectionCoord;

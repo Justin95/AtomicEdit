@@ -40,7 +40,7 @@ public class World {
     public OperationResult saveChanges(){
         //save chunks and remove from map
         //do lighting calc
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(); //TODO
     }
     
     public OperationResult doOperation(Operation op){
@@ -87,6 +87,10 @@ public class World {
     
     public Iterator<Chunk> getAllChunksInWorld(){
         throw new UnsupportedOperationException();
+    }
+    
+    public boolean hasUnsavedChanges(){
+        return this.unsavedChunkMap.isEmpty();
     }
     
 }

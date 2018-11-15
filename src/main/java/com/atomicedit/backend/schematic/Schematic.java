@@ -2,7 +2,7 @@
 package com.atomicedit.backend.schematic;
 
 import com.atomicedit.backend.BlockCoord;
-import com.atomicedit.backend.BlockEntity.BlockEntity;
+import com.atomicedit.backend.blockentity.BlockEntity;
 import com.atomicedit.backend.World;
 import com.atomicedit.backend.blockprovider.BlockProvider;
 import com.atomicedit.backend.blockprovider.SchematicBlockProvider;

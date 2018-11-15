@@ -1,5 +1,5 @@
 
-package com.atomicedit.backend.BlockEntity;
+package com.atomicedit.backend.blockentity;
 
 import com.atomicedit.backend.BlockCoord;
 import com.atomicedit.backend.nbt.MalformedNbtTagException;

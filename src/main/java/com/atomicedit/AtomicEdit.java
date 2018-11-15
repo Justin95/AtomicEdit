@@ -1,6 +1,7 @@
 
 package com.atomicedit;
 
+import com.atomicedit.backend.BackendController;
 import com.atomicedit.frontend.AtomicEditFrontEnd;
 
 
@@ -13,7 +14,7 @@ public class AtomicEdit {
     private AtomicEditFrontEnd frontEnd;
     
     public AtomicEdit(){
-        frontEnd = new AtomicEditFrontEnd();
+        frontEnd = new AtomicEditFrontEnd(new BackendController());
     }
     
     
