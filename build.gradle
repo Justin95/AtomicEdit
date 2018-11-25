@@ -36,6 +36,7 @@ dependencies {
     ["natives-windows", "natives-linux", "natives-macos"].each { lwjglNatives ->
         compile "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
     }
+    testCompile 'junit:junit:4.12'
 }
 
 jar {

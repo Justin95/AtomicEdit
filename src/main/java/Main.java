@@ -1,7 +1,7 @@
 
 
 
-import com.atomicedit.AtomicEdit;
+import atomicedit.AtomicEdit;
 
 
 
