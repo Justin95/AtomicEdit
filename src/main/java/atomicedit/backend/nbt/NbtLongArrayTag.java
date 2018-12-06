@@ -4,6 +4,7 @@ package atomicedit.backend.nbt;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  *
@@ -14,12 +15,12 @@ public class NbtLongArrayTag extends NbtTag{
     private long[] data;
     private int dataSize;
     
-    public NbtLongArrayTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_LONG_ARRAY, NbtTag.readUtfString(input));
+    public NbtLongArrayTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_LONG_ARRAY, readName ? NbtTag.readUtfString(input) : "");
         this.dataSize = input.readInt();
         this.data = new long[dataSize];
         for(int i = 0; i < dataSize; i++){
-            data[i] = input.readInt();
+            data[i] = input.readLong();
         }
     }
     
@@ -43,6 +44,11 @@ public class NbtLongArrayTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.dataSize;
+    }
+    
+    @Override
+    public String toString(){
+        return this.getName() + ":" + Arrays.toString(data);
     }
     
 }

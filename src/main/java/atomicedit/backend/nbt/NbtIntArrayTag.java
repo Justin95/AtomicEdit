@@ -1,10 +1,10 @@
 
 package atomicedit.backend.nbt;
 
-import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  *
@@ -15,8 +15,8 @@ public class NbtIntArrayTag extends NbtTag{
     private int[] data;
     private int dataSize;
     
-    public NbtIntArrayTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_INT_ARRAY, NbtTag.readUtfString(input));
+    public NbtIntArrayTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_INT_ARRAY, readName ? NbtTag.readUtfString(input) : "");
         this.dataSize = input.readInt();
         this.data = new int[dataSize];
         for(int i = 0; i < dataSize; i++){
@@ -46,5 +46,8 @@ public class NbtIntArrayTag extends NbtTag{
         return this.dataSize;
     }
     
+    public String toString(){
+        return this.getName() + ":" + Arrays.toString(data);
+    }
     
 }

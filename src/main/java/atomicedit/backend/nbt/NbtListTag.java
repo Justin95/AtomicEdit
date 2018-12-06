@@ -17,13 +17,13 @@ public class NbtListTag extends NbtTag{
     private List<NbtTag> data;
     private byte tagId;
     
-    public NbtListTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_LIST, NbtTag.readUtfString(input));
+    public NbtListTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_LIST, readName ? NbtTag.readUtfString(input) : "");
         this.tagId = input.readByte();
         int dataLength = input.readInt();
         this.data = new ArrayList<>(dataLength);
         for(int i = 0; i < dataLength; i++){
-            data.add(i, NbtTypes.getTypeFromId(tagId).instantiate(input));
+            data.add(i, NbtTypes.getTypeFromId(tagId).instantiate(input, false));
         }
     }
     
@@ -150,6 +150,19 @@ public class NbtListTag extends NbtTag{
             return (List<NbtStringTag>)(List<?>) data;
         }
         throw new MalformedNbtTagException();
+    }
+    
+    @Override
+    public String toString(){
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(this.getName());
+        strBuilder.append(":[\n");
+        data.forEach((NbtTag tag) -> {
+            strBuilder.append(tag.toString());
+            strBuilder.append("\n");
+        });
+        strBuilder.append("]");
+        return strBuilder.toString();
     }
     
 }

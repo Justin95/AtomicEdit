@@ -2,6 +2,9 @@
 package atomicedit.frontend;
 
 import atomicedit.backend.BackendController;
+import atomicedit.frontend.render.CameraController;
+import atomicedit.frontend.ui.AtomicEditGui;
+import atomicedit.frontend.worldmaintinance.ChunkLoadingThread;
 import atomicedit.logging.Logger;
 import org.liquidengine.legui.animation.Animator;
 import org.liquidengine.legui.layout.LayoutManager;
@@ -19,15 +22,18 @@ import org.lwjgl.opengl.GL11;
 public class AtomicEditFrontEnd {
     
     //window
-    private BackendController backendController;
-    private AtomicEditRenderer renderer;
+    private final BackendController backendController;
+    private final AtomicEditRenderer renderer;
     private SystemEventProcessor systemEventProcessor;
+    private final ChunkLoadingThread chunkLoadingThread;
+    private CameraController cameraController;
     private boolean keepRunning;
     
-    public AtomicEditFrontEnd(BackendController backendController){
-        this.renderer = new AtomicEditRenderer();
+    public AtomicEditFrontEnd(AtomicEditRenderer renderer, BackendController backendController){
+        this.renderer = renderer;
         this.keepRunning = false;
         this.backendController = backendController;
+        chunkLoadingThread = new ChunkLoadingThread(renderer);
     }
     
     
@@ -40,11 +46,19 @@ public class AtomicEditFrontEnd {
     private void initialize(){
         this.keepRunning = true;
         renderer.initialize();
+        this.cameraController = new CameraController(renderer.getCamera());
+        chunkLoadingThread.start();
         this.systemEventProcessor = new SystemEventProcessor();
+        AtomicEditGui.initializeGui(renderer.getFrame(), renderer.getContext(), backendController);
         
         CallbackKeeper keeper = new DefaultCallbackKeeper();
         CallbackKeeper.registerCallbacks(renderer.getGlfwWindow(), keeper);
         keeper.getChainWindowCloseCallback().add(w -> keepRunning = false);
+        keeper.getChainKeyCallback().add((long window, int key, int scancode, int action, int mods) -> {
+            if(renderer.getContext().getFocusedGui() == renderer.getFrame().getContainer()){ //only update camera if no UI component has focus
+                cameraController.handleInput(key, action);
+            }
+        });
         systemEventProcessor = new SystemEventProcessor();
         systemEventProcessor.addDefaultCallbacks(keeper);
         Logger.info("\nGL Version: " + GL11.glGetString(GL11.GL_VERSION));
@@ -54,6 +68,7 @@ public class AtomicEditFrontEnd {
         while(keepRunning){
             renderer.render();
             systemEventProcessor.processEvents(renderer.getFrame(), this.renderer.getContext());
+            cameraController.updateCamera();
             EventProcessor.getInstance().processEvents();
             LayoutManager.getInstance().layout(renderer.getFrame());
             Animator.getInstance().runAnimations();
@@ -61,6 +76,7 @@ public class AtomicEditFrontEnd {
     }
     
     private void cleanUp(){
+        chunkLoadingThread.cleanUp();
         renderer.cleanUp();
     }
     

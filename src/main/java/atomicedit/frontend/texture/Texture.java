@@ -15,16 +15,26 @@ import org.lwjgl.opengl.GL13;
 public class Texture {
     
     private int textureID;
+    private boolean initialized;
+    private BufferedImage image; //not needed after GL upload
 	
 	public Texture(BufferedImage image){
-		this.textureID = GL11.glGenTextures();
-		ByteBuffer textureData = imageToByteBuffer(image);
-        
-		uploadTexture(textureID, image.getWidth(), image.getHeight(), textureData, 0);
+        initialized = false;
+		this.image = image;
 	}
 	
+    private void initialize(){
+        this.initialized = true;
+        this.textureID = GL11.glGenTextures();
+		ByteBuffer textureData = imageToByteBuffer(image);
+		uploadTexture(textureID, image.getWidth(), image.getHeight(), textureData, 0);
+        this.image = null;
+    }
 	
 	public void bind(int textureNumber){
+        if(!initialized){
+            initialize();
+        }
 		if(textureNumber < 0 || textureNumber > GL13.GL_MAX_TEXTURE_UNITS) Logger.error("Invalid call to bind texture");
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + textureNumber);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureID);

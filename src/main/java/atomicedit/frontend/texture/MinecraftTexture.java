@@ -16,8 +16,8 @@ public class MinecraftTexture extends Texture{
     public static final int TEXTURE_RES = 16;
     public static final String UNKNOWN_TEXTURE_NAME = "ATOMICEDIT_UNKNOWN_TEXTURE";
     
-    private Map<String, Integer> blockTypeToIndex;
-    private int textureSquareLength;
+    private final Map<String, Integer> blockTypeToIndex;
+    private final int textureSquareLength;
     
     public MinecraftTexture(Map<String, BufferedImage> namedTextures, BufferedImage defaultTexture){
         super(createSuperImage(namedTextures, defaultTexture));
@@ -25,8 +25,14 @@ public class MinecraftTexture extends Texture{
         this.textureSquareLength = getSideLengthInTextures(namedTextures.size());
     }
     
-    public Map<String, Integer> getBlockTypeToIndex(){
-        return this.blockTypeToIndex;
+    
+    public int getIndexFromBlockName(String blockName){
+        if(blockName.equals("minecraft:grass_block")) blockName = "minecraft:grass_block_top"; //TEMP TODO read actual model files for blocks
+        if(!blockTypeToIndex.containsKey(blockName)){
+            //Logger.warning("Unknown texture name: " + blockName);
+            blockName = UNKNOWN_TEXTURE_NAME;
+        }
+        return blockTypeToIndex.get(blockName);
     }
     
     public int getBlockTextureLength(){
@@ -56,8 +62,7 @@ public class MinecraftTexture extends Texture{
         int superTextureSideLength = getSideLengthInTextures(numTextures);
         int superTextureRes = TEXTURE_RES * superTextureSideLength;
         BufferedImage superTexture = new BufferedImage(superTextureRes, superTextureRes, BufferedImage.TYPE_INT_ARGB);
-        List<String> names = new ArrayList<>(namedTextures.keySet());
-        names.add(UNKNOWN_TEXTURE_NAME); //add unknown texture to texture
+        List<String> names = getTextureNames(namedTextures);
         outer:
         for(int y = 0; y < superTextureSideLength; y++){
             for(int x = 0; x < superTextureSideLength; x++){
@@ -82,12 +87,18 @@ public class MinecraftTexture extends Texture{
     }
     
     private static Map<String, Integer> createNameToIndexMap(Map<String, BufferedImage> namedTextures){
-        List<String> names = new ArrayList<>(namedTextures.keySet());
+        List<String> names = getTextureNames(namedTextures);
         Map<String, Integer> map = new HashMap<>();
         for(int i = 0; i < names.size(); i++){
             map.put(names.get(i), i);
         }
         return map;
+    }
+    
+    private static List<String> getTextureNames(Map<String, BufferedImage> namedTextures){
+        List<String> names = new ArrayList<>(namedTextures.keySet());
+        names.add(UNKNOWN_TEXTURE_NAME);
+        return names;
     }
     
 }

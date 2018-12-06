@@ -1,7 +1,7 @@
 
 package atomicedit.frontend;
 
-import atomicedit.backend.GlobalBlockTypeMap;
+import atomicedit.AtomicEdit;
 import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.chunk.ChunkSection;
@@ -13,6 +13,7 @@ import atomicedit.frontend.texture.MinecraftTexture;
 import atomicedit.frontend.texture.TextureLoader;
 import atomicedit.logging.Logger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.joml.Vector3f;
@@ -23,38 +24,29 @@ import org.joml.Vector3f;
  */
 public class ChunkRenderObjectCreator {
     
+    private static final short[] EMPTY_BLOCK_ARRAY = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
     
-    public static Collection<RenderObject> createRenderObjects(ChunkReader chunk, Collection<ChunkReader> adjacentChunks){
+    /**
+     * Create a collection of Render Objects which together render a chunk.
+     * @param chunk
+     * @param xMinus
+     * @param xPlus
+     * @param zMinus
+     * @param zPlus
+     * @return 
+     */
+    public static Collection<RenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
         ArrayList<RenderObject> renderObjects = new ArrayList<>(Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK);
-        ChunkReader xMinus = null;
-        ChunkReader xPlus = null;
-        ChunkReader zMinus = null;
-        ChunkReader zPlus = null;
-        for(ChunkReader adjChunk : adjacentChunks){
-            if(adjChunk == null) continue;
-            try{
-                if(adjChunk.getChunkCoord().x > chunk.getChunkCoord().x){
-                    xPlus = adjChunk;
-                }else if(adjChunk.getChunkCoord().x < chunk.getChunkCoord().x){
-                    xMinus = adjChunk;
-                }else if(adjChunk.getChunkCoord().z > chunk.getChunkCoord().z){
-                    zPlus = adjChunk;
-                }else if(adjChunk.getChunkCoord().z < chunk.getChunkCoord().z){
-                    zMinus = adjChunk;
-                }else{
-                    Logger.warning("Tried to use a chunk as its own adjacent chunk while creating render object");
-                }
-            }catch(MalformedNbtTagException e){
-                Logger.error("Could not read chunk while creating render object");
-            }
-        }
         for(int i = 0; i < Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK; i++){
             try{
+                if(Arrays.equals(chunk.getBlocks(i), EMPTY_BLOCK_ARRAY)){
+                    continue;
+                }
                 ChunkSectionPlus section = new ChunkSectionPlus(chunk.getBlocks(i),
-                                                                xPlus.getBlocks(i),
-                                                                xMinus.getBlocks(i),
-                                                                zPlus.getBlocks(i),
-                                                                zMinus.getBlocks(i),
+                                                                xPlus != null ? xPlus.getBlocks(i) : null,
+                                                                xMinus != null ? xMinus.getBlocks(i) : null,
+                                                                zPlus != null ? zPlus.getBlocks(i) : null,
+                                                                zMinus != null ? zMinus.getBlocks(i) : null,
                                                                 i == Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK - 1 ? null : chunk.getBlocks(i + 1),
                                                                 i == 0 ? null : chunk.getBlocks(i - 1),
                                                                 chunk.getChunkCoord().x,
@@ -63,12 +55,18 @@ public class ChunkRenderObjectCreator {
                 );
                 renderObjects.add(createChunkSectionRenderObject(section));
             }catch(MalformedNbtTagException e){
-                Logger.error("MalformedNbtTagException while trying to create render object");
+                Logger.error("MalformedNbtTagException while trying to create render object", e);
+                //Logger.debug("Chunk NBT: " + chunk.getChunkAsNbtTag());
             }
         }
         return renderObjects;
     }
     
+    /**
+     * Create a render object for a chunk section.
+     * @param section
+     * @return A render object to allow rendering of a chunk section
+     */
     private static RenderObject createChunkSectionRenderObject(ChunkSectionPlus section){
         ArrayList<Float> vertexData = new ArrayList<>();
         ArrayList<Short> indicies = new ArrayList<>();
@@ -86,10 +84,20 @@ public class ChunkRenderObjectCreator {
         return new RenderObject(pos, new Vector3f(0,0,0), TextureLoader.getMinecraftDefaultTexture(), convertFloat(vertexData), convertShort(indicies));
     }
     
+    /**
+     * Add the vertex and indicie information for one block.
+     * @param x the x coord of the block in the section
+     * @param y the y coord of the block in the section
+     * @param z the z coord of the block in the section
+     * @param section The chunk section the block is in and the surrounding sections
+     * @param vertexData the list of vertex data to add this block's rendering information to
+     * @param indicies the list of indicies to add the block's rendering information to
+     */
     private static void createBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Short> indicies){
         short centerBlock = section.getBlockAt(x, y, z);
         MinecraftTexture texture = TextureLoader.getMinecraftDefaultTexture();
-        int textureIndex = texture.getBlockTypeToIndex().get(GlobalBlockTypeMap.getBlockType(centerBlock).name);
+        String centerBlockName = AtomicEdit.getBackendController().getBlockType(centerBlock).name;
+        int textureIndex = texture.getIndexFromBlockName(centerBlockName);
         float xMinTex = texture.getTextureCoordX(textureIndex);
         float xMaxTex = xMinTex + texture.getTextureCoordDelta();
         float yMinTex = texture.getTextureCoordY(textureIndex);
@@ -168,12 +176,6 @@ public class ChunkRenderObjectCreator {
         }
     }
     
-    private static void addAll(List<Short> dest, short[] source){
-        for(int i = 0; i < source.length; i++){
-            dest.add(source[i]);
-        }
-    }
-    
     private static float[] convertFloat(List<Float> source){
         float[] dest = new float[source.size()];
         for(int i = 0; i < source.size(); i++){
@@ -224,19 +226,19 @@ public class ChunkRenderObjectCreator {
             if(x < 0){
                 selectionX += ChunkSection.SIDE_LENGTH;
                 selectedSection = secMinusX;
-            } else if(x > ChunkSection.SIDE_LENGTH){
+            } else if(x >= ChunkSection.SIDE_LENGTH){
                 selectionX -= ChunkSection.SIDE_LENGTH;
                 selectedSection = secPlusX;
             } else if(y < 0){
                 selectionY += ChunkSection.SIDE_LENGTH;
                 selectedSection = secMinusY;
-            }else if(y > ChunkSection.SIDE_LENGTH){
+            }else if(y >= ChunkSection.SIDE_LENGTH){
                 selectionY -= ChunkSection.SIDE_LENGTH;
                 selectedSection = secPlusY;
             }else if(z < 0){
                 selectionZ += ChunkSection.SIDE_LENGTH;
                 selectedSection = secMinusZ;
-            }else if(z > ChunkSection.SIDE_LENGTH){
+            }else if(z >= ChunkSection.SIDE_LENGTH){
                 selectionZ -= ChunkSection.SIDE_LENGTH;
                 selectedSection = secPlusZ;
             }

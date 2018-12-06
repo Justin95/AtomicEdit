@@ -35,4 +35,17 @@ public class BlockStateProperty {
         STRING
     }
     
+    @Override
+    public String toString(){
+        return "{" + NAME + ":" + VALUE + "}";
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof BlockStateProperty)){
+            return false;
+        }
+        return this.toString().equals(obj.toString());
+    }
+    
 }

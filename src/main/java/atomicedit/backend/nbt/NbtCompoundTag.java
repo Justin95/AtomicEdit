@@ -15,13 +15,13 @@ public class NbtCompoundTag extends NbtTag{
     private ArrayList<NbtTag> data;
     private int dataSize;
     
-    public NbtCompoundTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_COMPOUND, NbtTag.readUtfString(input));
+    public NbtCompoundTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_COMPOUND, readName ? NbtTag.readUtfString(input) : "");
         this.data = new ArrayList<>();
         dataSize = 0;
         byte tagId;
         while((tagId = input.readByte()) != 0){
-            data.add(NbtTypes.getTypeFromId(tagId).instantiate(input));
+            data.add(NbtTypes.getTypeFromId(tagId).instantiate(input, true));
             dataSize++;
         }
     }
@@ -140,6 +140,18 @@ public class NbtCompoundTag extends NbtTag{
         NbtTag tag = getTag(name);
         NbtTypes.typeCheck(tag, NbtTypes.TAG_STRING);
         return (NbtStringTag) tag;
+    }
+    
+    public String toString(){
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(this.getName());
+        strBuilder.append(":{\n");
+        data.forEach((NbtTag tag) -> {
+            strBuilder.append(tag.toString());
+            strBuilder.append("\n");
+        });
+        strBuilder.append("}");
+        return strBuilder.toString();
     }
     
 }

@@ -18,12 +18,14 @@ public class Chunk {
     private NbtCompoundTag chunkTag;
     private boolean needsSave;
     private boolean needsLightingCalc;
+    private boolean needsRedraw;
     
     
     public Chunk(NbtCompoundTag chunkTag){
         this.chunkTag = chunkTag;
         this.needsLightingCalc = false;
         this.needsSave = false;
+        this.needsRedraw = false;
     }
     
     NbtCompoundTag getChunkTag(){
@@ -48,6 +50,14 @@ public class Chunk {
     
     public void setNeedsLightingCalc(boolean needsLightingCalc){
         this.needsLightingCalc = needsLightingCalc;
+    }
+    
+    public boolean needsRedraw(){
+        return this.needsRedraw;
+    }
+    
+    public void setNeedsRedraw(boolean needsRedraw){
+        this.needsRedraw = needsRedraw;
     }
     
 }

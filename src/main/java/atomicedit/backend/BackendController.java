@@ -4,6 +4,7 @@ package atomicedit.backend;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.schematic.Schematic;
+import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.volumes.Volume;
@@ -30,7 +31,15 @@ public class BackendController {
     }
     
     public void setWorld(String worldDirectoryFilepath){
+        if(worldDirectoryFilepath == null || worldDirectoryFilepath.equals("")){
+            Logger.notice("Tried to set null or empty file path as the world file");
+            return;
+        }
         this.world = new World(worldDirectoryFilepath);
+    }
+    
+    public String getWorldPath(){
+        return this.world != null ? this.world.getFilePath() : null;
     }
     
     public OperationResult applyOperation(Operation op){
@@ -53,6 +62,20 @@ public class BackendController {
         return Schematic.createSchematicFromWorld(world, volume, smallestPoint);
     }
     
+    public BlockType getBlockType(short blockRuntimeId){
+        return GlobalBlockTypeMap.getBlockType(blockRuntimeId);
+    }
     
+    public short getBlockId(BlockType blockType){
+        return GlobalBlockTypeMap.getBlockId(blockType);
+    }
+    
+    public boolean doesChunkNeedRedraw(ChunkCoord chunkCoord){
+        return this.world.doesChunkNeedRedraw(chunkCoord);
+    }
+    
+    public boolean doesChunkNeedSaving(ChunkCoord chunkCoord){
+        return this.world.doesChunkNeedSaving(chunkCoord);
+    }
     
 }

@@ -26,6 +26,12 @@ public enum AtomicEditSettings {
             }while(status != JFileChooser.APPROVE_OPTION && !".minecraft".equals(choice.getName()));
             return choice.getPath();
         }
+    ),
+    CHUNK_RENDER_DISTANCE(
+        "Render Distance",
+        "chunk_render_distance",
+        SettingDataType.INT,
+        () -> 9
     )
     ;
     
@@ -67,7 +73,7 @@ public enum AtomicEditSettings {
     }
     
     public Object createValueFromString(String valueString){
-        return valueString; //TODO create each type when more settings are needed
+        return this.getDataType().getValueFromString(this, valueString);
     }
     
     public boolean isCorrectType(Object value){
@@ -84,17 +90,44 @@ public enum AtomicEditSettings {
     }
     
     enum SettingDataType{
-        STRING(String.class),
-        BOOLEAN(Boolean.class),
-        INT(Integer.class),
-        CLASS_OPTION(SettingSelectableClass.class),
-        FILE_LOCATION(String.class)
+        STRING(
+            String.class,
+            (setting, strValue) -> strValue
+        ),
+        BOOLEAN(
+            Boolean.class,
+            (setting, strValue) -> Boolean.valueOf(strValue)
+        ),
+        INT(
+            Integer.class,
+            (setting, strValue) -> Integer.valueOf(strValue)
+        ),
+        CLASS_OPTION(
+            SettingSelectableClass.class,
+            (setting, strValue) -> {
+                throw new UnsupportedOperationException("Class options not yet implemented"); //TODO
+            }
+        ),
+        FILE_LOCATION(
+            String.class,
+            (setting, strValue) -> strValue
+        )
         ;
         
         public final Class BASE_TYPE;
+        public final ValueFromStringCreator valueCreator;
         
-        SettingDataType(Class type){
+        SettingDataType(Class type, ValueFromStringCreator valueCreator){
             this.BASE_TYPE = type;
+            this.valueCreator = valueCreator;
+        }
+        
+        interface ValueFromStringCreator{
+            public Object getValueFromString(AtomicEditSettings setting, String stringValue);
+        }
+        
+        Object getValueFromString(AtomicEditSettings setting, String stringValue){
+            return valueCreator.getValueFromString(setting, stringValue);
         }
         
     }

@@ -5,7 +5,6 @@ import atomicedit.frontend.render.Camera;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.Renderable;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
-import atomicedit.frontend.texture.TextureLoader;
 import atomicedit.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,8 +54,8 @@ public class AtomicEditRenderer {
     
     //https://github.com/LiquidEngine/legui/blob/develop/src/main/java/org/liquidengine/legui/demo/SingleClassExample.java
     public void initialize(){
-        System.setProperty("joml.nounsafe", Boolean.TRUE.toString());
-        System.setProperty("java.awt.headless", Boolean.TRUE.toString());
+        //System.setProperty("joml.nounsafe", Boolean.TRUE.toString());
+        //System.setProperty("java.awt.headless", Boolean.TRUE.toString());
         if (!GLFW.glfwInit()) {
             throw new RuntimeException("Can't initialize GLFW");
         }
@@ -65,8 +64,9 @@ public class AtomicEditRenderer {
         GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         this.width = videoMode.width();
         this.height = videoMode.height();
-        this.camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 90, width / height);
-        glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, GLFW.glfwGetPrimaryMonitor(), NULL);
+        this.camera = new Camera(new Vector3f(0, 80, 0), new Vector3f(0, 0, 0), 90, width / (float)height);
+        //glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, GLFW.glfwGetPrimaryMonitor(), NULL); //boarderless window
+        glfwWindow = GLFW.glfwCreateWindow(width - 2, height - 30, WINDOW_TITLE_STRING, NULL, NULL);
         GLFW.glfwShowWindow(glfwWindow);
         GLFW.glfwMakeContextCurrent(glfwWindow);
         GLFW.glfwFocusWindow(glfwWindow);
@@ -133,6 +133,10 @@ public class AtomicEditRenderer {
         return this.context;
     }
     
+    public Camera getCamera(){
+        return this.camera;
+    }
+    
     public void addRenderables(Collection<Renderable> additions){
         synchronized(renderables){
             synchronized(toAddRenderables){
@@ -143,7 +147,6 @@ public class AtomicEditRenderer {
     
     public void removeRenderables(Collection<Renderable> removals){
         synchronized(renderables){
-            renderables.removeAll(removals);
             synchronized(toRemoveRenderables){
                 toRemoveRenderables.addAll(removals);
             }
@@ -154,10 +157,8 @@ public class AtomicEditRenderer {
         synchronized(renderables){
             synchronized(toAddRenderables){
                 if(toAddRenderables.isEmpty()) return;
-                for(Renderable renderable : toAddRenderables){
-                    renderable.getRenderObjects().forEach((renderObject) -> renderObject.initialize());
-                }
-                toAddRenderables.addAll(renderables);
+                renderables.addAll(toAddRenderables);
+                toAddRenderables.clear();
             }
         }
     }
@@ -169,7 +170,8 @@ public class AtomicEditRenderer {
                 for(Renderable renderable : toRemoveRenderables){
                     renderable.getRenderObjects().forEach((renderObject) -> renderObject.destroy());
                 }
-                toRemoveRenderables.removeAll(renderables);
+                renderables.removeAll(toRemoveRenderables);
+                toRemoveRenderables.clear();
             }
         }
     }

@@ -15,43 +15,43 @@ public enum NbtTypes {
      * Nbt Types must have the index of their Tag Id, https://minecraft.gamepedia.com/NBT_format
      */
     TAG_END(
-        (DataInputStream input) -> {throw new UnsupportedOperationException();} //never instantiate end tags
+        (DataInputStream input, boolean readName) -> {throw new UnsupportedOperationException();} //never instantiate end tags
     ),
     TAG_BYTE(
-        (DataInputStream input) -> new NbtByteTag(input)
+        (DataInputStream input, boolean readName) -> new NbtByteTag(input, readName)
     ),
     TAG_SHORT(
-        (DataInputStream input) -> new NbtShortTag(input)
+        (DataInputStream input, boolean readName) -> new NbtShortTag(input, readName)
     ),
     TAG_INT(
-        (DataInputStream input) -> new NbtIntTag(input)
+        (DataInputStream input, boolean readName) -> new NbtIntTag(input, readName)
     ),
     TAG_LONG(
-        (DataInputStream input) -> new NbtLongTag(input)
+        (DataInputStream input, boolean readName) -> new NbtLongTag(input, readName)
     ),
     TAG_FLOAT(
-        (DataInputStream input) -> new NbtFloatTag(input)
+        (DataInputStream input, boolean readName) -> new NbtFloatTag(input, readName)
     ),
     TAG_DOUBLE(
-        (DataInputStream input) -> new NbtDoubleTag(input)
+        (DataInputStream input, boolean readName) -> new NbtDoubleTag(input, readName)
     ),
     TAG_BYTE_ARRAY(
-        (DataInputStream input) -> new NbtByteArrayTag(input)
+        (DataInputStream input, boolean readName) -> new NbtByteArrayTag(input, readName)
     ),
     TAG_STRING(
-        (DataInputStream input) -> new NbtStringTag(input)
+        (DataInputStream input, boolean readName) -> new NbtStringTag(input, readName)
     ),
     TAG_LIST(
-        (DataInputStream input) -> new NbtListTag(input)
+        (DataInputStream input, boolean readName) -> new NbtListTag(input, readName)
     ),
     TAG_COMPOUND(
-        (DataInputStream input) -> new NbtCompoundTag(input)
+        (DataInputStream input, boolean readName) -> new NbtCompoundTag(input, readName)
     ),
     TAG_INT_ARRAY(
-        (DataInputStream input) -> new NbtIntArrayTag(input)
+        (DataInputStream input, boolean readName) -> new NbtIntArrayTag(input, readName)
     ),
     TAG_LONG_ARRAY(
-        (DataInputStream input) -> new NbtLongArrayTag(input)
+        (DataInputStream input, boolean readName) -> new NbtLongArrayTag(input, readName)
     )
     ;
     
@@ -69,9 +69,9 @@ public enum NbtTypes {
         return NbtTypes.values()[id];
     }
     
-    public NbtTag instantiate(DataInputStream inputStream){
+    public NbtTag instantiate(DataInputStream inputStream, boolean readName){
         try{
-            return instantiater.instantiate(inputStream);
+            return instantiater.instantiate(inputStream, readName);
         }catch(IOException e){
             Logger.error("IOException making nbt tag: " + e);
             return null;
@@ -92,7 +92,7 @@ public enum NbtTypes {
     }
     
     public interface Instantiater{
-        public NbtTag instantiate(DataInputStream inputStream) throws IOException;
+        public NbtTag instantiate(DataInputStream inputStream, boolean readName) throws IOException;
     }
     
     public static NbtCompoundTag getAsCompoundTag(NbtTag tag) throws MalformedNbtTagException{

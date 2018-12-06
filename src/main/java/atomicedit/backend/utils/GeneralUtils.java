@@ -2,7 +2,13 @@
 package atomicedit.backend.utils;
 
 import atomicedit.backend.BlockCoord;
+import atomicedit.logging.Logger;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.BitSet;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
 
 /**
  *
@@ -10,18 +16,23 @@ import java.util.BitSet;
  */
 public class GeneralUtils {
     
-    
-    public static int readIntFromPackedArray(int elementSize, int offset, long[] source){
+    /**
+     * Read an integer of varying length from an array of longs
+     * @param elementSize
+     * @param offset
+     * @param source
+     * @return 
+     */
+    public static int readIntFromPackedLongArray(int elementSize, int offset, long[] source){
         int bitOffset = elementSize * offset;
-        int arrayElementSize = 64;
+        int arrayElementSize = 64; //64 bits in a long
         int arrayIndex = bitOffset / arrayElementSize;
         int bitOffsetInArrayElement = bitOffset % arrayElementSize;
         int result = 0;
         for(int i = 0; i < elementSize; i++){
-            int bit = (int)(source[arrayIndex] >> (arrayElementSize - bitOffsetInArrayElement - 1) & 1);
-            result = result << 1;
-            result += bit;
-            arrayIndex++;
+            int bit = (int)((source[arrayIndex] >>> (bitOffsetInArrayElement)) & 1);
+            result = result + (bit << i);
+            bitOffsetInArrayElement++;
             if(bitOffsetInArrayElement >= arrayElementSize){
                 bitOffsetInArrayElement = 0;
                 arrayIndex++;
@@ -123,6 +134,51 @@ public class GeneralUtils {
     
     public static int getYFromIndexYZX(int index, int xLen, int zLen){
         return (index / xLen) / zLen;
+    }
+    
+    public static byte[] decompressGZippedByteArray(byte[] compressed) throws IOException{
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(compressed));
+        byte[] temp = new byte[4096];
+        try{
+            while(gzipInputStream.available() != 0){
+                int writtenAmount = gzipInputStream.read(temp);
+                if(writtenAmount < 0) break;
+                outputStream.write(temp, 0, writtenAmount);
+            }
+        }catch(Exception e){
+            Logger.error("Exception decompressing byte array", e);
+        }finally{
+            try{
+                outputStream.close();
+            }catch(IOException e){
+                Logger.error("Exception closing stream", e);
+            }
+        }
+        return outputStream.toByteArray();
+    }
+    
+    public static byte[] decompressZippedByteArray(byte[] compressed) throws IOException{
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Inflater inflater = new Inflater();
+        inflater.setInput(compressed);
+        byte[] temp = new byte[4096];
+        try{
+            while(!inflater.finished()){
+                int writtenAmount = inflater.inflate(temp);
+                if(writtenAmount < 0) break;
+                outputStream.write(temp, 0, writtenAmount);
+            }
+        }catch(Exception e){
+            Logger.error("Exception decompressing byte array", e);
+        }finally{
+            try{
+                outputStream.close();
+            }catch(IOException e){
+                Logger.error("Exception closing stream", e);
+            }
+        }
+        return outputStream.toByteArray();
     }
     
 }

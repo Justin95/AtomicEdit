@@ -30,6 +30,7 @@ public class RenderObject {
     protected int shaderProgram;
     protected int numIndicies;
     protected boolean openGlInitialized;
+    protected boolean destroyed;
     protected float[] vertexData;
     protected short[] indicies;
     
@@ -41,6 +42,7 @@ public class RenderObject {
         this.shaderProgram = ShaderProgram.getShaderProgram(ShaderProgram.DEFAULT_SHADER_PROGRAM); //can add a choice here later
         this.numIndicies = indicies.length;
         this.openGlInitialized = false;
+        this.destroyed = false;
         this.vertexData = vertexData;
         this.indicies = indicies;
     }
@@ -57,6 +59,7 @@ public class RenderObject {
     }
     
     public void destroy(){
+        this.destroyed = true;
         glDeleteVertexArrays(vao); //assume vbos were deleted at vao creation
     }
     
@@ -78,7 +81,10 @@ public class RenderObject {
     
     public void render(){
         if(!this.openGlInitialized){
-            Logger.error("Tried to render a non initialized render object");
+            initialize();
+        }
+        if(this.destroyed){
+            Logger.error("Tried to draw destroyed render object");
             return;
         }
         UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.MODEL_MATRIX, shaderProgram, modelMatrix);

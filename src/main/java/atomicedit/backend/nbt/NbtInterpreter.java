@@ -19,21 +19,20 @@ public class NbtInterpreter {
         DataInputStream input = new DataInputStream(new ByteArrayInputStream(nbtData));
         try{
             NbtTag nbt = readNbt(input);
-            Logger.info("Sucessfully read NBT tag");
             return nbt;
         }catch(IOException e){
-            Logger.error("Encountered IOException while reading NBT data");
+            Logger.error("Encountered IOException while reading NBT data", e);
         }catch(MalformedNbtTagException e){
-            Logger.error("Tried to read malformed NBT data");
+            Logger.error("Tried to read malformed NBT data", e);
         }catch(Exception e){
-            Logger.error("Unexpected exception while reading NBT data: " + e);
+            Logger.error("Unexpected exception while reading NBT data", e);
         }
         return null;
     }
     
     static NbtTag readNbt(DataInputStream input) throws IOException, MalformedNbtTagException{
         byte tagId = input.readByte();
-        return NbtTypes.getTypeFromId(tagId).instantiate(input);
+        return NbtTypes.getTypeFromId(tagId).instantiate(input, true);
     }
     
 }

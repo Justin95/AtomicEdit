@@ -13,8 +13,8 @@ public class NbtShortTag extends NbtTag{
     
     private short data;
     
-    public NbtShortTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_SHORT, NbtTag.readUtfString(input));
+    public NbtShortTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_SHORT, readName ? NbtTag.readUtfString(input) : "");
         this.data = input.readShort();
     }
     
@@ -32,5 +32,9 @@ public class NbtShortTag extends NbtTag{
         return this.data;
     }
     
+    @Override
+    public String toString(){
+        return this.getName() + ":" + data;
+    }
     
 }

@@ -13,9 +13,9 @@ public class NbtLongTag extends NbtTag{
     
     private long data;
     
-    public NbtLongTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_LONG, NbtTag.readUtfString(input));
-        this.data = input.readByte();
+    public NbtLongTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_LONG, readName ? NbtTag.readUtfString(input) : "");
+        this.data = input.readLong();
     }
     
     public NbtLongTag(String name, long data){
@@ -32,5 +32,9 @@ public class NbtLongTag extends NbtTag{
         return this.data;
     }
     
+    @Override
+    public String toString(){
+        return this.getName() + ":" + data;
+    }
     
 }

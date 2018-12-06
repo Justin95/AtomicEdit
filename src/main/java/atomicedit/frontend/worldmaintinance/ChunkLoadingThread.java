@@ -1,0 +1,137 @@
+
+package atomicedit.frontend.worldmaintinance;
+
+import atomicedit.AtomicEdit;
+import atomicedit.backend.World;
+import atomicedit.backend.chunk.Chunk;
+import atomicedit.backend.chunk.ChunkCoord;
+import atomicedit.backend.chunk.ChunkReader;
+import atomicedit.frontend.AtomicEditRenderer;
+import atomicedit.frontend.render.Camera;
+import atomicedit.frontend.render.ChunkRenderable;
+import atomicedit.frontend.render.Renderable;
+import atomicedit.logging.Logger;
+import atomicedit.settings.AtomicEditSettings;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * This thread is responsible for keeping the set of loaded chunks up to date.
+ * It must load new chunks as they come into range, update chunks in the renderer as they are updated
+ * in the backend, and unload chunks as they are no longer in range.
+ * This thread only affects the visual loading of chunks on the front end, it does not effect chunks kept in memory in the backend.
+ * 
+ * @author Justin Bonner
+ */
+public class ChunkLoadingThread extends Thread {
+    
+    private static final long CHUNK_LOAD_THREAD_REST_TIME_MS = 50;
+    private static final String CHUNK_LOAD_THREAD_NAME = "Chunk Loading Thread";
+    private AtomicEditRenderer renderer;
+    private String worldPath;
+    private final Map<ChunkCoord, ChunkRenderable> loadedChunks;
+    private boolean keepRunning;
+    private int renderDistInChunks;
+    
+    public ChunkLoadingThread(AtomicEditRenderer renderer){
+        this.renderer = renderer;
+        this.loadedChunks = new HashMap<>();
+        this.keepRunning = true;
+        this.renderDistInChunks = AtomicEdit.getSettings().getSettingValueAsInt(AtomicEditSettings.CHUNK_RENDER_DISTANCE);
+        this.setName(CHUNK_LOAD_THREAD_NAME);
+        this.worldPath = AtomicEdit.getBackendController().getWorldPath();
+    }
+    
+    @Override
+    public void run(){
+        while(keepRunning){
+            restThread();
+            Camera camera = renderer.getCamera();
+            if(!AtomicEdit.getBackendController().hasWorld()) continue;
+            if(camera == null) continue;
+            ChunkCoord cameraCoord = new ChunkCoord((int)Math.floor(camera.getPosition().x / Chunk.X_LENGTH), (int)Math.floor(camera.getPosition().z / Chunk.Z_LENGTH));
+            ChunkCoord maxCoord = new ChunkCoord(cameraCoord.x + renderDistInChunks, cameraCoord.z + renderDistInChunks);
+            ChunkCoord minCoord = new ChunkCoord(cameraCoord.x - renderDistInChunks, cameraCoord.z - renderDistInChunks);
+            ArrayList<Renderable> toRemove = new ArrayList<>();
+            ArrayList<Renderable> toAdd = new ArrayList<>();
+            Set<ChunkCoord> neededChunks = new HashSet<>();
+            String currWorldPath = AtomicEdit.getBackendController().getWorldPath();
+            if(currWorldPath != null && !currWorldPath.equals(worldPath)){
+                toRemove.addAll(loadedChunks.values());
+                this.loadedChunks.clear();
+                this.worldPath = currWorldPath;
+            }
+            ArrayList<ChunkCoord> removeFromLoadedChunks = new ArrayList<>();
+            for(ChunkCoord coord : loadedChunks.keySet()){ 
+                if(coord.x > maxCoord.x || coord.x < minCoord.x || coord.z > maxCoord.z || coord.z < minCoord.z){
+                    removeFromLoadedChunks.add(coord);
+                    toRemove.add(loadedChunks.get(coord));
+                }
+            }
+            removeFromLoadedChunks.forEach((ChunkCoord coord) -> loadedChunks.remove(coord));
+            for(int x = minCoord.x; x <= maxCoord.x; x++){
+                for(int z = minCoord.z; z <= maxCoord.z; z++){
+                    ChunkCoord coord = new ChunkCoord(x, z);
+                    if(!loadedChunks.containsKey(coord)){
+                        neededChunks.add(coord);
+                    }else if(AtomicEdit.getBackendController().doesChunkNeedRedraw(coord)){
+                        toRemove.add(loadedChunks.get(coord));
+                        neededChunks.add(coord);
+                    }
+                }
+            }
+            Set<ChunkCoord> neededAndAdjacentChunks = expandToAdjacentChunks(neededChunks);
+            Map<ChunkCoord, ChunkReader> neededChunkReaders = null;
+            try{
+                neededChunkReaders = AtomicEdit.getBackendController().getReadOnlyChunks(neededAndAdjacentChunks);
+            }catch(Exception e){
+                Logger.error("Exception while trying to load chunks for drawing", e);
+            }
+            if(neededChunkReaders != null){
+                for(ChunkCoord chunkCoord : neededChunks){
+                    ChunkReader chunk = neededChunkReaders.get(chunkCoord);
+                    if(chunk == null) continue;
+                    ChunkReader xMinus = neededChunkReaders.get(new ChunkCoord(chunkCoord.x - 1, chunkCoord.z));
+                    ChunkReader xPlus =  neededChunkReaders.get(new ChunkCoord(chunkCoord.x + 1, chunkCoord.z));
+                    ChunkReader zMinus = neededChunkReaders.get(new ChunkCoord(chunkCoord.x, chunkCoord.z - 1));
+                    ChunkReader zPlus =  neededChunkReaders.get(new ChunkCoord(chunkCoord.x, chunkCoord.z + 1));
+                    ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
+                    loadedChunks.put(chunkCoord, renderable);
+                    toAdd.add(renderable);
+                }
+            }
+            renderer.removeRenderables(toRemove);
+            renderer.addRenderables(toAdd);
+        }
+    }
+    
+    private static Set<ChunkCoord> expandToAdjacentChunks(Set<ChunkCoord> originals){
+        Set<ChunkCoord> originalsAndAdjacents = new HashSet<>(originals);
+        originals.forEach((ChunkCoord coord) -> {
+            originalsAndAdjacents.add(new ChunkCoord(coord.x + 1, coord.z));
+            originalsAndAdjacents.add(new ChunkCoord(coord.x - 1, coord.z));
+            originalsAndAdjacents.add(new ChunkCoord(coord.x, coord.z + 1));
+            originalsAndAdjacents.add(new ChunkCoord(coord.x, coord.z - 1));
+        });
+        return originalsAndAdjacents;
+    }
+    
+    private static void restThread(){
+        try{
+            Thread.sleep(CHUNK_LOAD_THREAD_REST_TIME_MS);
+        }catch(Exception e){
+
+        }
+    }
+    
+    public void cleanUp(){
+        this.keepRunning = false;
+    }
+    
+    public void setRenderDistance(int distance){
+        this.renderDistInChunks = distance;
+    }
+}

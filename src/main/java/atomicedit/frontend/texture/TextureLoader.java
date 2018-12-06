@@ -66,7 +66,7 @@ public class TextureLoader {
             jarFile.stream().filter(
                 (entry) -> entry.getName().startsWith(INTERNAL_PATH) && entry.getName().endsWith(INTERNAL_EXT)
             ).forEach((pngEntry) -> {
-                String name = pngEntry.getName().substring(INTERNAL_PATH.length(), pngEntry.getName().length() - INTERNAL_EXT.length());
+                String name = "minecraft:" + pngEntry.getName().substring(INTERNAL_PATH.length(), pngEntry.getName().length() - INTERNAL_EXT.length()); //remove .png
                 Logger.info("Loading minecraft texture: " + name);
                 BufferedImage texture;
                 try{

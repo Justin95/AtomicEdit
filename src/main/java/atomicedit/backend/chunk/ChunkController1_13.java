@@ -18,6 +18,7 @@ import atomicedit.logging.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -84,6 +85,7 @@ public class ChunkController1_13 extends ChunkController{
         blockIds[index] = GlobalBlockTypeMap.getBlockId(block);
         writeChunkSectionCacheIntoNbt(coord.getSubChunkIndex());
         declareNbtChanged();
+        declareVisiblyChanged();
     }
     
     @Override
@@ -107,14 +109,15 @@ public class ChunkController1_13 extends ChunkController{
         }
         writeChunkSectionCacheIntoNbt(subChunkIndex);
         declareNbtChanged();
+        declareVisiblyChanged();
     }
     
     private void readChunkSectionIntoCache(int subChunkIndex) throws MalformedNbtTagException{
         ChunkSectionCoord sectionCoord = new ChunkSectionCoord(coord.x, subChunkIndex, coord.z);
-        for(NbtCompoundTag section : chunkNbt.getListTag("Sections").getCompoundTags()){
+        for(NbtCompoundTag section : getLevel().getListTag("Sections").getCompoundTags()){
             if(section.getByteTag("Y").getPayload() == subChunkIndex){
                 this.chunkSectionCache[subChunkIndex] = readChunkSection(section, sectionCoord);
-                break;
+                return;
             }
         }
         this.chunkSectionCache[subChunkIndex] = makeBlankChunkSection(sectionCoord);
@@ -135,16 +138,16 @@ public class ChunkController1_13 extends ChunkController{
                 NbtCompoundTag propertiesTag = blockStateTag.getCompoundTag("Properties");
                 properties = new BlockStateProperty[propertiesTag.getPayloadSize()];
                 for(int j = 0; j < properties.length; j++){
-                    NbtTag property = propertiesTag.getPayload().get(i);
+                    NbtTag property = propertiesTag.getPayload().get(j);
                     switch(property.getType()){
                         case TAG_INT:
-                            properties[i] = new BlockStateProperty(property.getName(), NbtTypes.getInt(property));
+                            properties[j] = new BlockStateProperty(property.getName(), NbtTypes.getInt(property));
                             break;
                         case TAG_BYTE: //assume byte used for boolean
-                            properties[i] = new BlockStateProperty(property.getName(), NbtTypes.getByte(property) != 0); //assume non zero value means true boolean
+                            properties[j] = new BlockStateProperty(property.getName(), NbtTypes.getByte(property) != 0); //assume non zero value means true boolean
                             break;
                         case TAG_STRING:
-                            properties[i] = new BlockStateProperty(property.getName(), NbtTypes.getString(property));
+                            properties[j] = new BlockStateProperty(property.getName(), NbtTypes.getString(property));
                             break;
                         default:
                             Logger.warning("Unexpected NBT type in block properties: " + property.getName() + " " + property.getType());
@@ -156,10 +159,22 @@ public class ChunkController1_13 extends ChunkController{
         int indexSize = getIndexSize(blockTypes.length);
         long[] localBlockIds = sectionTag.getLongArrayTag("BlockStates").getPayload();
         short[] blocks = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
+        //Logger.info("length: " + blockTypes.length + " " + Arrays.toString(blockTypes));
+        //for(int i = 0; i < localBlockIds.length; i++) System.out.print(" " + i + ": "+StringUtils.leftPad(Long.toBinaryString(localBlockIds[i]), 64, "0"));
+        //Logger.info("\nindex size: " + indexSize);
+        //short[] localBlocks = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
         for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
-            BlockType blockType = blockTypes[GeneralUtils.readIntFromPackedArray(indexSize, i, localBlockIds)];
+            int blockTypeIndex = GeneralUtils.readIntFromPackedLongArray(indexSize, i, localBlockIds);
+            //localBlocks[i] = (short)blockTypeIndex; //temp
+            if(blockTypeIndex >= blockTypes.length){
+                Logger.warning("Invalid block type index (" + blockTypeIndex + ") in chunk "+chunkSectionCoord+" at index ("+i+"), replacing with air");
+                blockTypeIndex = 0;
+            }
+            BlockType blockType = blockTypes[blockTypeIndex];
             blocks[i] = GlobalBlockTypeMap.getBlockId(blockType);
         }
+        //Logger.info("local blocks: " + Arrays.toString(localBlocks));
+        //if(indexSize > 1)throw new NullPointerException(); //always true temp
         byte[] blockLight = sectionTag.getByteArrayTag("BlockLight").getPayload();
         byte[] skyLight = sectionTag.getByteArrayTag("SkyLight").getPayload();
         return new ChunkSection(chunkSectionCoord, blocks, blockLight, skyLight);
@@ -250,9 +265,5 @@ public class ChunkController1_13 extends ChunkController{
         this.chunkNbt = chunkTag;
         declareNbtChanged();
     }
-    
-    private void declareNbtChanged(){
-        this.chunk.setNeedsSaving(true);
-    }
-    
+     
 }

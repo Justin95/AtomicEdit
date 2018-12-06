@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
-import java.util.TreeMap;
 
 /**
  *
@@ -26,13 +25,13 @@ public class World {
     /**
      * Hold chunks that have been modified but not yet saved to disk.
      */
-    private final TreeMap<ChunkCoord, ChunkController> unsavedChunkMap;
+    private final Map<ChunkCoord, ChunkController> unsavedChunkMap;
     private final Stack<Operation> operationHistory;
     private final String filepath;
     
     
     public World(String filepath){
-        this.unsavedChunkMap = new TreeMap<>();
+        this.unsavedChunkMap = new HashMap<>();
         this.operationHistory = new Stack<>();
         this.filepath = filepath;
     }
@@ -89,8 +88,24 @@ public class World {
         throw new UnsupportedOperationException();
     }
     
+    public String getFilePath(){
+        return this.filepath;
+    }
+    
     public boolean hasUnsavedChanges(){
         return this.unsavedChunkMap.isEmpty();
+    }
+    
+    public boolean doesChunkNeedSaving(ChunkCoord chunkCoord){
+        return this.unsavedChunkMap.containsKey(chunkCoord) && this.unsavedChunkMap.get(chunkCoord).needsSaving();
+    }
+    
+    public boolean doesChunkNeedRedraw(ChunkCoord chunkCoord){
+        return this.unsavedChunkMap.containsKey(chunkCoord) && this.unsavedChunkMap.get(chunkCoord).needsRedraw();
+    }
+    
+    public boolean doesChunkNeedLightingCalc(ChunkCoord chunkCoord){
+        return this.unsavedChunkMap.containsKey(chunkCoord) && this.unsavedChunkMap.get(chunkCoord).needsLightingCalc();
     }
     
 }

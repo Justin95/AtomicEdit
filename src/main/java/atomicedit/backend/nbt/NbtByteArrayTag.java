@@ -5,6 +5,7 @@ import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  *
@@ -15,8 +16,8 @@ public class NbtByteArrayTag extends NbtTag{
     private byte[] data;
     private int dataSize;
     
-    public NbtByteArrayTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_BYTE_ARRAY, NbtTag.readUtfString(input));
+    public NbtByteArrayTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_BYTE_ARRAY, readName ? NbtTag.readUtfString(input) : "");
         this.dataSize = input.readInt();
         this.data = new byte[dataSize];
         int result = input.read(data);
@@ -44,6 +45,10 @@ public class NbtByteArrayTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.dataSize;
+    }
+    
+    public String toString(){
+        return this.getName() + ":" + Arrays.toString(data);
     }
     
 }

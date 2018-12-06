@@ -4,7 +4,6 @@ package atomicedit.backend.nbt;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 /**
  *
@@ -12,7 +11,6 @@ import java.nio.charset.Charset;
  */
 public abstract class NbtTag {
     //https://minecraft.gamepedia.com/NBT_format
-    private static final Charset NBT_STRING_CHARSET = Charset.forName("UTF-8");
     private NbtTypes type;
     private String name;
     

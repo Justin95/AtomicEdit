@@ -3,7 +3,8 @@ package atomicedit.backend;
 
 import atomicedit.logging.Logger;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -11,12 +12,9 @@ import java.util.TreeMap;
  */
 public class GlobalBlockTypeMap {
     
-    private static TreeMap<BlockType, Short> blockToIdMap = new TreeMap<>();
-    private static ArrayList<BlockType> idToBlockTypeMap = new ArrayList<>();
+    private static Map<BlockType, Short> blockToIdMap = new HashMap<>();
+    private static ArrayList<BlockType> idToBlockTypeMap = new ArrayList<>(100);
     private static short idCounter = 0;
-    static{
-        addBlockType(BlockType.AIR); //make sure air has id 0, simplifies chunk creation
-    }
     
     public static void addBlockType(BlockType blockType){
         if(idToBlockTypeMap.contains(blockType)){

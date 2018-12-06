@@ -2,7 +2,6 @@
 package atomicedit.backend.chunk;
 
 import atomicedit.backend.nbt.MalformedNbtTagException;
-import java.util.Collection;
 
 /**
  *

@@ -1,7 +1,6 @@
 
 package atomicedit.backend.nbt;
 
-import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,8 +14,8 @@ public class NbtStringTag extends NbtTag{
     private String data;
     private int dataSize;
     
-    public NbtStringTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_STRING, NbtTag.readUtfString(input));
+    public NbtStringTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_STRING, readName ? NbtTag.readUtfString(input) : "");
         this.data = NbtTag.readUtfString(input);
         this.dataSize = data.length();
     }
@@ -38,6 +37,11 @@ public class NbtStringTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.dataSize;
+    }
+    
+    @Override
+    public String toString(){
+        return this.getName() + ":\"" + data + "\"";
     }
     
 }

@@ -32,4 +32,20 @@ public class ChunkCoord {
         );
     }
     
+    @Override
+    public String toString(){
+        return "{"+x+","+z+"}";
+    }
+    
+    @Override
+    public int hashCode(){
+        return (x * 10000) + z;
+    }
+    
+    @Override
+    public boolean equals(Object other){
+        if(!(other instanceof ChunkCoord)) return false;
+        return ((ChunkCoord) other).x == this.x && ((ChunkCoord) other).z == this.z;
+    }
+    
 }

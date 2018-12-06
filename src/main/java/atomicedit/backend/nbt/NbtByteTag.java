@@ -13,8 +13,8 @@ public class NbtByteTag extends NbtTag{
     
     private byte data;
     
-    public NbtByteTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_BYTE, NbtTag.readUtfString(input));
+    public NbtByteTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_BYTE, readName ? NbtTag.readUtfString(input) : "");
         this.data = input.readByte();
     }
     
@@ -30,6 +30,10 @@ public class NbtByteTag extends NbtTag{
     
     public byte getPayload(){
         return this.data;
+    }
+    
+    public String toString(){
+        return this.getName() + ":" + data;
     }
     
 }

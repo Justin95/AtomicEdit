@@ -13,8 +13,8 @@ public class NbtDoubleTag extends NbtTag{
     
     private double data;
     
-    public NbtDoubleTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_DOUBLE, NbtTag.readUtfString(input));
+    public NbtDoubleTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_DOUBLE, readName ? NbtTag.readUtfString(input) : "");
         this.data = input.readDouble();
     }
     
@@ -30,6 +30,10 @@ public class NbtDoubleTag extends NbtTag{
     
     public double getPayload(){
         return this.data;
+    }
+    
+    public String toString(){
+        return this.getName() + ":" + data;
     }
     
 }

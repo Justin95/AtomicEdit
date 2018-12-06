@@ -41,5 +41,29 @@ public abstract class ChunkController implements ChunkReader{
     
     public abstract void setChunkNbtTag(NbtTag tag) throws MalformedNbtTagException; //call this after editing the NbtTag from getChunkAsNbtTag
     
+    protected void declareNbtChanged(){
+        this.chunk.setNeedsSaving(true);
+    }
+    
+    protected void declareVisiblyChanged(){
+        this.chunk.setNeedsLightingCalc(true);
+        this.chunk.setNeedsRedraw(true);
+    }
+    
+    public boolean needsRedraw(){
+        return this.chunk.needsRedraw();
+    }
+    
+    public boolean needsSaving(){
+        return this.chunk.needsSaving();
+    }
+    
+    public boolean needsLightingCalc(){
+        return this.chunk.needsLightingCalc();
+    }
+    
+    public void clearNeedsRedraw(){
+        this.chunk.setNeedsRedraw(false);
+    }
     
 }

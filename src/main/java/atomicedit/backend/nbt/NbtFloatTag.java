@@ -13,8 +13,8 @@ public class NbtFloatTag extends NbtTag{
     
     private float data;
     
-    public NbtFloatTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_FLOAT, NbtTag.readUtfString(input));
+    public NbtFloatTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_FLOAT, readName ? NbtTag.readUtfString(input) : "");
         this.data = input.readFloat();
     }
     
@@ -30,6 +30,10 @@ public class NbtFloatTag extends NbtTag{
     
     public float getPayload(){
         return this.data;
+    }
+    
+    public String toString(){
+        return this.getName() + ":" + data;
     }
     
 }

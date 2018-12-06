@@ -37,7 +37,25 @@ public class AeSettingValues {
         if(setting.getDataType().BASE_TYPE != String.class){
             throw new IllegalArgumentException("The given setting is not a String");
         }
-        return (String) settingsValues.get(setting);
+        String value = (String) settingsValues.get(setting);
+        if(value == null){
+            value = (String) setting.createDefaultValue();
+        }
+        return value;
+    }
+    
+    public int getSettingValueAsInt(AtomicEditSettings setting){
+        if(setting == null){
+            throw new NullPointerException("Cannot look up null setting");
+        }
+        if(setting.getDataType().BASE_TYPE != Integer.class){
+            throw new IllegalArgumentException("The given setting is not a String");
+        }
+        Integer value = (Integer) settingsValues.get(setting);
+        if(value == null){
+            value = (Integer) setting.createDefaultValue();
+        }
+        return value;
     }
     
     //add other datatypes as needed

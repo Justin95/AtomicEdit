@@ -15,19 +15,24 @@ import java.util.List;
  */
 public interface ChunkReader {
     
-    public abstract ChunkCoord getChunkCoord() throws MalformedNbtTagException;
+    public ChunkCoord getChunkCoord() throws MalformedNbtTagException;
     
-    public abstract int getBiomeAt(BlockCoord coord) throws MalformedNbtTagException;
+    public int getBiomeAt(BlockCoord coord) throws MalformedNbtTagException;
     
-    public abstract BlockType getBlockAt(BlockCoord coord) throws MalformedNbtTagException;
+    public BlockType getBlockAt(BlockCoord coord) throws MalformedNbtTagException;
     
-    public abstract short[] getBlocks(int subChunkIndex) throws MalformedNbtTagException;
+    public short[] getBlocks(int subChunkIndex) throws MalformedNbtTagException;
     
-    public abstract List<Entity> getEntities() throws MalformedNbtTagException; //read only list
+    public List<Entity> getEntities() throws MalformedNbtTagException; //read only list
     
-    public abstract List<BlockEntity> getBlockEntities() throws MalformedNbtTagException; //read only list
+    public List<BlockEntity> getBlockEntities() throws MalformedNbtTagException; //read only list
     
-    public abstract NbtTag getChunkAsNbtTag();
+    public NbtTag getChunkAsNbtTag();
     
+    public boolean needsSaving();
+    
+    public boolean needsRedraw();
+    
+    public void clearNeedsRedraw();
     
 }

@@ -13,8 +13,8 @@ public class NbtIntTag extends NbtTag{
     
     private int data;
     
-    public NbtIntTag(DataInputStream input) throws IOException{
-        super(NbtTypes.TAG_INT, NbtTag.readUtfString(input));
+    public NbtIntTag(DataInputStream input, boolean readName) throws IOException{
+        super(NbtTypes.TAG_INT, readName ? NbtTag.readUtfString(input) : "");
         this.data = input.readInt();
     }
     
@@ -31,4 +31,10 @@ public class NbtIntTag extends NbtTag{
     public int getPayload(){
         return this.data;
     }
+    
+    @Override
+    public String toString(){
+        return this.getName() + ":" + data;
+    }
+    
 }

@@ -7,11 +7,13 @@ import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtInterpreter;
 import atomicedit.backend.nbt.NbtTag;
 import atomicedit.backend.nbt.NbtTypes;
+import atomicedit.backend.utils.GeneralUtils;
 import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -68,11 +70,11 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
         try{
             regionInput.skip(chunkIndexOffset);
             int index = regionInput.readInt();
-            byte chunkLength = (byte)(index & 255);
+            byte chunkLengthInSectors = (byte)(index & 255);
             int chunkOffset = index >> 8;
             if(chunkOffset >= 2){
                 regionInput.skip(chunkOffset * 4096 - (chunkIndexOffset + 4)); //set data stream to start of chunk
-                chunk = readChunkFromDataStream(regionInput, chunkLength * 4096);
+                chunk = readChunkFromDataStream(regionInput);
             }
         }catch(IOException e){
             Logger.error("IOException while reading chunk" + e);
@@ -85,11 +87,17 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
         return chunk;
     }
     
-    private Chunk readChunkFromDataStream(DataInputStream input, int chunkLength) throws IOException{
+    private Chunk readChunkFromDataStream(DataInputStream input) throws IOException{
+        //https://minecraft.gamepedia.com/Region_file_format
+        int chunkLength = input.readInt() - 1; //-1 for the compression type
+        byte compressionType = input.readByte();
         byte[] rawChunkData = new byte[chunkLength];
         input.read(rawChunkData);
+        rawChunkData = GeneralUtils.decompressZippedByteArray(rawChunkData); //minecraft always uses zlib, theoretically if compressionType were 1 then use Gzip
         try{
             NbtTag chunkNbt = NbtInterpreter.interpretNbt(rawChunkData);
+            //this is a good place to print chunk data to look at chunk formats
+            //Logger.info(chunkNbt.toString());
             return interpretChunk(chunkNbt);
         }catch(MalformedNbtTagException e){
             Logger.error("Malformed Nbt in chunk");
@@ -98,7 +106,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     private static String getRegionFileName(ChunkCoord chunkCoord){
-        return "r." + (int) Math.floor(chunkCoord.x / 32.0) + "." + (int) Math.floor(chunkCoord.z / 32.0) + ".mcr";
+        return "r." + (int) Math.floor(chunkCoord.x / 32.0) + "." + (int) Math.floor(chunkCoord.z / 32.0) + ".mca";
     }
     
     private DataInputStream getRegionAsDataInputStream(ChunkCoord chunkCoord){
