@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
  */
 public class CameraController {
     
-    private static final float SPEED = 1f / 16;
+    private static final float SPEED = .4f / 16;
     
     
     private final Camera camera;

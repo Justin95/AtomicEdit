@@ -1,18 +1,17 @@
 
-package atomicedit.frontend.texture;
+package atomicedit.jarreading.texture;
 
 import atomicedit.AtomicEdit;
+import atomicedit.frontend.texture.MinecraftTexture;
+import atomicedit.frontend.utils.LoadingUtils;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
@@ -42,7 +41,6 @@ public class TextureLoader {
             defaultTexture = createDefaultTexture();
             return defaultTexture;
         }
-        
     }
     
     private static MinecraftTexture createDefaultTexture(){
@@ -62,11 +60,13 @@ public class TextureLoader {
     private static Map<String, BufferedImage> loadBlockTextures() {
         Map<String, BufferedImage> imageMap = new HashMap<>();
         try{
-            ZipFile jarFile = new ZipFile(getNewestMinecraftJarFilePath());
+            String jarFilePath = LoadingUtils.getNewestMinecraftJarFilePath(getMinecraftDirectory());
+            Logger.info("Getting textures from minecraft version: " + jarFilePath);
+            ZipFile jarFile = new ZipFile(jarFilePath);
             jarFile.stream().filter(
                 (entry) -> entry.getName().startsWith(INTERNAL_PATH) && entry.getName().endsWith(INTERNAL_EXT)
             ).forEach((pngEntry) -> {
-                String name = "minecraft:" + pngEntry.getName().substring(INTERNAL_PATH.length(), pngEntry.getName().length() - INTERNAL_EXT.length()); //remove .png
+                String name = "block/" + pngEntry.getName().substring(INTERNAL_PATH.length(), pngEntry.getName().length() - INTERNAL_EXT.length()); //remove .png
                 Logger.info("Loading minecraft texture: " + name);
                 BufferedImage texture;
                 try{
@@ -90,46 +90,8 @@ public class TextureLoader {
         return texture;
     }
     
-    private static String getNewestMinecraftJarFilePath(){
-        String directory = getMinecraftDirectory() + "/versions";
-        File jarsDirectory = new File(directory);
-        File newestVersion = getHighestVersionedDir(jarsDirectory.listFiles());
-        Logger.info("Getting textures from minecraft version: " + newestVersion.getName());
-        return directory + "/" + newestVersion.getName() + "/" + newestVersion.getName() + ".jar";
-    }
-    
     private static String getMinecraftDirectory(){
         return AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION);
-    }
-    
-    private static File getHighestVersionedDir(File[] files){
-        List<File> versionDirs = new ArrayList<>();
-        for(File file : files){
-            if(file.getName().matches("[0-9]+\\.[0-9]+(\\.[0-9]+)?")){ //ex 1.13.1 or 1.8
-                versionDirs.add(file);
-            }
-        }
-        versionDirs.sort((File a, File b) -> {
-            String[] aName = a.getName().split("\\.");
-            String[] bName = b.getName().split("\\.");
-            int majorA = Integer.parseInt(aName[0]);
-            int majorB = Integer.parseInt(bName[0]);
-            if(majorA != majorB){
-                return majorB - majorA;
-            }
-            int minorA = Integer.parseInt(aName[1]);
-            int minorB = Integer.parseInt(bName[1]);
-            if(minorA != minorB){
-                return minorB - minorA;
-            }
-            if(aName.length != bName.length){
-                return bName.length - aName.length;
-            }
-            int bugfixA = Integer.parseInt(aName[2]);
-            int bugfixB = Integer.parseInt(bName[2]);
-            return bugfixB - bugfixA;
-        });
-        return versionDirs.get(0);
     }
     
     public static BufferedImage testCreateUnknownTexture(){

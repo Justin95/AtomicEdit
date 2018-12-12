@@ -89,17 +89,5 @@ public class Texture {
 		buffer.flip();
 		return buffer;
 	}
-	
-	
-	/*
-	private static BufferedImage imageToBufferedImage(Image image){
-		int width = image.getWidth(null);
-		int height = image.getHeight(null);
-		BufferedImage buffImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
-		Graphics g = buffImage.getGraphics();
-		g.drawImage(image,0,0,null);
-		return buffImage;
-	}
-    */
     
 }

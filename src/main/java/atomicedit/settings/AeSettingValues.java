@@ -35,7 +35,7 @@ public class AeSettingValues {
             throw new NullPointerException("Cannot look up null setting");
         }
         if(setting.getDataType().BASE_TYPE != String.class){
-            throw new IllegalArgumentException("The given setting is not a String");
+            throw new IllegalArgumentException("The given setting is not a String setting");
         }
         String value = (String) settingsValues.get(setting);
         if(value == null){
@@ -49,11 +49,25 @@ public class AeSettingValues {
             throw new NullPointerException("Cannot look up null setting");
         }
         if(setting.getDataType().BASE_TYPE != Integer.class){
-            throw new IllegalArgumentException("The given setting is not a String");
+            throw new IllegalArgumentException("The given setting is not an Integer setting");
         }
         Integer value = (Integer) settingsValues.get(setting);
         if(value == null){
             value = (Integer) setting.createDefaultValue();
+        }
+        return value;
+    }
+    
+    public SettingSelectableClass getSettingValueAsClassInstance(AtomicEditSettings setting, Class instanceType){
+        if(setting == null){
+            throw new NullPointerException("Cannot look up null setting");
+        }
+        if(setting.getDataType().BASE_TYPE != SettingSelectableClass.class){
+            throw new IllegalArgumentException("The given setting is not a class selection setting");
+        }
+        SettingSelectableClass value = (SettingSelectableClass) settingsValues.get(setting);
+        if(!instanceType.isAssignableFrom(value.getClass())){
+            throw new IllegalArgumentException("Selected Class "+value.getClass().getSimpleName()+" instance is not assignable from " + instanceType.getSimpleName());
         }
         return value;
     }

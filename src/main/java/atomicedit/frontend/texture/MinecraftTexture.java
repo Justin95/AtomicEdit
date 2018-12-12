@@ -26,13 +26,12 @@ public class MinecraftTexture extends Texture{
     }
     
     
-    public int getIndexFromBlockName(String blockName){
-        if(blockName.equals("minecraft:grass_block")) blockName = "minecraft:grass_block_top"; //TEMP TODO read actual model files for blocks
-        if(!blockTypeToIndex.containsKey(blockName)){
+    public int getIndexFromTextureName(String texName){
+        if(!blockTypeToIndex.containsKey(texName)){
             //Logger.warning("Unknown texture name: " + blockName);
-            blockName = UNKNOWN_TEXTURE_NAME;
+            texName = UNKNOWN_TEXTURE_NAME;
         }
-        return blockTypeToIndex.get(blockName);
+        return blockTypeToIndex.get(texName);
     }
     
     public int getBlockTextureLength(){

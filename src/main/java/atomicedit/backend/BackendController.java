@@ -62,11 +62,11 @@ public class BackendController {
         return Schematic.createSchematicFromWorld(world, volume, smallestPoint);
     }
     
-    public BlockType getBlockType(short blockRuntimeId){
+    public BlockState getBlockType(short blockRuntimeId){
         return GlobalBlockTypeMap.getBlockType(blockRuntimeId);
     }
     
-    public short getBlockId(BlockType blockType){
+    public short getBlockId(BlockState blockType){
         return GlobalBlockTypeMap.getBlockId(blockType);
     }
     

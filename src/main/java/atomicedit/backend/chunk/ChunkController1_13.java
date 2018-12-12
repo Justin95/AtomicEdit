@@ -4,7 +4,7 @@ package atomicedit.backend.chunk;
 import atomicedit.backend.BlockCoord;
 import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.BlockStateProperty;
-import atomicedit.backend.BlockType;
+import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.backend.GlobalBlockTypeMap;
 import atomicedit.backend.entity.Entity;
@@ -65,7 +65,7 @@ public class ChunkController1_13 extends ChunkController{
     }
     
     @Override
-    public BlockType getBlockAt(BlockCoord coord) throws MalformedNbtTagException{
+    public BlockState getBlockAt(BlockCoord coord) throws MalformedNbtTagException{
         if(this.chunkSectionCacheIsDirty || chunkSectionCache[coord.getSubChunkIndex()] == null){
             readChunkSectionIntoCache(coord.getSubChunkIndex());
         }
@@ -76,7 +76,7 @@ public class ChunkController1_13 extends ChunkController{
     }
     
     @Override
-    public void setBlockAt(BlockCoord coord, BlockType block) throws MalformedNbtTagException{
+    public void setBlockAt(BlockCoord coord, BlockState block) throws MalformedNbtTagException{
         if(this.chunkSectionCacheIsDirty || chunkSectionCache[coord.getSubChunkIndex()] == null){
             readChunkSectionIntoCache(coord.getSubChunkIndex());
         }
@@ -89,11 +89,16 @@ public class ChunkController1_13 extends ChunkController{
     }
     
     @Override
-    public short[] getBlocks(int subChunkIndex) throws MalformedNbtTagException{
+    public ChunkSection getChunkSection(int subChunkIndex) throws MalformedNbtTagException{
         if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
             readChunkSectionIntoCache(subChunkIndex);
         }
-        return this.chunkSectionCache[subChunkIndex].getBlockIds();
+        return this.chunkSectionCache[subChunkIndex];
+    }
+    
+    @Override
+    public short[] getBlocks(int subChunkIndex) throws MalformedNbtTagException{
+        return getChunkSection(subChunkIndex).getBlockIds();
     }
     
     @Override
@@ -128,8 +133,11 @@ public class ChunkController1_13 extends ChunkController{
     }
     
     private ChunkSection readChunkSection(NbtCompoundTag sectionTag, ChunkSectionCoord chunkSectionCoord) throws MalformedNbtTagException{
+        if(!sectionTag.contains("Palette")){
+            Logger.warning("Chunk section does not contain 'Palette' tag. This chunk section is not in minecraft 1.13 chunk format");
+        }
         List<NbtCompoundTag> blockStateNbts = sectionTag.getListTag("Palette").getCompoundTags();
-        BlockType[] blockTypes = new BlockType[blockStateNbts.size()];
+        BlockState[] blockTypes = new BlockState[blockStateNbts.size()];
         for(int i = 0; i < blockStateNbts.size(); i++){
             NbtCompoundTag blockStateTag = blockStateNbts.get(i);
             String blockName = blockStateTag.getStringTag("Name").getPayload();
@@ -154,7 +162,7 @@ public class ChunkController1_13 extends ChunkController{
                     }
                 }
             }
-            blockTypes[i] = BlockType.getBlockType(blockName, properties);
+            blockTypes[i] = BlockState.getBlockType(blockName, properties);
         }
         int indexSize = getIndexSize(blockTypes.length);
         long[] localBlockIds = sectionTag.getLongArrayTag("BlockStates").getPayload();
@@ -170,7 +178,7 @@ public class ChunkController1_13 extends ChunkController{
                 Logger.warning("Invalid block type index (" + blockTypeIndex + ") in chunk "+chunkSectionCoord+" at index ("+i+"), replacing with air");
                 blockTypeIndex = 0;
             }
-            BlockType blockType = blockTypes[blockTypeIndex];
+            BlockState blockType = blockTypes[blockTypeIndex];
             blocks[i] = GlobalBlockTypeMap.getBlockId(blockType);
         }
         //Logger.info("local blocks: " + Arrays.toString(localBlocks));
@@ -196,8 +204,8 @@ public class ChunkController1_13 extends ChunkController{
     
     private ChunkSection makeBlankChunkSection(ChunkSectionCoord coord){
         short[] blocks = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
-        if(GlobalBlockTypeMap.getBlockId(BlockType.AIR) != 0){
-            Arrays.fill(blocks, GlobalBlockTypeMap.getBlockId(BlockType.AIR));
+        if(GlobalBlockTypeMap.getBlockId(BlockState.AIR) != 0){
+            Arrays.fill(blocks, GlobalBlockTypeMap.getBlockId(BlockState.AIR));
         }
         byte[] blockLight = new byte[(ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION + 1) / 2]; // divid 2 rounds down on odd numbers, add one to make it round up
         byte[] skyLight = new byte[(ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION + 1) / 2]; //may cause lighting errors

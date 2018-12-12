@@ -18,9 +18,11 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL11.GL_BACK;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.glCullFace;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -78,6 +80,7 @@ public class AtomicEditRenderer {
         guiRenderer.initialize();
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK); //nessessary?
     }
     
     public void render(){

@@ -1,7 +1,6 @@
 
 package atomicedit.backend;
 
-import atomicedit.logging.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,33 +9,37 @@ import java.util.HashMap;
  *
  * @author Justin Bonner
  */
-public class BlockType {
+public class BlockState {
     
     public final String name;
     public final BlockStateProperty[] blockStateProperties;
     private final String stringDesc;
     /**
-     * Only have one immutable BlockType object per block state
+     * Only have one immutable BlockState object per block state
      */
-    private static HashMap<String, ArrayList<BlockType>> blockLibrary = new HashMap<>();
-    public static final BlockType AIR = getBlockType("minecraft:air", null); //need a block to fill empty chunk sections with
+    private static HashMap<String, ArrayList<BlockState>> blockLibrary = new HashMap<>();
+    public static final BlockState AIR = getBlockType("minecraft:air", null); //need a block to fill empty chunk sections with
     
-    private BlockType(String name, BlockStateProperty[] blockStateProperties){
+    private BlockState(String name, BlockStateProperty[] blockStateProperties){
         if(name == null) throw new IllegalArgumentException("Block name cannot be null");
-        if(blockStateProperties != null && blockStateProperties.length == 0) blockStateProperties = null;
+        if(blockStateProperties != null && blockStateProperties.length == 0){
+            blockStateProperties = null;
+        }else if(blockStateProperties != null){
+            sortProperties(blockStateProperties);
+        }
         this.name = name;
         this.blockStateProperties = blockStateProperties;
         this.stringDesc = "{" + name + ":" + (blockStateProperties != null ? Arrays.toString(blockStateProperties) : "[]") + "}";
     }
     
-    public static BlockType getBlockType(String name, BlockStateProperty[] blockStateProperties){
+    public static BlockState getBlockType(String name, BlockStateProperty[] blockStateProperties){
         if(blockStateProperties != null && blockStateProperties.length == 0){
             blockStateProperties = null;
         }
-        BlockType newType = new BlockType(name, blockStateProperties);
+        BlockState newType = new BlockState(name, blockStateProperties);
         if(blockLibrary.containsKey(name)){
-            ArrayList<BlockType> potentialTypes = blockLibrary.get(name);
-            for(BlockType type : potentialTypes){
+            ArrayList<BlockState> potentialTypes = blockLibrary.get(name);
+            for(BlockState type : potentialTypes){
                 if(newType.equals(type)){
                     return type; //allow newType to be garbage collected
                 }
@@ -45,13 +48,16 @@ public class BlockType {
             GlobalBlockTypeMap.addBlockType(newType);
             return newType;
         }
-        ArrayList<BlockType> newList = new ArrayList<>();
+        ArrayList<BlockState> newList = new ArrayList<>();
         newList.add(newType);
         blockLibrary.put(name, newList);
         GlobalBlockTypeMap.addBlockType(newType);
         return newType;
     }
     
+    private static void sortProperties(BlockStateProperty[] properties){
+        //TODO make comparisons easier, make sure minecraft doesnt care about properties order!
+    }
     
     public static String getLoadedBlockTypesDebugString(){
         StringBuilder strBuilder = new StringBuilder();
@@ -67,7 +73,7 @@ public class BlockType {
         return stringDesc;
     }
     
-    private boolean equals(BlockType other){
+    private boolean equals(BlockState other){
         return other.name.equals(this.name) && (Arrays.deepEquals(this.blockStateProperties, other.blockStateProperties));
     }
     

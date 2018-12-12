@@ -3,7 +3,7 @@ package atomicedit.backend.chunk;
 
 import atomicedit.backend.BlockCoord;
 import atomicedit.backend.blockentity.BlockEntity;
-import atomicedit.backend.BlockType;
+import atomicedit.backend.BlockState;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtTag;
@@ -19,9 +19,11 @@ public interface ChunkReader {
     
     public int getBiomeAt(BlockCoord coord) throws MalformedNbtTagException;
     
-    public BlockType getBlockAt(BlockCoord coord) throws MalformedNbtTagException;
+    public BlockState getBlockAt(BlockCoord coord) throws MalformedNbtTagException;
     
     public short[] getBlocks(int subChunkIndex) throws MalformedNbtTagException;
+    
+    public ChunkSection getChunkSection(int subChunkIndex) throws MalformedNbtTagException;
     
     public List<Entity> getEntities() throws MalformedNbtTagException; //read only list
     

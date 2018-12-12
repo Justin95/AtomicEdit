@@ -2,7 +2,7 @@
 package atomicedit.operations;
 
 import atomicedit.backend.BlockCoord;
-import atomicedit.backend.BlockType;
+import atomicedit.backend.BlockState;
 import atomicedit.backend.World;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.blockprovider.BlockProvider;
@@ -20,10 +20,10 @@ public class SetBlocksOperation extends Operation{
     
     private Volume operationVolume; //volume operated on
     private Schematic schematicBackup; //backup for undos
-    private BlockType blockType; //block type to fill
+    private BlockState blockType; //block type to fill
     private BlockCoord smallestCoord;
     
-    public SetBlocksOperation(BlockType toFill, Volume volume, BlockCoord smallestCoord){
+    public SetBlocksOperation(BlockState toFill, Volume volume, BlockCoord smallestCoord){
         this.operationVolume = volume;
         this.blockType = toFill;
         this.smallestCoord = smallestCoord;

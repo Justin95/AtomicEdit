@@ -2,7 +2,6 @@
 package atomicedit.settings;
 
 import atomicedit.logging.Logger;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;

@@ -1,6 +1,8 @@
 
 package atomicedit.settings;
 
+import atomicedit.frontend.render.blockmodelcreation.BlockModelCreator1_13Logic;
+import atomicedit.logging.Logger;
 import java.io.File;
 import javax.swing.JFileChooser;
 
@@ -14,10 +16,11 @@ public enum AtomicEditSettings {
         "Minecraft Install Directory",
         "minecraft_install_directory",
         SettingDataType.FILE_LOCATION,
+        null,
         () -> {
             JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Locate .minecraft folder");
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            fileChooser.setName("Locate .minecraft folder");
             int status;
             File choice;
             do{
@@ -31,7 +34,17 @@ public enum AtomicEditSettings {
         "Render Distance",
         "chunk_render_distance",
         SettingDataType.INT,
+        null,
         () -> 9
+    ),
+    BLOCK_MODEL_CREATOR(
+        "Block Model Creator",
+        "block_model_creator",
+        SettingDataType.CLASS_OPTION,
+        new ClassInstanceOption[]{
+            new ClassInstanceOption(BlockModelCreator1_13Logic.getInstance())
+        },
+        () -> BlockModelCreator1_13Logic.getInstance()
     )
     ;
     
@@ -42,17 +55,20 @@ public enum AtomicEditSettings {
     public final String DISPLAY_NAME;
     public final String SETTING_ID;
     private final SettingDataType DATATYPE;
+    private final SettingOption[] OPTIONS;
     private final DefaultValueCreator DEFAULT_VALUE_CREATOR;
     
     AtomicEditSettings(
         String displayName,
         String settingId,
         SettingDataType dataType,
+        SettingOption[] options,
         DefaultValueCreator defaultValueCreator
     ){
         this.DISPLAY_NAME = displayName;
         this.SETTING_ID = settingId;
         this.DATATYPE = dataType;
+        this.OPTIONS = options;
         this.DEFAULT_VALUE_CREATOR = defaultValueCreator;
     }
     
@@ -86,40 +102,65 @@ public enum AtomicEditSettings {
     }
     
     public String createValueId(Object value){
-        return value.toString(); //TODO create each type when more settings are added
+        if(!isCorrectType(value)){
+            throw new IllegalArgumentException("Tried to crate a value string for the wrong type");
+        }
+        return this.DATATYPE.storeAsString(value);
     }
     
     enum SettingDataType{
         STRING(
             String.class,
-            (setting, strValue) -> strValue
+            (setting, strValue) -> strValue,
+            (value) -> (String) value
         ),
         BOOLEAN(
             Boolean.class,
-            (setting, strValue) -> Boolean.valueOf(strValue)
+            (setting, strValue) -> Boolean.valueOf(strValue),
+            (value) -> value.toString()
         ),
         INT(
             Integer.class,
-            (setting, strValue) -> Integer.valueOf(strValue)
+            (setting, strValue) -> Integer.valueOf(strValue),
+            (value) -> value.toString()
         ),
         CLASS_OPTION(
             SettingSelectableClass.class,
             (setting, strValue) -> {
-                throw new UnsupportedOperationException("Class options not yet implemented"); //TODO
-            }
+                for(int i = 0; i < setting.OPTIONS.length; i++){
+                    SettingSelectableClass classInstance = (SettingSelectableClass)setting.OPTIONS[i].getValue();
+                    if(classInstance.getIdentifierString().equals(strValue)){
+                        return classInstance;
+                    }
+                }
+                Logger.warning("Could not recognize option " + strValue + " for setting " + setting.DISPLAY_NAME + " chosing default");
+                return setting.createDefaultValue();
+            },
+            (value) -> ((SettingSelectableClass)value).getIdentifierString()
         ),
         FILE_LOCATION(
             String.class,
-            (setting, strValue) -> strValue
+            (setting, strValue) -> strValue,
+            (value) -> (String) value
         )
         ;
         
         public final Class BASE_TYPE;
-        public final ValueFromStringCreator valueCreator;
+        private final ValueFromStringCreator valueCreator;
+        private final ValueToString valueToString;
         
-        SettingDataType(Class type, ValueFromStringCreator valueCreator){
+        SettingDataType(Class type, ValueFromStringCreator valueCreator, ValueToString valueToString){
             this.BASE_TYPE = type;
             this.valueCreator = valueCreator;
+            this.valueToString = valueToString;
+        }
+        
+        String storeAsString(Object value){
+            return valueToString.valueToString(value);
+        }
+        
+        interface ValueToString{
+            String valueToString(Object value);
         }
         
         interface ValueFromStringCreator{

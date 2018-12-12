@@ -1,6 +1,7 @@
 
 package atomicedit.frontend.texture;
 
+import atomicedit.jarreading.texture.TextureLoader;
 import atomicedit.AtomicEdit;
 import java.awt.Canvas;
 import java.awt.Graphics;
