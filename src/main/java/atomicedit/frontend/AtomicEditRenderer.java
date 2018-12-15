@@ -47,11 +47,15 @@ public class AtomicEditRenderer {
     private final Collection<Renderable> toAddRenderables;
     private final Collection<Renderable> toRemoveRenderables;
     private Camera camera;
+    private boolean isCursorVisible;
+    private boolean shouldCursorBeVisible;
     
     public AtomicEditRenderer(){
         this.renderables = new ArrayList<>();
         this.toAddRenderables = new ArrayList<>();
         this.toRemoveRenderables = new ArrayList<>();
+        this.isCursorVisible = true;
+        this.shouldCursorBeVisible = true;
     }
     
     //https://github.com/LiquidEngine/legui/blob/develop/src/main/java/org/liquidengine/legui/demo/SingleClassExample.java
@@ -68,7 +72,7 @@ public class AtomicEditRenderer {
         this.height = videoMode.height();
         this.camera = new Camera(new Vector3f(0, 80, 0), new Vector3f(0, 0, 0), 90, width / (float)height);
         //glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, GLFW.glfwGetPrimaryMonitor(), NULL); //boarderless window
-        glfwWindow = GLFW.glfwCreateWindow(width - 2, height - 30, WINDOW_TITLE_STRING, NULL, NULL);
+        glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, NULL, NULL);
         GLFW.glfwShowWindow(glfwWindow);
         GLFW.glfwMakeContextCurrent(glfwWindow);
         GLFW.glfwFocusWindow(glfwWindow);
@@ -88,9 +92,11 @@ public class AtomicEditRenderer {
         if((check = glGetError()) != GL_NO_ERROR){
             Logger.error("OpenGL error " + check);
         }
+        glEnable(GL_CULL_FACE); //I think LEGUI turns this off
         
         handleRenderableRemovals();
         handleRenderableAdditions();
+        handleSetCursorVisible();
         
         context.updateGlfwWindow();
         Vector2i windowSize = context.getFramebufferSize();
@@ -136,8 +142,28 @@ public class AtomicEditRenderer {
         return this.context;
     }
     
+    public int getWidth(){
+        return this.width;
+    }
+    
+    public int getHeight(){
+        return this.height;
+    }
+    
     public Camera getCamera(){
         return this.camera;
+    }
+    
+    public void setCursorVisible(boolean visible){
+        this.shouldCursorBeVisible = visible;
+    }
+    
+    private void handleSetCursorVisible(){
+        boolean setVisible = this.shouldCursorBeVisible; //shouldnt need to use locks for this
+        if(setVisible != this.isCursorVisible){
+            GLFW.glfwSetInputMode(glfwWindow, GLFW.GLFW_CURSOR, setVisible ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_HIDDEN);
+            this.isCursorVisible = setVisible;
+        }
     }
     
     public void addRenderables(Collection<Renderable> additions){

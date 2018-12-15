@@ -15,7 +15,7 @@ public class Camera {
     private static float FAR_CLIP  = 1000f;
     
     private Vector3f position;
-    private Vector3f rotation;
+    private Vector3f rotation; //in degrees
     private float fov;
     private float aspectRatio;
     

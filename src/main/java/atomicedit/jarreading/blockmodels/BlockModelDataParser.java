@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class BlockModelDataParser {
     
-    public static BlockModelDataPrecursor parseJson(String modelJson){
+    static BlockModelDataPrecursor parseJson(String modelJson){
         JsonReader reader = new JsonReader(new StringReader(modelJson));
         reader.setLenient(true);
         JsonObject root = new JsonParser().parse(reader).getAsJsonObject();

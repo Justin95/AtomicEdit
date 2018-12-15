@@ -24,9 +24,9 @@ public class AtomicEditGui {
     //https://github.com/SpinyOwl/legui/blob/develop/src/main/java/org/liquidengine/legui/demo/ExampleGui.java
     
     public static void initializeGui(Frame frame, Context context, BackendController backendController){
-        Panel testPanel = new Panel(20, 20, 140, 170);
+        Panel testPanel = new Panel(20, 20, 120, 170);
         testPanel.setVisible(true);
-        Button selectWorldButton = new Button(20, 20, 60, 20);
+        Button selectWorldButton = new Button(20, 20, 80, 20);
         selectWorldButton.getTextState().setText("Select World");
         selectWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
@@ -45,7 +45,7 @@ public class AtomicEditGui {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setName("Locate minecraft save folder");
-        fileChooser.setCurrentDirectory(new File(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION)));
+        fileChooser.setCurrentDirectory(new File(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"));
         int status;
         File choice;
         //try to make this on top somehow

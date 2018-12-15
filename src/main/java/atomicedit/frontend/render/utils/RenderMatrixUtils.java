@@ -22,17 +22,15 @@ public class RenderMatrixUtils {
     
     
     public static Matrix4f createViewMatrix(Vector3f pos, Vector3f rot){
-        Vector3f negPos = new Vector3f();
-        Vector3f negRot = new Vector3f();
-        pos.negate(negPos);
-        rot.negate(negRot);
+        Vector3f negPos = new Vector3f(pos).negate();
+        Vector3f negRot = new Vector3f(rot).negate();
         return createModelMatrix(negPos, negRot);
     }
     
     
     public static Matrix4f createProjectionMatrix(float fov, float aspectRatio, float nearClip, float farClip){
         Matrix4f proj = new Matrix4f();
-        return proj.perspective(fov, aspectRatio, nearClip, farClip);
+        return proj.perspective((float)Math.toRadians(fov), aspectRatio, nearClip, farClip);
     }
     
     

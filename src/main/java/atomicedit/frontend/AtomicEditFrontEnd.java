@@ -2,7 +2,7 @@
 package atomicedit.frontend;
 
 import atomicedit.backend.BackendController;
-import atomicedit.frontend.render.CameraController;
+import atomicedit.frontend.controls.MasterController;
 import atomicedit.frontend.ui.AtomicEditGui;
 import atomicedit.frontend.worldmaintinance.ChunkLoadingThread;
 import atomicedit.logging.Logger;
@@ -26,7 +26,7 @@ public class AtomicEditFrontEnd {
     private final AtomicEditRenderer renderer;
     private SystemEventProcessor systemEventProcessor;
     private final ChunkLoadingThread chunkLoadingThread;
-    private CameraController cameraController;
+    private MasterController masterController;
     private boolean keepRunning;
     
     public AtomicEditFrontEnd(AtomicEditRenderer renderer, BackendController backendController){
@@ -46,7 +46,7 @@ public class AtomicEditFrontEnd {
     private void initialize(){
         this.keepRunning = true;
         renderer.initialize();
-        this.cameraController = new CameraController(renderer.getCamera());
+        this.masterController = new MasterController(renderer);
         chunkLoadingThread.start();
         this.systemEventProcessor = new SystemEventProcessor();
         AtomicEditGui.initializeGui(renderer.getFrame(), renderer.getContext(), backendController);
@@ -54,9 +54,14 @@ public class AtomicEditFrontEnd {
         CallbackKeeper keeper = new DefaultCallbackKeeper();
         CallbackKeeper.registerCallbacks(renderer.getGlfwWindow(), keeper);
         keeper.getChainWindowCloseCallback().add(w -> keepRunning = false);
+        keeper.getChainMouseButtonCallback().add((window, button, action, mods) -> {
+            if(renderer.getContext().getFocusedGui() == renderer.getFrame().getContainer()){ //only update camera if no UI component has focus
+                masterController.handleInput(button, action);
+            }
+        });
         keeper.getChainKeyCallback().add((long window, int key, int scancode, int action, int mods) -> {
             if(renderer.getContext().getFocusedGui() == renderer.getFrame().getContainer()){ //only update camera if no UI component has focus
-                cameraController.handleInput(key, action);
+                masterController.handleInput(key, action);
             }
         });
         systemEventProcessor = new SystemEventProcessor();
@@ -68,7 +73,7 @@ public class AtomicEditFrontEnd {
         while(keepRunning){
             renderer.render();
             systemEventProcessor.processEvents(renderer.getFrame(), this.renderer.getContext());
-            cameraController.updateCamera();
+            masterController.renderUpdate();
             EventProcessor.getInstance().processEvents();
             LayoutManager.getInstance().layout(renderer.getFrame());
             Animator.getInstance().runAnimations();

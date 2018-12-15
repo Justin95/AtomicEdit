@@ -85,8 +85,7 @@ public class TextureLoader {
     
     private static BufferedImage readPngToSquareImage(InputStream pngFile) throws IOException{
         BufferedImage wholeImage = ImageIO.read(pngFile);
-        BufferedImage texture = new BufferedImage(MinecraftTexture.TEXTURE_RES, MinecraftTexture.TEXTURE_RES, BufferedImage.TYPE_INT_ARGB);
-        texture.getGraphics().drawImage(wholeImage, 0, 0, MinecraftTexture.TEXTURE_RES, MinecraftTexture.TEXTURE_RES, null); //copy texture square
+        BufferedImage texture = wholeImage.getSubimage(0, 0, MinecraftTexture.TEXTURE_RES, MinecraftTexture.TEXTURE_RES);
         return texture;
     }
     
@@ -107,7 +106,7 @@ public class TextureLoader {
         g.setColor(new Color(100, 200, 100));
         g.drawRect(0, 0, 15, 15);
         g.setColor(Color.red);
-        g.drawString("B", 3, 12);
+        g.drawString("?", 3, 12);
         unknownTexture = image;
         return image;
     }
