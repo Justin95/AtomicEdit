@@ -9,8 +9,9 @@ import java.util.List;
  */
 public class BlockModelData {
     
-    private List<TexturedBox> boxes;
-    private boolean isFullBlock;
+    private final List<TexturedBox> boxes;
+    private final boolean isFullBlock;
+    
     
     public BlockModelData(List<TexturedBox> boxes, boolean isFullBlock){
         this.boxes = boxes;

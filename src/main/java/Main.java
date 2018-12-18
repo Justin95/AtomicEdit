@@ -13,7 +13,7 @@ public class Main {
     
     
     public static void main(String[] args){
-        AtomicEdit atomicEdit = new AtomicEdit();
+        AtomicEdit atomicEdit = AtomicEdit.getInstance();
         atomicEdit.run();
     }
     

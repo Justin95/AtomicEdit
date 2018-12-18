@@ -45,6 +45,13 @@ public enum AtomicEditSettings {
             new ClassInstanceOption(BlockModelCreator1_13Logic.getInstance())
         },
         () -> BlockModelCreator1_13Logic.getInstance()
+    ),
+    USE_TRANSLUCENCY(
+        "Use Experemental Translucency",
+        "use_translucency",
+        SettingDataType.BOOLEAN,
+        null,
+        () -> false
     )
     ;
     

@@ -2,6 +2,7 @@
 package atomicedit.jarreading.blockstates;
 
 import atomicedit.jarreading.blockmodels.BlockModelData;
+import org.joml.Vector3f;
 
 
 /**
@@ -13,17 +14,13 @@ public class BlockStateData {
     private final BlockStatePropertyMatcher propertyMatcher;
     private final String modelName;
     private BlockModelData blockModelData;
-    private final int xRot;
-    private final int yRot;
-    private final int zRot;
+    private final Vector3f rotation;
     
     
-    public BlockStateData(BlockStatePropertyMatcher propertyMatcher, String modelName, int xRot, int yRot, int zRot){
+    public BlockStateData(BlockStatePropertyMatcher propertyMatcher, String modelName, Vector3f rotation){
         this.propertyMatcher = propertyMatcher;
         this.modelName = modelName;
-        this.xRot = xRot;
-        this.yRot = yRot;
-        this.zRot = zRot;
+        this.rotation = rotation;
     }
 
     public BlockModelData getBlockModelData(){
@@ -42,16 +39,8 @@ public class BlockStateData {
         return modelName;
     }
 
-    public int getXRot() {
-        return xRot;
-    }
-
-    public int getYRot() {
-        return yRot;
-    }
-
-    public int getZRot() {
-        return zRot;
+    public Vector3f getRotation() {
+        return rotation;
     }
     
     

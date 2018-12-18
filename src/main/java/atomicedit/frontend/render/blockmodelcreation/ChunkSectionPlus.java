@@ -74,7 +74,7 @@ public class ChunkSectionPlus {
     
     private short getBlockLightAt(int x, int y, int z, ChunkSection selectedSection){
         if(selectedSection == null){
-            return 15;
+            return 0;
         }
         byte[] light = selectedSection.getBlockLightValues();
         return getLightAt(x, y, z, light);

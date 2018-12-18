@@ -58,6 +58,20 @@ public class AeSettingValues {
         return value;
     }
     
+    public boolean getSettingValueAsBoolean(AtomicEditSettings setting){
+        if(setting == null){
+            throw new NullPointerException("Cannot look up null setting");
+        }
+        if(setting.getDataType().BASE_TYPE != Boolean.class){
+            throw new IllegalArgumentException("The given setting is not a Boolean setting");
+        }
+        Boolean value = (Boolean) settingsValues.get(setting);
+        if(value == null){
+            value = (Boolean) setting.createDefaultValue();
+        }
+        return value;
+    }
+    
     public SettingSelectableClass getSettingValueAsClassInstance(AtomicEditSettings setting, Class instanceType){
         if(setting == null){
             throw new NullPointerException("Cannot look up null setting");

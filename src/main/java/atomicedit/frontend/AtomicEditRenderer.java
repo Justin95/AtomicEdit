@@ -1,11 +1,13 @@
 
 package atomicedit.frontend;
 
+import atomicedit.AtomicEdit;
 import atomicedit.frontend.render.Camera;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.Renderable;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import atomicedit.logging.Logger;
+import atomicedit.settings.AtomicEditSettings;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.joml.Vector2i;
@@ -18,11 +20,13 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
-import static org.lwjgl.opengl.GL11.glCullFace;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -84,7 +88,6 @@ public class AtomicEditRenderer {
         guiRenderer.initialize();
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK); //nessessary?
     }
     
     public void render(){
@@ -93,6 +96,11 @@ public class AtomicEditRenderer {
             Logger.error("OpenGL error " + check);
         }
         glEnable(GL_CULL_FACE); //I think LEGUI turns this off
+        
+        if(AtomicEdit.getSettings().getSettingValueAsBoolean(AtomicEditSettings.USE_TRANSLUCENCY)){
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
         
         handleRenderableRemovals();
         handleRenderableAdditions();

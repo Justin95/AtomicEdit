@@ -2,7 +2,10 @@
 package atomicedit.jarreading.blockmodels;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import org.joml.Vector3f;
 
 /**
  *
@@ -10,51 +13,23 @@ import java.util.List;
  */
 class TexturedBoxPrecursor {
     
-    float smallX;
-    float smallY;
-    float smallZ;
-    float largeX;
-    float largeY;
-    float largeZ;
-    
-    /**
-     * Up
-     */
-    String yPlusTexName; //up
-    /**
-     * Down
-     */
-    String yMinusTexName; //down
-    /**
-     * East
-     */
-    String xPlusTexName; //east
-    /**
-     * West
-     */
-    String xMinusTexName; //west
-    /**
-     * South
-     */
-    String zPlusTexName; //south
-    /**
-     * North
-     */
-    String zMinusTexName; //north
-    
+    Vector3f smallCorner;
+    Vector3f largeCorner;
+    Map<CubeFace, FacePrecursor> faces;
+    boolean useShade;
+    Vector3f rotateAbout;
+    Vector3f rotation;
     
     TexturedBoxPrecursor(){
-        
+        this.faces = new EnumMap<>(CubeFace.class);
+        useShade = true;
+        rotateAbout = new Vector3f(0,0,0);
+        rotation = new Vector3f(0,0,0);
     }
     
     public List<String> getTextureNames(){
-        ArrayList<String> names = new ArrayList();
-        names.add(yPlusTexName);
-        names.add(yMinusTexName);
-        names.add(xPlusTexName);
-        names.add(xMinusTexName);
-        names.add(zPlusTexName);
-        names.add(zMinusTexName);
+        ArrayList<String> names = new ArrayList<>();
+        faces.values().forEach(face -> names.add(face.textureName));
         return names;
     }
     
@@ -65,18 +40,13 @@ class TexturedBoxPrecursor {
     
     public TexturedBoxPrecursor copy(){
         TexturedBoxPrecursor newBox = new TexturedBoxPrecursor();
-        newBox.largeX = largeX;
-        newBox.largeY = largeY;
-        newBox.largeZ = largeZ;
-        newBox.smallX = smallX;
-        newBox.smallY = smallY;
-        newBox.smallZ = smallZ;
-        newBox.xMinusTexName = xMinusTexName;
-        newBox.xPlusTexName = xPlusTexName;
-        newBox.yMinusTexName = yMinusTexName;
-        newBox.yPlusTexName = yPlusTexName;
-        newBox.zMinusTexName = zMinusTexName;
-        newBox.zPlusTexName = zPlusTexName;
+        newBox.smallCorner = new Vector3f(smallCorner);
+        newBox.largeCorner = new Vector3f(largeCorner);
+        newBox.rotateAbout = new Vector3f(this.rotateAbout);
+        newBox.rotation = new Vector3f(this.rotation);
+        for(CubeFace face : faces.keySet()){
+            newBox.faces.put(face, faces.get(face).copy());
+        }
         return newBox;
     }
     

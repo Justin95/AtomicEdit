@@ -17,16 +17,22 @@ import atomicedit.settings.AtomicEditSettingsCreator;
  */
 public class AtomicEdit {
     
+    private static final AtomicEdit INSTANCE = new AtomicEdit();
+    
     private AtomicEditFrontEnd frontEnd;
     private static AeSettingValues settings;
     private static BackendController backendController;
     private AtomicEditRenderer renderer;
     
-    public AtomicEdit(){
+    private AtomicEdit(){
         initializeSettings();
         backendController = new BackendController();
         renderer = new AtomicEditRenderer();
         frontEnd = new AtomicEditFrontEnd(renderer, backendController);
+    }
+    
+    public static AtomicEdit getInstance(){
+        return INSTANCE;
     }
     
     private void initialize(){

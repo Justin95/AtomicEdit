@@ -1,6 +1,8 @@
 
 package atomicedit.jarreading.blockmodels;
 
+import java.util.EnumMap;
+import java.util.Map;
 import org.joml.Vector3f;
 
 /**
@@ -9,83 +11,40 @@ import org.joml.Vector3f;
  */
 public class TexturedBox {
     
-    private static final int NUM_SIDES = 6;
+    private static final Vector3f BLOCK_CENTER = new Vector3f(.5f, .5f, .5f);
     private static final float NUM_BOX_UNITS_IN_BLOCK = 16f;
     public final Vector3f smallPos;
     public final Vector3f largePos;
-    private final String[] textures;
+    public final Map<CubeFace, Face> faces;
+    public final boolean useShade;
+    public final Vector3f rotateAbout;
+    public final Vector3f rotation;
     
-    TexturedBox(TexturedBoxPrecursor precursor){
-        this.smallPos = new Vector3f(precursor.smallX / NUM_BOX_UNITS_IN_BLOCK, precursor.smallY / NUM_BOX_UNITS_IN_BLOCK, precursor.smallZ / NUM_BOX_UNITS_IN_BLOCK);
-        this.largePos = new Vector3f(precursor.largeX / NUM_BOX_UNITS_IN_BLOCK, precursor.largeY / NUM_BOX_UNITS_IN_BLOCK, precursor.largeZ / NUM_BOX_UNITS_IN_BLOCK);
-        this.textures = new String[NUM_SIDES];
-        for(BoxFace face : BoxFace.values()){
-            textures[face.getIndex()] = face.getTextureName(precursor);
+    
+    TexturedBox(TexturedBoxPrecursor precursor, Vector3f blockRotation){
+        this.smallPos = new Vector3f(precursor.smallCorner).div(NUM_BOX_UNITS_IN_BLOCK);
+        this.largePos = new Vector3f(precursor.largeCorner).div(NUM_BOX_UNITS_IN_BLOCK);
+        this.faces = new EnumMap<>(CubeFace.class);
+        for(CubeFace face : precursor.faces.keySet()){
+            faces.put(calcRotatedFace(face, blockRotation), new Face(precursor.faces.get(face)));
         }
+        this.useShade = precursor.useShade;
+        this.rotateAbout = precursor.rotateAbout;
+        this.rotation = precursor.rotation;
     }
     
-    public String getTextureName(BoxFace face){
-        return textures[face.getIndex()];
+    /**
+     * Calculate the replacements from rotating the box in the specified way.
+     * @param startFace
+     * @param blockRot
+     * @return 
+     */
+    private static CubeFace calcRotatedFace(CubeFace startFace, Vector3f blockRot){
+        CubeFace currFace = startFace;
+        float xRot = blockRot.x % 360; //in degrees
+        
+        return currFace;
     }
     
-    
-    public static enum BoxFace{
-        /**
-         * Y plus
-         */
-        UP(
-            (precursor) -> precursor.yPlusTexName
-        ),
-        /**
-         * Y minus
-         */
-        DOWN(
-            (precursor) -> precursor.yMinusTexName
-        ),
-        /**
-         * X plus
-         */
-        EAST(
-            (precursor) -> precursor.xPlusTexName
-        ),
-        /**
-         * X minus
-         */
-        WEST(
-            (precursor) -> precursor.xMinusTexName
-        ),
-        /**
-         * Z minus
-         */
-        NORTH(
-            (precursor) -> precursor.zMinusTexName
-        ),
-        /**
-         * Z plus
-         */
-        SOUTH(
-            (precursor) -> precursor.zPlusTexName
-        )
-        ;
-        
-        private final TextureGetter texGetter;
-        
-        BoxFace(TextureGetter texGetter){
-            this.texGetter = texGetter;
-        }
-        
-        private int getIndex(){
-            return this.ordinal();
-        }
-        
-        private String getTextureName(TexturedBoxPrecursor precursor){
-            return this.texGetter.getTexture(precursor);
-        }
-        
-        private interface TextureGetter{
-            public String getTexture(TexturedBoxPrecursor precursor);
-        }
-        
-    }
     
 }

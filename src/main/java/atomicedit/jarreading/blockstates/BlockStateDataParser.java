@@ -9,6 +9,7 @@ import com.google.gson.stream.JsonReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import org.joml.Vector3f;
 
 /**
  * Parse minecraft's block state jsons.
@@ -36,7 +37,7 @@ public class BlockStateDataParser {
                 float xRot = entryData.has("x") ? entryData.get("x").getAsFloat() : 0;
                 float yRot = entryData.has("y") ? entryData.get("y").getAsFloat() : 0; //not sure if these are ever not integers but just in case
                 float zRot = entryData.has("z") ? entryData.get("z").getAsFloat() : 0;
-                blockStateDatas.add(new BlockStateData(new BlockStatePropertyMatcher(properties), modelName, (int)xRot, (int)yRot, (int)zRot));
+                blockStateDatas.add(new BlockStateData(new BlockStatePropertyMatcher(properties), modelName, new Vector3f(xRot, yRot, zRot)));
             });
         }else if(root.has("multipart")){
             JsonArray multipart = root.getAsJsonArray("multipart");
@@ -50,7 +51,7 @@ public class BlockStateDataParser {
             float xRot = entryData.has("x") ? entryData.get("x").getAsFloat() : 0;
             float yRot = entryData.has("y") ? entryData.get("y").getAsFloat() : 0; //not sure if these are ever not integers but just in case
             float zRot = entryData.has("z") ? entryData.get("z").getAsFloat() : 0;
-            blockStateDatas.add(new BlockStateData(new BlockStatePropertyMatcher(new ArrayList<>()), modelName, (int)xRot, (int)yRot, (int)zRot));
+            blockStateDatas.add(new BlockStateData(new BlockStatePropertyMatcher(new ArrayList<>()), modelName, new Vector3f(xRot, yRot, zRot)));
             //only read whatever the first entry is to save programmer time, if desired later read all fields the right way and let block state datas have multiple models
         }
         return blockStateDatas;

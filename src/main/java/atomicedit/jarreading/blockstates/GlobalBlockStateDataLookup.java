@@ -38,7 +38,7 @@ public class GlobalBlockStateDataLookup {
         for(BlockStateData stateData : possibilities){
             if(stateData.getPropertyMatcher().matches(blockState.blockStateProperties)){
                 //add block model to blockstate data
-                BlockModelData blockModel = GlobalBlockModelDataLookup.getBlockModelData(stateData.getModelName());
+                BlockModelData blockModel = GlobalBlockModelDataLookup.createBlockModelData(stateData.getModelName(), stateData.getRotation());
                 if(blockModel == null){
                     Logger.error("Block model lookup found null for model: " + stateData.getModelName());
                 }
