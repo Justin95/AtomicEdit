@@ -16,20 +16,28 @@ public class BlockStatePropertyMatcher {
         this.mustHaves = mustHaves;
     }
     
-    public boolean matches(BlockStateProperty[] properties){
+    /**
+     * Determine if these block state properties match this matcher.
+     * The more in common the bigger the number, if they do not match return -1.
+     * @param properties
+     * @return 
+     */
+    public int matchScore(BlockStateProperty[] properties){
         if(properties == null){
-            return mustHaves.isEmpty();
+            return mustHaves.isEmpty() ? 0 : -1;
         }
+        int commonCount = 0;
         outer:
         for(BlockStateProperty mustHave : mustHaves){
             for(BlockStateProperty property : properties){
                 if(equalProps(mustHave, property)){
+                    commonCount++;
                     continue outer;
                 }
             }
-            return false;
+            return -1;
         }
-        return true;
+        return commonCount;
     }
     
     /**
@@ -42,6 +50,11 @@ public class BlockStatePropertyMatcher {
      */
     private boolean equalProps(BlockStateProperty a, BlockStateProperty b){
         return a.NAME.equals(b.NAME) && a.VALUE.toString().equalsIgnoreCase(b.VALUE.toString());
+    }
+    
+    @Override
+    public String toString(){
+        return "BlockStatePropertyMatcher{mustHaves:" + mustHaves.toString() + "}";
     }
     
 }

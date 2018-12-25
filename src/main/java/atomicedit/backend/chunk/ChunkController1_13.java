@@ -18,7 +18,6 @@ import atomicedit.logging.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -134,7 +133,7 @@ public class ChunkController1_13 extends ChunkController{
     
     private ChunkSection readChunkSection(NbtCompoundTag sectionTag, ChunkSectionCoord chunkSectionCoord) throws MalformedNbtTagException{
         if(!sectionTag.contains("Palette")){
-            Logger.warning("Chunk section does not contain 'Palette' tag. This chunk section is not in minecraft 1.13 chunk format");
+            Logger.warning("Chunk section does not contain 'Palette' tag.");
         }
         List<NbtCompoundTag> blockStateNbts = sectionTag.getListTag("Palette").getCompoundTags();
         BlockState[] blockTypes = new BlockState[blockStateNbts.size()];

@@ -1,6 +1,7 @@
 
 package atomicedit.frontend.texture;
 
+import atomicedit.logging.Logger;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,22 +17,23 @@ public class MinecraftTexture extends Texture{
     public static final int TEXTURE_RES = 16;
     public static final String UNKNOWN_TEXTURE_NAME = "ATOMICEDIT_UNKNOWN_TEXTURE";
     
-    private final Map<String, Integer> blockTypeToIndex;
+    private final Map<String, Integer> texNameToIndex;
+    private final boolean[] textureIndexIsTranslucent;
     private final int textureSquareLength;
     
     public MinecraftTexture(Map<String, BufferedImage> namedTextures, BufferedImage defaultTexture){
         super(createSuperImage(namedTextures, defaultTexture));
-        this.blockTypeToIndex = createNameToIndexMap(namedTextures);
+        this.texNameToIndex = createNameToIndexMap(namedTextures);
         this.textureSquareLength = getSideLengthInTextures(namedTextures.size());
+        this.textureIndexIsTranslucent = calculateTranslucency(namedTextures, texNameToIndex);
     }
     
     
     public int getIndexFromTextureName(String texName){
-        if(!blockTypeToIndex.containsKey(texName)){
-            //Logger.warning("Unknown texture name: " + blockName);
+        if(!texNameToIndex.containsKey(texName)){
             texName = UNKNOWN_TEXTURE_NAME;
         }
-        return blockTypeToIndex.get(texName);
+        return texNameToIndex.get(texName);
     }
     
     public int getBlockTextureLength(){
@@ -98,6 +100,29 @@ public class MinecraftTexture extends Texture{
         List<String> names = new ArrayList<>(namedTextures.keySet());
         names.add(UNKNOWN_TEXTURE_NAME);
         return names;
+    }
+    
+    public boolean isTextureTranslucent(int texIndex){
+        return this.textureIndexIsTranslucent[texIndex];
+    }
+    
+    private static boolean[] calculateTranslucency(Map<String, BufferedImage> namedTextures, Map<String, Integer> texNameToIndex){
+        boolean[] translucencies = new boolean[namedTextures.size() + 1];
+        outer:
+        for(String texName : namedTextures.keySet()){
+            BufferedImage tex = namedTextures.get(texName);
+            for(int x = 0; x < tex.getWidth(); x++){
+                for(int y = 0; y < tex.getHeight(); y++){
+                    int alpha = ((tex.getRGB(x, y) >> 24) & 0xFF);
+                    if(alpha > 0 && alpha < 255){ //not completely opaque and not completely transparent
+                        translucencies[texNameToIndex.get(texName)] = true;
+                        Logger.info("Translucent texture: " + texName);
+                        continue outer;
+                    }
+                }
+            }
+        }
+        return translucencies;
     }
     
 }

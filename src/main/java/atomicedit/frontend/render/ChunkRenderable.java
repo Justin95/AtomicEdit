@@ -12,9 +12,9 @@ import java.util.Collection;
  *
  * @author Justin Bonner
  */
-public class ChunkRenderable implements Renderable{
+public class ChunkRenderable{
     
-    private Collection<RenderObject> renderObjects;
+    private Collection<ChunkSectionRenderObject> renderObjects;
     private ChunkCoord chunkCoord;
     
     public ChunkRenderable(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
@@ -28,9 +28,13 @@ public class ChunkRenderable implements Renderable{
         
     }
     
-    @Override
-    public Collection<RenderObject> getRenderObjects(){
+    
+    public Collection<ChunkSectionRenderObject> getRenderObjects(){
         return this.renderObjects;
+    }
+    
+    public ChunkCoord getChunkCoord(){
+        return this.chunkCoord;
     }
     
     @Override

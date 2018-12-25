@@ -10,7 +10,7 @@ import org.joml.Vector3f;
  *
  * @author Justin Bonner
  */
-public class Face {
+public class TexturedFace {
     
     private static final Vector3f GREEN_TINT = new Vector3f(.3f, .9f, .3f); //may need adjustment
     private static final Vector3f BLUE_TINT = new Vector3f(.3f,.3f,1f);
@@ -19,10 +19,12 @@ public class Face {
     private final Vector2f texCoordsMin;
     private final Vector2f texCoordsMax;
     private final Vector3f tint;
+    private final boolean isTranslucent;
     
-    public Face(FacePrecursor precursor){
+    public TexturedFace(TexturedFacePrecursor precursor){
         this.tint = calcTint(precursor.tintIndex);
         MinecraftTexture texture = TextureLoader.getMinecraftDefaultTexture();
+        this.isTranslucent = texture.isTextureTranslucent(texture.getIndexFromTextureName(precursor.textureName));
         float pixelDelta = 1f / (texture.getBlockTextureLength() * MinecraftTexture.TEXTURE_RES);
         int textureIndex = texture.getIndexFromTextureName(precursor.textureName);
         float baseMinX = texture.getTextureCoordX(textureIndex);
@@ -44,6 +46,10 @@ public class Face {
             default:
                 return NO_TINT;
         }
+    }
+    
+    public boolean isTranslucent(){
+        return this.isTranslucent;
     }
     
     public Vector2f getTexCoordsMin(){

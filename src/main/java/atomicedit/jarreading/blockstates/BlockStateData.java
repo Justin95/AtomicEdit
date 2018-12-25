@@ -1,8 +1,12 @@
 
 package atomicedit.jarreading.blockstates;
 
+import atomicedit.backend.BlockState;
 import atomicedit.jarreading.blockmodels.BlockModelData;
-import org.joml.Vector3f;
+import atomicedit.jarreading.blockmodels.GlobalBlockModelDataLookup;
+import atomicedit.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -11,36 +15,31 @@ import org.joml.Vector3f;
  */
 public class BlockStateData {
     
-    private final BlockStatePropertyMatcher propertyMatcher;
-    private final String modelName;
-    private BlockModelData blockModelData;
-    private final Vector3f rotation;
+    private List<BlockModelData> blockModelDatas;
     
     
-    public BlockStateData(BlockStatePropertyMatcher propertyMatcher, String modelName, Vector3f rotation){
-        this.propertyMatcher = propertyMatcher;
-        this.modelName = modelName;
-        this.rotation = rotation;
+    
+    public BlockStateData(BlockState blockState, List<BlockStateDataPrecursor> precursors){
+        List<BlockModelData> blockModels = new ArrayList<>();
+        for(BlockStateDataPrecursor stateDataPrecursor : precursors){
+            int matchScore = stateDataPrecursor.getPropertyMatcher().matchScore(blockState.blockStateProperties);
+            if(matchScore >= 0){
+                String modelName = stateDataPrecursor.getModelName();
+                if(modelName == null){
+                    Logger.warning("Null model name in Block State Data Creation");
+                }
+                BlockModelData blockModel = GlobalBlockModelDataLookup.createBlockModelData(modelName, stateDataPrecursor.getRotation());
+                if(blockModel == null){
+                    Logger.warning("Block model lookup found null for model: " + modelName);
+                }
+                blockModels.add(blockModel);
+            }
+        }
+        this.blockModelDatas = blockModels;
     }
 
-    public BlockModelData getBlockModelData(){
-        return this.blockModelData;
-    }
-    
-    void setBlockModelData(BlockModelData blockModelData){
-        this.blockModelData = blockModelData; //TODO copy and rotate
-    }
-    
-    public BlockStatePropertyMatcher getPropertyMatcher() {
-        return propertyMatcher;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public Vector3f getRotation() {
-        return rotation;
+    public List<BlockModelData> getBlockModelDatas(){
+        return this.blockModelDatas;
     }
     
     

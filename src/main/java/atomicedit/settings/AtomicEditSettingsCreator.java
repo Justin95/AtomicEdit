@@ -22,7 +22,9 @@ public class AtomicEditSettingsCreator {
         File settingsFile = new File(AtomicEditSettings.SETTINGS_FILEPATH);
         if(settingsFile.exists()){
             try{
-                return readSettings(settingsFile);
+                AeSettingValues settings = readSettings(settingsFile);
+                writeSettingsFile(settings, settingsFile);
+                return settings;
             }catch(Exception e){
                 Logger.notice("Unable to read settings because: " + e.getLocalizedMessage());
             }

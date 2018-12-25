@@ -49,7 +49,7 @@ public class AtomicEditFrontEnd {
         this.masterController = new MasterController(renderer);
         chunkLoadingThread.start();
         this.systemEventProcessor = new SystemEventProcessor();
-        AtomicEditGui.initializeGui(renderer.getFrame(), renderer.getContext(), backendController);
+        AtomicEditGui.initializeGui(renderer.getFrame(), renderer.getContext(), backendController, renderer);
         
         CallbackKeeper keeper = new DefaultCallbackKeeper();
         CallbackKeeper.registerCallbacks(renderer.getGlfwWindow(), keeper);
@@ -77,6 +77,7 @@ public class AtomicEditFrontEnd {
             EventProcessor.getInstance().processEvents();
             LayoutManager.getInstance().layout(renderer.getFrame());
             Animator.getInstance().runAnimations();
+            AtomicEditGui.updateGui(renderer);
         }
     }
     

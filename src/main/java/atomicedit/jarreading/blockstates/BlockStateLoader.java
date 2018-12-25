@@ -17,10 +17,10 @@ import java.util.zip.ZipFile;
  */
 public class BlockStateLoader {
     
-    private static Map<String, List<BlockStateData>> loadedBlockNameToBlockStateDataPossibilities;
+    private static Map<String, List<BlockStateDataPrecursor>> loadedBlockNameToBlockStateDataPossibilities;
     private static final Object LOADER_LOCK = new Object();
     
-    public static Map<String, List<BlockStateData>> getBlockNameToBlockStateDataPossibilities(){
+    public static Map<String, List<BlockStateDataPrecursor>> getBlockNameToBlockStateDataPossibilities(){
         if(loadedBlockNameToBlockStateDataPossibilities != null){
             return loadedBlockNameToBlockStateDataPossibilities;
         }
@@ -36,10 +36,10 @@ public class BlockStateLoader {
     
     private static final String INTERNAL_PATH = "assets/minecraft/blockstates/";
     private static final String INTERNAL_EXT = ".json";
-    private static Map<String, List<BlockStateData>> loadBlockStates(){
+    private static Map<String, List<BlockStateDataPrecursor>> loadBlockStates(){
         String jarFilePath = LoadingUtils.getNewestMinecraftJarFilePath(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION));
         Logger.info("Getting block states from minecraft version: " + jarFilePath);
-        Map<String, List<BlockStateData>> blockNameToPossibilities = new HashMap<>();
+        Map<String, List<BlockStateDataPrecursor>> blockNameToPossibilities = new HashMap<>();
         try{
             ZipFile jarFile = new ZipFile(jarFilePath);
             jarFile.stream().filter(
@@ -50,7 +50,7 @@ public class BlockStateLoader {
                 String blockStateJson;
                 try{
                     blockStateJson = LoadingUtils.readInputStream(jarFile.getInputStream(jsonEntry));
-                    List<BlockStateData> possibilities = BlockStateDataParser.parseJson(blockStateJson);
+                    List<BlockStateDataPrecursor> possibilities = BlockStateDataParser.parseJson(blockStateJson);
                     blockNameToPossibilities.put(name, possibilities);
                 }catch(IOException e){
                     Logger.warning("Could not read block state file: " + jsonEntry.getName(), e);

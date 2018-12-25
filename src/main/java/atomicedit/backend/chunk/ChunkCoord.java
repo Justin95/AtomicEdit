@@ -17,6 +17,11 @@ public class ChunkCoord {
         this.z = z;
     }
     
+    
+    public static ChunkCoord getInstanceFromWorldPos(float x, float z){
+        return new ChunkCoord((int)Math.floor(x / Chunk.X_LENGTH), (int)Math.floor(z / Chunk.Z_LENGTH));
+    }
+    
     /**
      * Get the block coordinate in this chunk that is closest to negative infinity on x, y, and z
      * @return 

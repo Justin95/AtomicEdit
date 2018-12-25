@@ -3,13 +3,10 @@ package atomicedit.frontend;
 
 import atomicedit.AtomicEdit;
 import atomicedit.frontend.render.Camera;
-import atomicedit.frontend.render.RenderObject;
-import atomicedit.frontend.render.Renderable;
+import atomicedit.frontend.render.RenderableStage;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.liquidengine.legui.component.Frame;
@@ -47,17 +44,13 @@ public class AtomicEditRenderer {
     private Frame frame;
     private int width;
     private int height;
-    private final Collection<Renderable> renderables;
-    private final Collection<Renderable> toAddRenderables;
-    private final Collection<Renderable> toRemoveRenderables;
+    private final RenderableStage renderableStage;
     private Camera camera;
     private boolean isCursorVisible;
     private boolean shouldCursorBeVisible;
     
     public AtomicEditRenderer(){
-        this.renderables = new ArrayList<>();
-        this.toAddRenderables = new ArrayList<>();
-        this.toRemoveRenderables = new ArrayList<>();
+        this.renderableStage = new RenderableStage();
         this.isCursorVisible = true;
         this.shouldCursorBeVisible = true;
     }
@@ -101,9 +94,7 @@ public class AtomicEditRenderer {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
-        
-        handleRenderableRemovals();
-        handleRenderableAdditions();
+        renderableStage.destroyOldRenderObjects();
         handleSetCursorVisible();
         
         context.updateGlfwWindow();
@@ -115,13 +106,8 @@ public class AtomicEditRenderer {
         //render world
         UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.VIEW_MATRIX, camera.getViewMatrix());
         UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.PROJECTION_MATRIX, camera.getProjectionMatrix());
-        synchronized(renderables){
-            for(Renderable renderable : renderables){
-                for(RenderObject renderObject : renderable.getRenderObjects()){
-                    renderObject.render();
-                }
-            }
-        }
+        
+        renderableStage.renderRenderables(camera);
         
         // render frame / GUI
         guiRenderer.render(frame, context);
@@ -174,43 +160,8 @@ public class AtomicEditRenderer {
         }
     }
     
-    public void addRenderables(Collection<Renderable> additions){
-        synchronized(renderables){
-            synchronized(toAddRenderables){
-                toAddRenderables.addAll(additions);
-            }
-        }
-    }
-    
-    public void removeRenderables(Collection<Renderable> removals){
-        synchronized(renderables){
-            synchronized(toRemoveRenderables){
-                toRemoveRenderables.addAll(removals);
-            }
-        }
-    }
-    
-    private void handleRenderableAdditions(){
-        synchronized(renderables){
-            synchronized(toAddRenderables){
-                if(toAddRenderables.isEmpty()) return;
-                renderables.addAll(toAddRenderables);
-                toAddRenderables.clear();
-            }
-        }
-    }
-    
-    private void handleRenderableRemovals(){
-        synchronized(renderables){
-            synchronized(toRemoveRenderables){
-                if(toRemoveRenderables.isEmpty()) return;
-                for(Renderable renderable : toRemoveRenderables){
-                    renderable.getRenderObjects().forEach((renderObject) -> renderObject.destroy());
-                }
-                renderables.removeAll(toRemoveRenderables);
-                toRemoveRenderables.clear();
-            }
-        }
+    public RenderableStage getRenderableStage(){
+        return this.renderableStage;
     }
     
 }

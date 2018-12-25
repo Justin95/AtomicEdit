@@ -90,7 +90,7 @@ public class BlockModelDataParser {
                         continue;
                     }
                     JsonObject jsonFace = faces.getAsJsonObject(cubeFace.faceName);
-                    FacePrecursor facePrecursor = new FacePrecursor();
+                    TexturedFacePrecursor facePrecursor = new TexturedFacePrecursor();
                     if(jsonFace.has("texture")){
                         facePrecursor.textureName = jsonFace.get("texture").getAsString();
                     }

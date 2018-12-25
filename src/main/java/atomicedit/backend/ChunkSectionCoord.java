@@ -20,6 +20,10 @@ public class ChunkSectionCoord {
         this.z = z;
     }
     
+    public static ChunkSectionCoord getInstanceFromWorldPos(float x, float y, float z){
+        return new ChunkSectionCoord((int)Math.floor(x / ChunkSection.SIDE_LENGTH), (int)Math.floor(y / ChunkSection.SIDE_LENGTH), (int)Math.floor(z / ChunkSection.SIDE_LENGTH));
+    }
+    
     /**
      * Get the block coordinate in this chunk that is closest to negative infinity on x, y, and z
      * @return 

@@ -3,6 +3,7 @@ package atomicedit.jarreading.blockstates;
 
 import atomicedit.backend.BlockStateProperty;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -18,11 +19,11 @@ import org.joml.Vector3f;
 public class BlockStateDataParser {
     
     
-    public static List<BlockStateData> parseJson(String json){
+    public static List<BlockStateDataPrecursor> parseJson(String json){
         JsonReader reader = new JsonReader(new StringReader(json));
         reader.setLenient(true);
         JsonObject root = new JsonParser().parse(reader).getAsJsonObject();
-        List<BlockStateData> blockStateDatas = new ArrayList<>();
+        List<BlockStateDataPrecursor> blockStateDatas = new ArrayList<>();
         if(root.has("variants")){
             JsonObject variants = root.getAsJsonObject("variants");
             variants.entrySet().forEach(entry -> {
@@ -37,22 +38,27 @@ public class BlockStateDataParser {
                 float xRot = entryData.has("x") ? entryData.get("x").getAsFloat() : 0;
                 float yRot = entryData.has("y") ? entryData.get("y").getAsFloat() : 0; //not sure if these are ever not integers but just in case
                 float zRot = entryData.has("z") ? entryData.get("z").getAsFloat() : 0;
-                blockStateDatas.add(new BlockStateData(new BlockStatePropertyMatcher(properties), modelName, new Vector3f(xRot, yRot, zRot)));
+                blockStateDatas.add(new BlockStateDataPrecursor(new BlockStatePropertyMatcher(properties), modelName, new Vector3f(xRot, yRot, zRot)));
             });
         }else if(root.has("multipart")){
             JsonArray multipart = root.getAsJsonArray("multipart");
-            JsonObject entryData = multipart.get(0).getAsJsonObject();
-            String modelName;
-            if(entryData.get("apply").isJsonObject()){
-                modelName = entryData.get("apply").getAsJsonObject().get("model").getAsString();
-            }else{
-                modelName = entryData.get("apply").getAsJsonArray().get(0).getAsJsonObject().get("model").getAsString();
+            for(int i = 0; i < multipart.size(); i++){ 
+                JsonObject entryData = multipart.get(i).getAsJsonObject();
+                JsonObject apply;
+                if(entryData.get("apply").isJsonObject()){
+                    apply = entryData.get("apply").getAsJsonObject(); //make a block state data for each combo of 'when' statements
+                }else{
+                    apply = entryData.get("apply").getAsJsonArray().get(0).getAsJsonObject();
+                }
+                String modelName = apply.get("model").getAsString();
+                float xRot = apply.has("x") ? apply.get("x").getAsFloat() : 0;
+                float yRot = apply.has("y") ? apply.get("y").getAsFloat() : 0; //not sure if these are ever not integers but just in case
+                float zRot = apply.has("z") ? apply.get("z").getAsFloat() : 0;
+                
+                List<BlockStateProperty> properties = entryData.has("when") ? parseMultipartWhenStatement(entryData.getAsJsonObject("when")) : new ArrayList<>();
+                
+                blockStateDatas.add(new BlockStateDataPrecursor(new BlockStatePropertyMatcher(properties), modelName, new Vector3f(xRot, yRot, zRot)));
             }
-            float xRot = entryData.has("x") ? entryData.get("x").getAsFloat() : 0;
-            float yRot = entryData.has("y") ? entryData.get("y").getAsFloat() : 0; //not sure if these are ever not integers but just in case
-            float zRot = entryData.has("z") ? entryData.get("z").getAsFloat() : 0;
-            blockStateDatas.add(new BlockStateData(new BlockStatePropertyMatcher(new ArrayList<>()), modelName, new Vector3f(xRot, yRot, zRot)));
-            //only read whatever the first entry is to save programmer time, if desired later read all fields the right way and let block state datas have multiple models
         }
         return blockStateDatas;
     }
@@ -75,6 +81,19 @@ public class BlockStateDataParser {
             String value = propAndValue[1];
             properties.add(new BlockStateProperty(propertyName, value));
         }
+        return properties;
+    }
+    
+    private static List<BlockStateProperty> parseMultipartWhenStatement(JsonObject whenStatement){
+        List<BlockStateProperty> properties = new ArrayList<>();
+        whenStatement.entrySet().forEach((entry) ->{
+            String propName = entry.getKey();
+            JsonElement propValue = entry.getValue();
+            if(propValue.isJsonPrimitive()){
+                BlockStateProperty property = new BlockStateProperty(propName, propValue.getAsString());
+                properties.add(property);
+            }
+        });
         return properties;
     }
     

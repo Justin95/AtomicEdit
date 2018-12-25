@@ -15,7 +15,7 @@ class TexturedBoxPrecursor {
     
     Vector3f smallCorner;
     Vector3f largeCorner;
-    Map<CubeFace, FacePrecursor> faces;
+    Map<CubeFace, TexturedFacePrecursor> faces;
     boolean useShade;
     Vector3f rotateAbout;
     Vector3f rotation;

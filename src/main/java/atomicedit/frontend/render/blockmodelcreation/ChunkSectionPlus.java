@@ -3,7 +3,6 @@ package atomicedit.frontend.render.blockmodelcreation;
 
 import atomicedit.backend.chunk.ChunkSection;
 import atomicedit.backend.utils.GeneralUtils;
-import atomicedit.logging.Logger;
 
 /**
  *
@@ -21,9 +20,9 @@ public class ChunkSectionPlus {
     public final ChunkSection secPlusY;
     public final ChunkSection secMinusY;
 
-    public ChunkSectionPlus(ChunkSection sectionBlocks, ChunkSection secPlusX, ChunkSection secMinusX, ChunkSection secPlusZ,
+    public ChunkSectionPlus(ChunkSection section, ChunkSection secPlusX, ChunkSection secMinusX, ChunkSection secPlusZ,
                             ChunkSection secMinusZ, ChunkSection secPlusY, ChunkSection secMinusY, int x, int y, int z){
-        this.centerSection = sectionBlocks;
+        this.centerSection = section;
         this.secPlusX = secPlusX;
         this.secMinusX = secMinusX;
         this.secPlusZ = secPlusZ;

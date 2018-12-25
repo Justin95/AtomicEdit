@@ -1,20 +1,18 @@
 
 package atomicedit.frontend;
 
+import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.chunk.ChunkSection;
 import atomicedit.backend.nbt.MalformedNbtTagException;
-import atomicedit.frontend.render.RenderObject;
+import atomicedit.frontend.render.ChunkSectionRenderObject;
 import atomicedit.frontend.render.blockmodelcreation.BlockModelCreator;
 import atomicedit.frontend.render.blockmodelcreation.ChunkSectionPlus;
-import atomicedit.jarreading.texture.TextureLoader;
 import atomicedit.logging.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import org.joml.Vector3f;
 
 /**
  *
@@ -33,8 +31,8 @@ public class ChunkRenderObjectCreator {
      * @param zPlus
      * @return 
      */
-    public static Collection<RenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
-        ArrayList<RenderObject> renderObjects = new ArrayList<>(Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK);
+    public static Collection<ChunkSectionRenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
+        ArrayList<ChunkSectionRenderObject> renderObjects = new ArrayList<>();
         for(int i = 0; i < Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK; i++){
             try{
                 if(Arrays.equals(chunk.getBlocks(i), EMPTY_BLOCK_ARRAY)){
@@ -51,9 +49,18 @@ public class ChunkRenderObjectCreator {
                                                                 i,
                                                                 chunk.getChunkCoord().z
                 );
-                renderObjects.add(createChunkSectionRenderObject(section));
+                ChunkSectionRenderObject sectionRenderObject = createChunkSectionRenderObject(section, true);
+                if(sectionRenderObject != null){
+                    renderObjects.add(sectionRenderObject);
+                }
+                sectionRenderObject = createChunkSectionRenderObject(section, false);
+                if(sectionRenderObject != null){
+                    renderObjects.add(sectionRenderObject);
+                }
             }catch(MalformedNbtTagException e){
-                Logger.error("MalformedNbtTagException while trying to create render object", e);
+                Logger.warning("MalformedNbtTagException while trying to create render object", e);
+            }catch(Exception e){
+                Logger.warning("Exception while trying to create chunk render object", e);
             }
         }
         return renderObjects;
@@ -64,38 +71,26 @@ public class ChunkRenderObjectCreator {
      * @param section
      * @return A render object to allow rendering of a chunk section
      */
-    private static RenderObject createChunkSectionRenderObject(ChunkSectionPlus section){
+    private static ChunkSectionRenderObject createChunkSectionRenderObject(ChunkSectionPlus section, boolean onlyTranslucent){
         BlockModelCreator blockModelCreator = BlockModelCreator.getInstance();
         ArrayList<Float> vertexData = new ArrayList<>();
-        ArrayList<Short> indicies = new ArrayList<>();
+        ArrayList<Integer> indicies = new ArrayList<>();
         for(int y = 0; y < ChunkSection.SIDE_LENGTH; y++){
             for(int z = 0; z < ChunkSection.SIDE_LENGTH; z++){
                 for(int x = 0; x < ChunkSection.SIDE_LENGTH; x++){
                     if(section.getBlockAt(x, y, z) == 0){ //AIR
                         continue;
                     }
-                    blockModelCreator.addBlockRenderData(x, y, z, section, vertexData, indicies);
+                    blockModelCreator.addBlockRenderData(x, y, z, section, vertexData, indicies, onlyTranslucent);
                 }
             }
         }
-        Vector3f pos = new Vector3f(section.xCoord * ChunkSection.SIDE_LENGTH, section.yCoord * ChunkSection.SIDE_LENGTH, section.zCoord * ChunkSection.SIDE_LENGTH);
-        return new RenderObject(pos, new Vector3f(0,0,0), TextureLoader.getMinecraftDefaultTexture(), convertFloat(vertexData), convertShort(indicies));
+        if(vertexData.isEmpty()){
+            return null;
+        }
+        return new ChunkSectionRenderObject(new ChunkSectionCoord(section.xCoord, section.yCoord, section.zCoord), onlyTranslucent, vertexData, indicies);
     }
     
-    private static float[] convertFloat(List<Float> source){
-        float[] dest = new float[source.size()];
-        for(int i = 0; i < source.size(); i++){
-            dest[i] = source.get(i);
-        }
-        return dest;
-    }
     
-    private static short[] convertShort(List<Short> source){
-        short[] dest = new short[source.size()];
-        for(int i = 0; i < source.size(); i++){
-            dest[i] = source.get(i);
-        }
-        return dest;
-    }
     
 }

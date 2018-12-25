@@ -51,7 +51,7 @@ public enum AtomicEditSettings {
         "use_translucency",
         SettingDataType.BOOLEAN,
         null,
-        () -> false
+        () -> true
     )
     ;
     

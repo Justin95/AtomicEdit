@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Scanner;
 import org.lwjgl.opengl.GL11;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 
 /**
  *
@@ -33,7 +32,6 @@ public enum ShaderProgram {
     private static final String FILEPATH_TO_SHADERS = "/shaders/";
     private static final String FILETYPE_OF_SHADERS = ".glsl";
     private static final Map<ShaderProgram, Integer> mapToProgramId = new EnumMap<>(ShaderProgram.class);
-    private static final String OUT_COLOR_NAME = "outColor";
     
     
     
@@ -46,7 +44,6 @@ public enum ShaderProgram {
 		int fragmentShader = createShader(program.fragmentShaderName, GL_FRAGMENT_SHADER);
 		glAttachShader(programId, vertexShader);
 		glAttachShader(programId, fragmentShader);
-        //glBindFragDataLocation(programId, 0, OUT_COLOR_NAME); //not needed?
 		glLinkProgram(programId);
 		glValidateProgram(programId);
 		if(!linkedCorrectly(programId)){

@@ -72,7 +72,7 @@ public class GlobalBlockModelDataLookup {
     
     private static void updateBoxTextureNames(Map<String, BlockModelDataParameter> params, TexturedBoxPrecursor boxPrecursor){
         for(CubeFace face : boxPrecursor.faces.keySet()){
-            FacePrecursor facePrecursor = boxPrecursor.faces.get(face);
+            TexturedFacePrecursor facePrecursor = boxPrecursor.faces.get(face);
             if(facePrecursor.textureName.startsWith(PARAM_IDENTIFIER)){
                 facePrecursor.textureName = (String) getParam(params, facePrecursor.textureName.substring(1), 0).value; //strip leading '#' and get parameter
             }

@@ -18,7 +18,7 @@ public enum CubeFace {
             1, 1, 1,
             0, 1, 1
         },
-        new short[]{ //indicies
+        new int[]{ //indicies
             0, 2, 1,   0, 3, 2
         }
     ),
@@ -31,7 +31,7 @@ public enum CubeFace {
             1, 0, 1,
             0, 0, 1
         },
-        new short[]{
+        new int[]{ //indicies
             0, 1, 2,   0, 2, 3
         }
     ),
@@ -44,7 +44,7 @@ public enum CubeFace {
             1, 1, 0,
             0, 1, 0
         },
-        new short[]{
+        new int[]{ //indicies
             0, 2, 1,   0, 3, 2
         }
     ),
@@ -57,7 +57,7 @@ public enum CubeFace {
             1, 1, 1,
             0, 1, 1
         },
-        new short[]{ //indicies
+        new int[]{ //indicies
             0, 1, 2,   0, 2, 3
         }
     ),
@@ -70,7 +70,7 @@ public enum CubeFace {
             1, 1, 1,
             1, 1, 0
         },
-        new short[]{ //indicies
+        new int[]{ //indicies
             0, 2, 1,   0, 3, 2
         }
     ),
@@ -83,7 +83,7 @@ public enum CubeFace {
             0, 1, 1,
             0, 1, 0
         },
-        new short[]{ //indicies
+        new int[]{ //indicies
             0, 1, 2,   0, 2, 3
         }
     ),
@@ -97,9 +97,9 @@ public enum CubeFace {
      * There are always 4 vertices listed with 3 points each for an array length of 12.
      */
     public final int[] coordAdditions;
-    public final short[] indicies;
+    public final int[] indicies;
 
-    CubeFace(String faceName, Vector3i adjTrans, int[] coordAdditions, short[] indicies){
+    CubeFace(String faceName, Vector3i adjTrans, int[] coordAdditions, int[] indicies){
         this.faceName = faceName;
         this.adjTrans = adjTrans;
         this.coordAdditions = coordAdditions;

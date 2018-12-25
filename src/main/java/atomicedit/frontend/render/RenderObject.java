@@ -10,7 +10,7 @@ import atomicedit.logging.Logger;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_SHORT;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import org.lwjgl.opengl.GL30;
@@ -24,6 +24,7 @@ public class RenderObject {
     
     protected Vector3f position;
     protected Vector3f rotation;
+    protected final boolean containsTranslucent;
     protected Matrix4f modelMatrix;
     protected Texture texture;
     protected int vao;
@@ -32,11 +33,12 @@ public class RenderObject {
     protected boolean openGlInitialized;
     protected boolean destroyed;
     protected float[] vertexData;
-    protected short[] indicies;
+    protected int[] indicies;
     
-    public RenderObject(Vector3f pos, Vector3f rot, Texture texture, float[] vertexData, short[] indicies){
+    public RenderObject(Vector3f pos, Vector3f rot, Texture texture, boolean containsTranslucent, float[] vertexData, int[] indicies){
         this.position = pos;
         this.rotation = rot;
+        this.containsTranslucent = containsTranslucent;
         this.modelMatrix = RenderMatrixUtils.createModelMatrix(pos, rot);
         this.texture = texture;
         this.shaderProgram = ShaderProgram.getShaderProgram(ShaderProgram.DEFAULT_SHADER_PROGRAM); //can add a choice here later
@@ -59,6 +61,10 @@ public class RenderObject {
     }
     
     public void destroy(){
+        if(this.destroyed){
+            Logger.warning("Tried to destroy already destroyed RenderObject");
+            return;
+        }
         this.destroyed = true;
         glDeleteVertexArrays(vao); //assume vbos were deleted at vao creation
     }
@@ -91,7 +97,7 @@ public class RenderObject {
         texture.bind(0); //bind to texture 0
         glUseProgram(shaderProgram);
         GL30.glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, numIndicies, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, numIndicies, GL_UNSIGNED_INT, 0);
     }
     
     

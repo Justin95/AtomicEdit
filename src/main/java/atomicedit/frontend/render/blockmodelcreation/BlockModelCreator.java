@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class BlockModelCreator {
     
+    private static BlockModelCreator INSTANCE; //singleton design wont allow changing block model creator setting without restarting
+    
     private final BlockModelCreatorLogic modelCreatorLogic;
     
     private BlockModelCreator(BlockModelCreatorLogic logic){
@@ -18,13 +20,15 @@ public class BlockModelCreator {
     }
     
     public static BlockModelCreator getInstance(){
-        BlockModelCreatorLogic logic = (BlockModelCreatorLogic)AtomicEdit.getSettings().getSettingValueAsClassInstance(AtomicEditSettings.BLOCK_MODEL_CREATOR, BlockModelCreatorLogic.class);
-        BlockModelCreator blockModelCreator = new BlockModelCreator(logic);
-        return blockModelCreator;
+        if(INSTANCE == null){
+            BlockModelCreatorLogic logic = (BlockModelCreatorLogic)AtomicEdit.getSettings().getSettingValueAsClassInstance(AtomicEditSettings.BLOCK_MODEL_CREATOR, BlockModelCreatorLogic.class);
+            INSTANCE = new BlockModelCreator(logic);
+        }
+        return INSTANCE;
     }
     
-    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Short> indicies){
-        modelCreatorLogic.addBlockRenderData(x, y, z, section, vertexData, indicies);
+    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Integer> indicies, boolean includeTranslucent){
+        modelCreatorLogic.addBlockRenderData(x, y, z, section, vertexData, indicies, includeTranslucent);
     }
     
 }

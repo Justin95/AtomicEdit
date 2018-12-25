@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface BlockModelCreatorLogic extends SettingSelectableClass{
     
-    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Short> indicies);
+    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Integer> indicies, boolean includeTranslucent);
     
 }

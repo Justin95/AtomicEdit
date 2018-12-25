@@ -52,11 +52,10 @@ public class ChunkLoadingThread extends Thread {
             Camera camera = renderer.getCamera();
             if(!AtomicEdit.getBackendController().hasWorld()) continue;
             if(camera == null) continue;
-            ChunkCoord cameraCoord = new ChunkCoord((int)Math.floor(camera.getPosition().x / Chunk.X_LENGTH), (int)Math.floor(camera.getPosition().z / Chunk.Z_LENGTH));
+            ChunkCoord cameraCoord = ChunkCoord.getInstanceFromWorldPos(camera.getPosition().x, camera.getPosition().z);
             ChunkCoord maxCoord = new ChunkCoord(cameraCoord.x + renderDistInChunks, cameraCoord.z + renderDistInChunks);
             ChunkCoord minCoord = new ChunkCoord(cameraCoord.x - renderDistInChunks, cameraCoord.z - renderDistInChunks);
-            ArrayList<Renderable> toRemove = new ArrayList<>();
-            ArrayList<Renderable> toAdd = new ArrayList<>();
+            ArrayList<ChunkRenderable> toRemove = new ArrayList<>();
             Set<ChunkCoord> neededChunks = new HashSet<>();
             String currWorldPath = AtomicEdit.getBackendController().getWorldPath();
             if(currWorldPath != null && !currWorldPath.equals(worldPath)){
@@ -90,6 +89,9 @@ public class ChunkLoadingThread extends Thread {
             }catch(Exception e){
                 Logger.error("Exception while trying to load chunks for drawing", e);
             }
+            if(!toRemove.isEmpty()){
+                renderer.getRenderableStage().removeChunkRenderables(toRemove);
+            }
             if(neededChunkReaders != null){
                 for(ChunkCoord chunkCoord : neededChunks){
                     ChunkReader chunk = neededChunkReaders.get(chunkCoord);
@@ -100,11 +102,9 @@ public class ChunkLoadingThread extends Thread {
                     ChunkReader zPlus =  neededChunkReaders.get(new ChunkCoord(chunkCoord.x, chunkCoord.z + 1));
                     ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
                     loadedChunks.put(chunkCoord, renderable);
-                    toAdd.add(renderable);
+                    renderer.getRenderableStage().addChunkRenderable(renderable);
                 }
             }
-            renderer.removeRenderables(toRemove);
-            renderer.addRenderables(toAdd);
         }
     }
     

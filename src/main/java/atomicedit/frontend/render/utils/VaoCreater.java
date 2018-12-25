@@ -19,7 +19,7 @@ public class VaoCreater {
      * @param indicies
      * @return a valid VAO id
      */
-    public static int createVao(float[] vertexData, short[] indicies){
+    public static int createVao(float[] vertexData, int[] indicies){
         int vao = glGenVertexArrays();
         glBindVertexArray(vao);
         
