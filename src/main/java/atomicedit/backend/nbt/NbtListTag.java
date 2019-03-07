@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,10 +22,11 @@ public class NbtListTag extends NbtTag{
         super(NbtTypes.TAG_LIST, readName ? NbtTag.readUtfString(input) : "");
         this.tagId = input.readByte();
         int dataLength = input.readInt();
-        this.data = new ArrayList<>(dataLength);
+        List<NbtTag> temp = new ArrayList<>(dataLength);
         for(int i = 0; i < dataLength; i++){
-            data.add(i, NbtTypes.getTypeFromId(tagId).instantiate(input, false));
+            temp.add(i, NbtTypes.getTypeFromId(tagId).instantiate(input, false));
         }
+        this.data = Collections.unmodifiableList(temp);
     }
     
     public NbtListTag(String name, List<NbtTag> data){
@@ -69,87 +71,87 @@ public class NbtListTag extends NbtTag{
     //time savers
     
     public List<NbtByteArrayTag> getByteArrayTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_BYTE_ARRAY){
+        if(getListType() == NbtTypes.TAG_BYTE_ARRAY || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtByteArrayTag>)(List<?>) data; //we can use a (List<?>) cast because we expressly check types here and in the constructor
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Byte Array NBT tags got: ", this);
     }
     
     public List<NbtByteTag> getByteTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_BYTE){
+        if(getListType() == NbtTypes.TAG_BYTE || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtByteTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Byte NBT tags got: ", this);
     }
     
     public List<NbtCompoundTag> getCompoundTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_COMPOUND){
+        if(getListType() == NbtTypes.TAG_COMPOUND || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtCompoundTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Compound NBT tags got type "+getListType()+": ", this);
     }
     
     public List<NbtDoubleTag> getDoubleTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_DOUBLE){
+        if(getListType() == NbtTypes.TAG_DOUBLE || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtDoubleTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Double NBT tags got: ", this);
     }
     
     public List<NbtFloatTag> getFloatTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_FLOAT){
+        if(getListType() == NbtTypes.TAG_FLOAT || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtFloatTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Float NBT tags got: ", this);
     }
     
     public List<NbtIntArrayTag> getIntArrayTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_INT_ARRAY){
+        if(getListType() == NbtTypes.TAG_INT_ARRAY || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtIntArrayTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Integer Array NBT tags got: ", this);
     }
     
     public List<NbtIntTag> getIntTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_INT){
+        if(getListType() == NbtTypes.TAG_INT || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtIntTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Integer NBT tags got: ", this);
     }
     
     public List<NbtListTag> getListTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_LIST){
+        if(getListType() == NbtTypes.TAG_LIST || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtListTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of List NBT tags got: ", this);
     }
     
     public List<NbtLongTag> getLongTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_LONG){
+        if(getListType() == NbtTypes.TAG_LONG || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtLongTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Long NBT tags got: ", this);
     }
     
     public List<NbtLongArrayTag> getLongArrayTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_LONG_ARRAY){
+        if(getListType() == NbtTypes.TAG_LONG_ARRAY || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtLongArrayTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Long Array NBT tags got: ", this);
     }
     
     public List<NbtShortTag> getShortTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_SHORT){
+        if(getListType() == NbtTypes.TAG_SHORT || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtShortTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of Short NBT tags got: ", this);
     }
     
     public List<NbtStringTag> getStringTags() throws MalformedNbtTagException{
-        if(getListType() == NbtTypes.TAG_STRING){
+        if(getListType() == NbtTypes.TAG_STRING || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtStringTag>)(List<?>) data;
         }
-        throw new MalformedNbtTagException();
+        throw new MalformedNbtTagException("Expected a list of String NBT tags got: ", this);
     }
     
     @Override

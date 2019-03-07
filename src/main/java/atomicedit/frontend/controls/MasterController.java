@@ -2,7 +2,7 @@
 package atomicedit.frontend.controls;
 
 import atomicedit.frontend.AtomicEditRenderer;
-import atomicedit.logging.Logger;
+import atomicedit.frontend.editor.EditorSystem;
 import java.nio.DoubleBuffer;
 import org.joml.Vector3f;
 import org.liquidengine.legui.component.Frame;
@@ -32,8 +32,9 @@ public class MasterController {
         this.centerMouse = false;
     }
     
-    public void handleInput(int key, int action){
-        KeyControls.getKeyControlsFromKey(key).doAction(this, action);
+    public void handleInput(int key, int action, int mods){
+        KeyControls.getKeyControlsFromKey(key).doAction(this, action, mods);
+        EditorSystem.handleInput(key, action, mods);
     }
     
     public void renderUpdate(){
@@ -66,11 +67,11 @@ public class MasterController {
     private static enum KeyControls{
         NO_ACTION(
             -1,
-            (masterController, action) -> {}
+            (masterController, action, mods) -> {}
         ),
         TOGGLE_LOOK_AROUND(
             GLFW.GLFW_MOUSE_BUTTON_RIGHT,
-            (masterController, action) -> {
+            (masterController, action, mods) -> {
                 if(action == GLFW.GLFW_PRESS){
                     masterController.centerMouse = true;
                     masterController.cameraLookAround = !masterController.cameraLookAround;
@@ -80,27 +81,27 @@ public class MasterController {
         ),
         CAMERA_SHIFT_UP(
             GLFW.GLFW_KEY_SPACE,
-            (masterController, action) -> setCamDirection(masterController, CameraController.Directions.UP, action)
+            (masterController, action, mods) -> setCamDirection(masterController, CameraController.Directions.UP, action)
         ),
         CAMERA_SHIFT_DOWN(
             GLFW.GLFW_KEY_LEFT_SHIFT,
-            (masterController, action) -> setCamDirection(masterController, CameraController.Directions.DOWN, action)
+            (masterController, action, mods) -> setCamDirection(masterController, CameraController.Directions.DOWN, action)
         ),
         CAMERA_SHIFT_FORWARD(
             GLFW.GLFW_KEY_W,
-            (masterController, action) -> setCamDirection(masterController, CameraController.Directions.FORWARD, action)
+            (masterController, action, mods) -> setCamDirection(masterController, CameraController.Directions.FORWARD, action)
         ),
         CAMERA_SHIFT_BACKWARD(
             GLFW.GLFW_KEY_S,
-            (masterController, action) -> setCamDirection(masterController, CameraController.Directions.BACKWARD, action)
+            (masterController, action, mods) -> setCamDirection(masterController, CameraController.Directions.BACKWARD, action)
         ),
         CAMERA_SHIFT_LEFT(
             GLFW.GLFW_KEY_A,
-            (masterController, action) -> setCamDirection(masterController, CameraController.Directions.LEFT, action)
+            (masterController, action, mods) -> setCamDirection(masterController, CameraController.Directions.LEFT, action)
         ),
         CAMERA_SHIFT_RIGHT(
             GLFW.GLFW_KEY_D,
-            (masterController, action) -> setCamDirection(masterController, CameraController.Directions.RIGHT, action)
+            (masterController, action, mods) -> setCamDirection(masterController, CameraController.Directions.RIGHT, action)
         )
         ;
         
@@ -113,7 +114,7 @@ public class MasterController {
         }
         
         private interface KeyPressAction{
-            void keyPress(MasterController masterController, int action);
+            void keyPress(MasterController masterController, int action, int mods);
         }
         
         public static KeyControls getKeyControlsFromKey(int key){
@@ -123,8 +124,8 @@ public class MasterController {
             return NO_ACTION;
         }
         
-        public void doAction(MasterController masterController, int action){
-            pressAction.keyPress(masterController, action);
+        public void doAction(MasterController masterController, int action, int mods){
+            pressAction.keyPress(masterController, action, mods);
         }
         
     }

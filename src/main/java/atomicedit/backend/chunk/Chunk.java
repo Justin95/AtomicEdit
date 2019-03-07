@@ -28,7 +28,7 @@ public class Chunk {
         this.needsRedraw = false;
     }
     
-    NbtCompoundTag getChunkTag(){
+    public NbtCompoundTag getChunkTag(){
         return this.chunkTag;
     }
     

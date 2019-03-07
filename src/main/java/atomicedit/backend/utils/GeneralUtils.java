@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 
@@ -171,6 +172,29 @@ public class GeneralUtils {
             }
         }catch(Exception e){
             Logger.error("Exception decompressing byte array", e);
+        }finally{
+            try{
+                outputStream.close();
+            }catch(IOException e){
+                Logger.error("Exception closing stream", e);
+            }
+        }
+        return outputStream.toByteArray();
+    }
+    
+    public static byte[] compressByteArrayToZip(byte[] uncompressed) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Deflater deflater = new Deflater();
+        deflater.setInput(uncompressed);
+        byte[] temp = new byte[4096];
+        try{
+            while(!deflater.finished()){
+                int writtenAmount = deflater.deflate(temp);
+                if(writtenAmount < 0) break;
+                outputStream.write(temp, 0, writtenAmount);
+            }
+        }catch(Exception e){
+            Logger.error("Exception while compressing byte array", e);
         }finally{
             try{
                 outputStream.close();

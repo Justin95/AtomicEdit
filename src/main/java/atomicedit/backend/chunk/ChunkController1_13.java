@@ -6,7 +6,7 @@ import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.BlockStateProperty;
 import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
-import atomicedit.backend.GlobalBlockTypeMap;
+import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtByteArrayTag;
@@ -71,7 +71,7 @@ public class ChunkController1_13 extends ChunkController{
         short[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
         int index = GeneralUtils.getIndexYZX(coord.getChunkLocalX(), coord.getSubChunkLocalY(), coord.getChunkLocalZ(), ChunkSection.SIDE_LENGTH);
         short globalId = blockIds[index];
-        return GlobalBlockTypeMap.getBlockType(globalId);
+        return GlobalBlockStateMap.getBlockType(globalId);
     }
     
     @Override
@@ -81,7 +81,7 @@ public class ChunkController1_13 extends ChunkController{
         }
         short[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
         int index = GeneralUtils.getIndexYZX(coord.getChunkLocalX(), coord.getSubChunkLocalY(), coord.getChunkLocalZ(), ChunkSection.SIDE_LENGTH);
-        blockIds[index] = GlobalBlockTypeMap.getBlockId(block);
+        blockIds[index] = GlobalBlockStateMap.getBlockId(block);
         writeChunkSectionCacheIntoNbt(coord.getSubChunkIndex());
         declareNbtChanged();
         declareVisiblyChanged();
@@ -161,7 +161,7 @@ public class ChunkController1_13 extends ChunkController{
                     }
                 }
             }
-            blockTypes[i] = BlockState.getBlockType(blockName, properties);
+            blockTypes[i] = BlockState.getBlockState(blockName, properties);
         }
         int indexSize = getIndexSize(blockTypes.length);
         long[] localBlockIds = sectionTag.getLongArrayTag("BlockStates").getPayload();
@@ -178,7 +178,7 @@ public class ChunkController1_13 extends ChunkController{
                 blockTypeIndex = 0;
             }
             BlockState blockType = blockTypes[blockTypeIndex];
-            blocks[i] = GlobalBlockTypeMap.getBlockId(blockType);
+            blocks[i] = GlobalBlockStateMap.getBlockId(blockType);
         }
         //Logger.info("local blocks: " + Arrays.toString(localBlocks));
         //if(indexSize > 1)throw new NullPointerException(); //always true temp
@@ -203,8 +203,8 @@ public class ChunkController1_13 extends ChunkController{
     
     private ChunkSection makeBlankChunkSection(ChunkSectionCoord coord){
         short[] blocks = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
-        if(GlobalBlockTypeMap.getBlockId(BlockState.AIR) != 0){
-            Arrays.fill(blocks, GlobalBlockTypeMap.getBlockId(BlockState.AIR));
+        if(GlobalBlockStateMap.getBlockId(BlockState.AIR) != 0){
+            Arrays.fill(blocks, GlobalBlockStateMap.getBlockId(BlockState.AIR));
         }
         byte[] blockLight = new byte[(ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION + 1) / 2]; // divid 2 rounds down on odd numbers, add one to make it round up
         byte[] skyLight = new byte[(ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION + 1) / 2]; //may cause lighting errors

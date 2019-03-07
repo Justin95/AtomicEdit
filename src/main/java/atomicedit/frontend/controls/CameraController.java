@@ -48,14 +48,15 @@ public class CameraController {
     public void addToRotation(Vector3f addRot){
         Vector3f cameraRot = camera.getRotation();
         cameraRot.add(addRot);
-        cameraRot.x = cameraRot.x % 360;
+        if(cameraRot.x > 90) cameraRot.x = 90;
+        if(cameraRot.x < -90)cameraRot.x = -90;
         cameraRot.y = cameraRot.y % 360;
         cameraRot.z = cameraRot.z % 360;
     }
     
     private Vector3f calcDirectionVector(){
         Vector3f dirVector = new Vector3f(0,0,0); //in degrees
-        Vector3f rot = new Vector3f(camera.getRotation()).mul(2); //dont know why but the rotation angles appear to be half of what they should be to match the visual camera rotation
+        Vector3f rot = new Vector3f(camera.getRotation());
         for(Directions dir : Directions.values()){
             if(activeDirections.get(dir)){
                 dirVector.add(dir.rotateVector(new Vector3f(dir.DIRECTION), rot));

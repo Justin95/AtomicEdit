@@ -2,7 +2,7 @@
 package atomicedit.frontend.render.blockmodelcreation;
 
 import atomicedit.backend.BlockState;
-import atomicedit.backend.GlobalBlockTypeMap;
+import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.frontend.render.shaders.DataBufferLayoutFormat;
 import atomicedit.jarreading.blockmodels.BlockModelData;
 import atomicedit.jarreading.blockmodels.CubeFace;
@@ -30,7 +30,7 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic{
     @Override
     public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Integer> indicies, boolean includeTranslucent){
         short blockId = section.getBlockAt(x, y, z);
-        BlockState blockState = GlobalBlockTypeMap.getBlockType(blockId);
+        BlockState blockState = GlobalBlockStateMap.getBlockType(blockId);
         BlockStateData blockStateData = GlobalBlockStateDataLookup.getBlockStateDataFromBlockState(blockState);
         for(BlockModelData modelData : blockStateData.getBlockModelDatas()){
             boolean isFullBlock = modelData.isFullBlock();

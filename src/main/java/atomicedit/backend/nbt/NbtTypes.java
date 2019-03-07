@@ -62,7 +62,7 @@ public enum NbtTypes {
     }
     
     public static NbtTypes getTypeFromId(int id){
-        if(id < 0 || id > NbtTypes.values().length){
+        if(id < 0 || id >= NbtTypes.values().length){
             Logger.warning("Invalid NbtTag id");
             return null;
         }

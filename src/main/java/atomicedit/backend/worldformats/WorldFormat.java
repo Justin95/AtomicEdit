@@ -2,9 +2,11 @@
 package atomicedit.backend.worldformats;
 
 import atomicedit.backend.chunk.Chunk;
+import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
+import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Classes implementing this interface are used to read and write Minecraft world file formats, Anvil, MCregion etc.
@@ -19,9 +21,9 @@ public interface WorldFormat {
      */
     public void setWorld(String filepath);
     
-    public void writeChunks(Collection<Chunk> chunks);
+    public void writeChunks(Map<ChunkCoord, ChunkController> chunks) throws IOException;
     
-    public HashMap<ChunkCoord, Chunk> readChunks(Collection<ChunkCoord> chunkCoords);
+    public Map<ChunkCoord, Chunk> readChunks(Collection<ChunkCoord> chunkCoords);
     
     
     /**

@@ -30,11 +30,11 @@ public class PositionedFace {
     
     private void rotateFace(Vector3f rot, Vector3f rotAbout){
         rot = new Vector3f((float)Math.toRadians(rot.x), (float)Math.toRadians(rot.y), (float)Math.toRadians(rot.z));
-        //I dont know why it needs to be multiplied by -2
-        pos1.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-2*rot.x).rotateY(-2*rot.y).rotateZ(-2*rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z);
-        pos2.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-2*rot.x).rotateY(-2*rot.y).rotateZ(-2*rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z); 
-        pos3.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-2*rot.x).rotateY(-2*rot.y).rotateZ(-2*rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z);
-        pos4.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-2*rot.x).rotateY(-2*rot.y).rotateZ(-2*rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z);
+        //I dont know why it needs to be multiplied by -1
+        pos1.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-rot.x).rotateY(-rot.y).rotateZ(-rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z);
+        pos2.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-rot.x).rotateY(-rot.y).rotateZ(-rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z); 
+        pos3.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-rot.x).rotateY(-rot.y).rotateZ(-rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z);
+        pos4.add(-rotAbout.x, -rotAbout.y, -rotAbout.z).rotateX(-rot.x).rotateY(-rot.y).rotateZ(-rot.z).add(rotAbout.x, rotAbout.y, rotAbout.z);
     }
     
 }

@@ -1,12 +1,11 @@
 
 package atomicedit.frontend;
 
-import atomicedit.AtomicEdit;
+import atomicedit.frontend.editor.EditorSystem;
 import atomicedit.frontend.render.Camera;
 import atomicedit.frontend.render.RenderableStage;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import atomicedit.logging.Logger;
-import atomicedit.settings.AtomicEditSettings;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.liquidengine.legui.component.Frame;
@@ -65,14 +64,15 @@ public class AtomicEditRenderer {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, GL_MAJOR_VERSION);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, GL_MINOR_VERSION);
         GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        this.width = videoMode.width();
-        this.height = videoMode.height();
+        this.width = videoMode.width() - 2;
+        this.height = videoMode.height() - 75;
         this.camera = new Camera(new Vector3f(0, 80, 0), new Vector3f(0, 0, 0), 90, width / (float)height);
         //glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, GLFW.glfwGetPrimaryMonitor(), NULL); //boarderless window
         glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, NULL, NULL);
         GLFW.glfwShowWindow(glfwWindow);
         GLFW.glfwMakeContextCurrent(glfwWindow);
         GLFW.glfwFocusWindow(glfwWindow);
+        GLFW.glfwSetWindowPos(glfwWindow, 0, 30);
         GL.createCapabilities();
         GLFW.glfwSwapInterval(0);
         frame = new Frame(width, height);
@@ -90,16 +90,16 @@ public class AtomicEditRenderer {
         }
         glEnable(GL_CULL_FACE); //I think LEGUI turns this off
         
-        if(AtomicEdit.getSettings().getSettingValueAsBoolean(AtomicEditSettings.USE_TRANSLUCENCY)){
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
+        //enable translucency
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
         renderableStage.destroyOldRenderObjects();
         handleSetCursorVisible();
         
         context.updateGlfwWindow();
         Vector2i windowSize = context.getFramebufferSize();
-        GL11.glClearColor(0, 0, 0, 1);
+        GL11.glClearColor(0f, 0f, 0f, 1);
         GL11.glViewport(0, 0, windowSize.x, windowSize.y);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
         
@@ -111,7 +111,8 @@ public class AtomicEditRenderer {
         
         // render frame / GUI
         guiRenderer.render(frame, context);
-
+        
+        EditorSystem.renderTick();
         // poll events to callbacks
         GLFW.glfwPollEvents();
         GLFW.glfwSwapBuffers(glfwWindow);
@@ -137,11 +138,11 @@ public class AtomicEditRenderer {
     }
     
     public int getWidth(){
-        return this.width;
+        return this.width; //TODO update to get current window width
     }
     
     public int getHeight(){
-        return this.height;
+        return this.height; //TODO update to get current window height
     }
     
     public Camera getCamera(){

@@ -2,7 +2,7 @@
 package atomicedit.backend.blockprovider;
 
 import atomicedit.backend.BlockState;
-import atomicedit.backend.GlobalBlockTypeMap;
+import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.volumes.Volume;
 
 /**
@@ -17,7 +17,7 @@ public class FillBlockProvider implements BlockProvider{
     
     
     public FillBlockProvider(Volume volume, BlockState blockType){
-        this.blockId = GlobalBlockTypeMap.getBlockId(blockType);
+        this.blockId = GlobalBlockStateMap.getBlockId(blockType);
         this.volume = volume;
     }
 

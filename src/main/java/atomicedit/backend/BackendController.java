@@ -8,6 +8,7 @@ import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.volumes.Volume;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -50,7 +51,7 @@ public class BackendController {
         this.world.undoLastOperation();
     }
     
-    public void saveChanges(){
+    public void saveChanges() throws IOException{
         world.saveChanges();
     }
     
@@ -63,11 +64,11 @@ public class BackendController {
     }
     
     public BlockState getBlockType(short blockRuntimeId){
-        return GlobalBlockTypeMap.getBlockType(blockRuntimeId);
+        return GlobalBlockStateMap.getBlockType(blockRuntimeId);
     }
     
     public short getBlockId(BlockState blockType){
-        return GlobalBlockTypeMap.getBlockId(blockType);
+        return GlobalBlockStateMap.getBlockId(blockType);
     }
     
     public boolean doesChunkNeedRedraw(ChunkCoord chunkCoord){

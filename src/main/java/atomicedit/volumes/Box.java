@@ -1,7 +1,7 @@
 
 package atomicedit.volumes;
 
-import atomicedit.backend.BlockCoord;
+import org.joml.Vector3i;
 
 /**
  *
@@ -19,7 +19,7 @@ public class Box {
      * @param pointOne inclusive
      * @param pointTwo inclusive
      */
-    public Box(BlockCoord pointOne, BlockCoord pointTwo){
+    public Box(Vector3i pointOne, Vector3i pointTwo){
         this.xLength = Math.abs(pointOne.x - pointTwo.x) + 1; //+1 for inclusive
         this.yLength = Math.abs(pointOne.y - pointTwo.y) + 1;
         this.zLength = Math.abs(pointOne.z - pointTwo.z) + 1;

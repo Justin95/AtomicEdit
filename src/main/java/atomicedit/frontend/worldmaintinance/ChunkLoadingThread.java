@@ -2,14 +2,11 @@
 package atomicedit.frontend.worldmaintinance;
 
 import atomicedit.AtomicEdit;
-import atomicedit.backend.World;
-import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.Camera;
 import atomicedit.frontend.render.ChunkRenderable;
-import atomicedit.frontend.render.Renderable;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import java.util.ArrayList;

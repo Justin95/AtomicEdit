@@ -9,6 +9,7 @@ import atomicedit.logging.Logger;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import org.joml.Vector3i;
 
 /**
  * Classes implementing this interface describe a selection of block coordinates.
@@ -29,6 +30,18 @@ public class Volume {
             Logger.error(message);
             throw new IllegalArgumentException(message);
         }
+    }
+    
+    /**
+     * Create a rectangular volume in which every block is included.
+     * @param pointA one corner
+     * @param pointB the opposite corner
+     * @return 
+     */
+    public static Volume getInstance(Vector3i pointA, Vector3i pointB){
+        Box box = new Box(pointA, pointB);
+        BitSet bitSet = GeneralUtils.getAllTrueBitSet(box.getNumBlocksContained());
+        return new Volume(box, bitSet);
     }
     
     public int getNumBlocksContained(){

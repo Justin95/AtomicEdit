@@ -3,8 +3,8 @@ apply plugin: 'application'
 
 mainClassName = "Main"
 
-def lwjglVersion = "3.1.6-SNAPSHOT" //shares dependency with legui
-def leguiVersion = "1.4.4-SNAPSHOT"
+def lwjglVersion = "3.2.2-SNAPSHOT" //also dependency of legui
+def leguiVersion = "1.5.0-24"
 
 repositories {
     mavenCentral()

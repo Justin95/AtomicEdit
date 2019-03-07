@@ -15,4 +15,12 @@ public class MalformedNbtTagException extends Exception {
         super(message);
     }
     
+    public MalformedNbtTagException(String message, NbtTag nbtTag){
+        super(message + "\nMalformedNbtTag: " + nbtTag);
+    }
+    
+    public MalformedNbtTagException(NbtTag nbtTag){
+        super("MalformedNbtTag: " + nbtTag);
+    }
+    
 }

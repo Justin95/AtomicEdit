@@ -18,21 +18,19 @@ public class BlockState {
      * Only have one immutable BlockState object per block state
      */
     private static HashMap<String, ArrayList<BlockState>> blockLibrary = new HashMap<>();
-    public static final BlockState AIR = getBlockType("minecraft:air", null); //need a block to fill empty chunk sections with
+    public static final BlockState AIR = getBlockState("minecraft:air", null); //need a block to fill empty chunk sections with
     
     private BlockState(String name, BlockStateProperty[] blockStateProperties){
         if(name == null) throw new IllegalArgumentException("Block name cannot be null");
         if(blockStateProperties != null && blockStateProperties.length == 0){
             blockStateProperties = null;
-        }else if(blockStateProperties != null){
-            sortProperties(blockStateProperties);
         }
         this.name = name;
         this.blockStateProperties = blockStateProperties;
         this.stringDesc = "{" + name + ":" + (blockStateProperties != null ? Arrays.toString(blockStateProperties) : "[]") + "}";
     }
     
-    public static BlockState getBlockType(String name, BlockStateProperty[] blockStateProperties){
+    public static BlockState getBlockState(String name, BlockStateProperty[] blockStateProperties){
         if(blockStateProperties != null && blockStateProperties.length == 0){
             blockStateProperties = null;
         }
@@ -45,18 +43,14 @@ public class BlockState {
                 }
             }
             potentialTypes.add(newType);
-            GlobalBlockTypeMap.addBlockType(newType);
+            GlobalBlockStateMap.addBlockType(newType);
             return newType;
         }
         ArrayList<BlockState> newList = new ArrayList<>();
         newList.add(newType);
         blockLibrary.put(name, newList);
-        GlobalBlockTypeMap.addBlockType(newType);
+        GlobalBlockStateMap.addBlockType(newType);
         return newType;
-    }
-    
-    private static void sortProperties(BlockStateProperty[] properties){
-        //TODO make comparisons easier, make sure minecraft doesnt care about properties order!
     }
     
     public static String getLoadedBlockTypesDebugString(){

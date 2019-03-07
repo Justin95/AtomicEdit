@@ -12,6 +12,7 @@ import org.joml.Vector3f;
  */
 public class TexturedFace {
     
+    private static final Vector3f RED_TINT = new Vector3f(1f, .2f, .2f);
     private static final Vector3f GREEN_TINT = new Vector3f(.3f, .9f, .3f); //may need adjustment
     private static final Vector3f BLUE_TINT = new Vector3f(.3f,.3f,1f);
     private static final Vector3f NO_TINT = new Vector3f(1f, 1f, 1f);
@@ -22,7 +23,7 @@ public class TexturedFace {
     private final boolean isTranslucent;
     
     public TexturedFace(TexturedFacePrecursor precursor){
-        this.tint = calcTint(precursor.tintIndex);
+        this.tint = calcTint(precursor.tintIndex, precursor.textureName);
         MinecraftTexture texture = TextureLoader.getMinecraftDefaultTexture();
         this.isTranslucent = texture.isTextureTranslucent(texture.getIndexFromTextureName(precursor.textureName));
         float pixelDelta = 1f / (texture.getBlockTextureLength() * MinecraftTexture.TEXTURE_RES);
@@ -37,9 +38,12 @@ public class TexturedFace {
         this.texCoordsMax = new Vector2f(maxX, minY);
     }
     
-    private static Vector3f calcTint(int tintIndex){
+    private static Vector3f calcTint(int tintIndex, String textureName){
         switch(tintIndex){
             case 0:
+                if(textureName.contains("red")){ //yes really, block tints are hardcoded in MC and not included in .json model files
+                    return RED_TINT;
+                }
                 return GREEN_TINT;
             case 1:
                 return BLUE_TINT;

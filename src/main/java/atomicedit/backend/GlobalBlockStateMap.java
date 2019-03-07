@@ -3,17 +3,19 @@ package atomicedit.backend;
 
 import atomicedit.logging.Logger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author Justin Bonner
  */
-public class GlobalBlockTypeMap {
+public class GlobalBlockStateMap {
     
-    private static Map<BlockState, Short> blockToIdMap = new HashMap<>();
-    private static ArrayList<BlockState> idToBlockTypeMap = new ArrayList<>(100);
+    private static final Map<BlockState, Short> blockToIdMap = new HashMap<>();
+    private static final ArrayList<BlockState> idToBlockTypeMap = new ArrayList<>(100);
     private static short idCounter = 0;
     
     public static void addBlockType(BlockState blockType){
@@ -23,7 +25,9 @@ public class GlobalBlockTypeMap {
         if(idToBlockTypeMap.size() != idCounter){
             Logger.error("Block type map id desync");
         }
-        idToBlockTypeMap.add(blockType);
+        synchronized(idToBlockTypeMap){
+            idToBlockTypeMap.add(blockType);
+        }
         blockToIdMap.put(blockType, idCounter);
         idCounter++;
     }
@@ -41,5 +45,10 @@ public class GlobalBlockTypeMap {
         return idToBlockTypeMap.get(id);
     }
     
+    public static List<BlockState> getBlockTypes(){
+        synchronized(idToBlockTypeMap){
+            return Collections.unmodifiableList(idToBlockTypeMap);
+        }
+    }
     
 }

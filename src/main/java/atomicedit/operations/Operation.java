@@ -8,7 +8,7 @@ import atomicedit.volumes.Volume;
 import java.util.Collection;
 
 /**
- *
+ * This class describes a change that can be done and undone to a part of a minecraft world.
  * @author Justin Bonner
  */
 public abstract class Operation {
