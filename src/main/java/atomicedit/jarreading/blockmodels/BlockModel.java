@@ -1,5 +1,5 @@
 
-package atomicedit.jarreading.blockmodels_v2;
+package atomicedit.jarreading.blockmodels;
 
 import java.util.ArrayList;
 import java.util.List;

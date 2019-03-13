@@ -1,7 +1,7 @@
 
-package atomicedit.jarreading.blockstates_v2;
+package atomicedit.jarreading.blockstates;
 
-import atomicedit.jarreading.blockmodels_v2.BlockModel;
+import atomicedit.jarreading.blockmodels.BlockModel;
 import org.joml.Vector3f;
 
 /**

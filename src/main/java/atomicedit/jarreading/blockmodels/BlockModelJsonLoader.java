@@ -1,5 +1,5 @@
 
-package atomicedit.jarreading.blockmodels_v2;
+package atomicedit.jarreading.blockmodels;
 
 import atomicedit.AtomicEdit;
 import atomicedit.frontend.utils.LoadingUtils;

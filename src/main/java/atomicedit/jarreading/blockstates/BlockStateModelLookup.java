@@ -1,5 +1,5 @@
 
-package atomicedit.jarreading.blockstates_v2;
+package atomicedit.jarreading.blockstates;
 
 import atomicedit.backend.BlockState;
 import atomicedit.logging.Logger;

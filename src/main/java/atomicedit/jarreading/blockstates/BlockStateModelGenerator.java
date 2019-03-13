@@ -1,9 +1,9 @@
 
-package atomicedit.jarreading.blockstates_v2;
+package atomicedit.jarreading.blockstates;
 
 import atomicedit.backend.BlockState;
-import atomicedit.jarreading.blockmodels_v2.BlockModel;
-import atomicedit.jarreading.blockmodels_v2.BlockModelLookup;
+import atomicedit.jarreading.blockmodels.BlockModel;
+import atomicedit.jarreading.blockmodels.BlockModelLookup;
 import atomicedit.logging.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

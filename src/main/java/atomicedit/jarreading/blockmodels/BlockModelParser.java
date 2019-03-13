@@ -1,5 +1,5 @@
 
-package atomicedit.jarreading.blockmodels_v2;
+package atomicedit.jarreading.blockmodels;
 
 import atomicedit.logging.Logger;
 import com.google.gson.JsonArray;
