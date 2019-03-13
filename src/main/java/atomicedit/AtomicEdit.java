@@ -4,9 +4,7 @@ package atomicedit;
 import atomicedit.backend.BackendController;
 import atomicedit.frontend.AtomicEditFrontEnd;
 import atomicedit.frontend.AtomicEditRenderer;
-import atomicedit.jarreading.blockmodels.GlobalBlockModelDataLookup;
 import atomicedit.jarreading.blockmodels_v2.BlockModelLookup;
-import atomicedit.jarreading.blockstates.GlobalBlockStateDataLookup;
 import atomicedit.jarreading.blockstates_v2.BlockStateModelLookup;
 import atomicedit.jarreading.texture.TextureLoader;
 import atomicedit.settings.AeSettingValues;
@@ -38,8 +36,6 @@ public class AtomicEdit {
     }
     
     private void initialize(){
-        //GlobalBlockStateDataLookup.initialize(); //force load block state jsons
-        //GlobalBlockModelDataLookup.initialize(); //force load block models
         TextureLoader.getMinecraftDefaultTexture(); //force load textures
         BlockModelLookup.initialize();
         BlockStateModelLookup.initialize();
