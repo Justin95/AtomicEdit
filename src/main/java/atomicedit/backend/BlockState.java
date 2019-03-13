@@ -71,4 +71,22 @@ public class BlockState {
         return other.name.equals(this.name) && (Arrays.deepEquals(this.blockStateProperties, other.blockStateProperties));
     }
     
+    public boolean hasProperty(String propertyName){
+        for(int i = 0; i < blockStateProperties.length; i++){
+            if(blockStateProperties[i].NAME.equals(propertyName)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public Object getProperty(String propertyName){
+        for(int i = 0; i < blockStateProperties.length; i++){
+            if(blockStateProperties[i].NAME.equals(propertyName)){
+                return blockStateProperties[i].VALUE;
+            }
+        }
+        return null;
+    }
+    
 }
