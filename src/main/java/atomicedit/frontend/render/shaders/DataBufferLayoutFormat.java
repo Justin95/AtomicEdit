@@ -8,67 +8,76 @@ import org.lwjgl.opengl.GL20;
  *
  * @author Justin Bonner
  */
-public class DataBufferLayoutFormat {
+public enum DataBufferLayoutFormat {
+    DEFAULT_DATA_BUFFER_LAYOUT(
+        new BufferElement[]{
+            new BufferElement(0, 3, DataType.FLOAT), //position
+            new BufferElement(1, 2, DataType.FLOAT), //tex coords
+            new BufferElement(2, 4, DataType.FLOAT)  //color
+        }
+    ),
+    NO_TEXTURE_DATA_BUFFER_LAYOUT(
+        new BufferElement[]{
+            new BufferElement(0, 3, DataType.FLOAT), //position
+            new BufferElement(1, 4, DataType.FLOAT)  //color
+        }
+    )
+    ;
     
-    public static final int NUM_ELEMENTS_PER_VERTEX = BufferElements.sumElements();
+    private final BufferElement[] bufferElements;
+    private final int stride; //num bytes for one vertex
+    public final int NUM_ELEMENTS_PER_VERTEX;
     
-    public static void defineBufferLayout(){
+    DataBufferLayoutFormat(BufferElement[] bufferElements){
+        this.bufferElements = bufferElements;
+        int total = 0;
+        for(BufferElement element : bufferElements){
+            total += element.NUM_PRIMITIVES * element.PRIMITIVE_TYPE.SIZE_IN_BYTES;
+        }
+        this.stride = total;
+        int numElements = 0;
+        for(BufferElement element : this.bufferElements){
+            numElements += element.NUM_PRIMITIVES;
+        }
+        this.NUM_ELEMENTS_PER_VERTEX = numElements;
+    }
+    
+    
+    
+    public void defineBufferLayout(){
         int offset = 0;
-        for(BufferElements element : BufferElements.values()){
+        for(BufferElement element : this.bufferElements){
             GL20.glEnableVertexAttribArray(element.LOCATION);
-            GL20.glVertexAttribPointer(element.LOCATION, element.NUM_PRIMITIVES, element.PRIMITIVE_TYPE.GL_NAME, false, BufferElements.STRIDE, offset);
+            GL20.glVertexAttribPointer(element.LOCATION, element.NUM_PRIMITIVES, element.PRIMITIVE_TYPE.GL_NAME, false, this.stride, offset);
             offset += element.NUM_PRIMITIVES * element.PRIMITIVE_TYPE.SIZE_IN_BYTES;
         }
     }
     
     
-    private static enum BufferElements{
-        POSITION        (0, 3, DataType.FLOAT),
-        TEXTURE_COORDS  (1, 2, DataType.FLOAT),
-        COLOR           (2, 4, DataType.FLOAT),
-        ;
+    private static class BufferElement{
         
         public final int LOCATION;
         public final int NUM_PRIMITIVES;
         public final DataType PRIMITIVE_TYPE;
-        public static final int STRIDE; //num bytes for one vertex
-        static{
-            int total = 0;
-            for(BufferElements element : BufferElements.values()){
-                total += element.NUM_PRIMITIVES * element.PRIMITIVE_TYPE.SIZE_IN_BYTES;
-            }
-            STRIDE = total;
-        }
         
-        BufferElements(int location, int numPrimitives, DataType primitiveType){
+        BufferElement(int location, int numPrimitives, DataType primitiveType){
             this.LOCATION = location;
             this.NUM_PRIMITIVES = numPrimitives;
             this.PRIMITIVE_TYPE = primitiveType;
         }
         
-        static int sumElements(){
-            int numElements = 0;
-            for(BufferElements element : BufferElements.values()){
-                numElements += element.NUM_PRIMITIVES;
-            }
-            return numElements;
-        }
-        
-        private static enum DataType{
-            SHORT(2, GL11.GL_SHORT),
-            FLOAT(4, GL11.GL_FLOAT),
-            ;
-            public final int SIZE_IN_BYTES;
-            public final int GL_NAME;
-            
-            DataType(int sizeInBytes, int glName){
-                this.SIZE_IN_BYTES = sizeInBytes;
-                this.GL_NAME = glName;
-            }
-        }
-            
-        
     }
     
-    
+    private static enum DataType{
+        SHORT(2, GL11.GL_SHORT),
+        FLOAT(4, GL11.GL_FLOAT),
+        ;
+        public final int SIZE_IN_BYTES;
+        public final int GL_NAME;
+
+        DataType(int sizeInBytes, int glName){
+            this.SIZE_IN_BYTES = sizeInBytes;
+            this.GL_NAME = glName;
+        }
+    }
 }

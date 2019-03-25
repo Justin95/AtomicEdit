@@ -6,7 +6,6 @@ import atomicedit.logging.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
@@ -16,6 +15,35 @@ import java.util.zip.Inflater;
  * @author Justin Bonner
  */
 public class GeneralUtils {
+    
+    
+    
+    public static long[] writeIntArrayToPackedLongArray(int[] source, int elementSize){
+        int arrayElementSize = 64; //64 bits in a long
+        int longsNeeded = (source.length * elementSize) / arrayElementSize + ((source.length * elementSize) % arrayElementSize == 0 ? 0 : 1);
+        long[] dest = new long[longsNeeded];
+        for(int sourceIndex = 0; sourceIndex < source.length; sourceIndex++){
+            int toWrite = source[sourceIndex];
+            writeIntToPackedLongArray(toWrite, elementSize, sourceIndex, dest);
+        }
+        return dest;
+    }
+    
+    public static void writeIntToPackedLongArray(int toWrite, int elementSize, int index, long[] dest){
+        int bitOffset = elementSize * index;
+        int arrayElementSize = 64; //64 bits in a long
+        int arrayIndex = bitOffset / arrayElementSize;
+        int bitOffsetInArrayElement = bitOffset % arrayElementSize;
+        for(int i = 0; i < elementSize; i++){
+            long bit = (long)((toWrite >>> (i)) & 1);
+            dest[arrayIndex] |= (bit << bitOffsetInArrayElement);
+            bitOffsetInArrayElement++;
+            if(bitOffsetInArrayElement >= arrayElementSize){
+                bitOffsetInArrayElement = 0;
+                arrayIndex++;
+            }
+        }
+    }
     
     /**
      * Read an integer of varying length from an array of longs
@@ -42,14 +70,14 @@ public class GeneralUtils {
         return result;
     }
     
-    public static short readShortFromPackedArray(int elementSize, int offset, long[] source){
+    private static short readShortFromPackedArray(int elementSize, int offset, long[] source){
         int bitOffset = elementSize * offset;
         int arrayElementSize = 64;
         int arrayIndex = bitOffset / arrayElementSize;
         int bitOffsetInArrayElement = bitOffset % arrayElementSize;
         short result = 0;
         for(int i = 0; i < elementSize; i++){
-            short bit = (short)(source[arrayIndex] >> (arrayElementSize - bitOffsetInArrayElement - 1) & 1);
+            short bit = (short)(source[arrayIndex] >> (arrayElementSize - bitOffsetInArrayElement - 1) & 1);//im pretty sure this is incorrect
             result = (short) (result << 1);
             result += bit;
             arrayIndex++;
@@ -114,17 +142,6 @@ public class GeneralUtils {
         return (z * xLen) + x;
     }
     
-    /**
-     * Create a BitSet that is filled with ones.
-     * @param size
-     * @return 
-     */
-    public static BitSet getAllTrueBitSet(int size){
-        BitSet bitSet = new BitSet(size);
-        bitSet.set(0, size);
-        return bitSet;
-    }
-    
     public static int getXFromIndexYZX(int index, int xLen){
         return index % xLen;
     }
@@ -186,6 +203,7 @@ public class GeneralUtils {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Deflater deflater = new Deflater();
         deflater.setInput(uncompressed);
+        deflater.finish();
         byte[] temp = new byte[4096];
         try{
             while(!deflater.finished()){

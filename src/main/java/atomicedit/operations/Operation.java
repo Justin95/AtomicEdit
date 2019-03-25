@@ -1,10 +1,10 @@
 
 package atomicedit.operations;
 
-import atomicedit.backend.BlockCoord;
 import atomicedit.backend.World;
 import atomicedit.backend.chunk.ChunkCoord;
-import atomicedit.volumes.Volume;
+import atomicedit.logging.Logger;
+import atomicedit.volumes.WorldVolume;
 import java.util.Collection;
 
 /**
@@ -19,24 +19,36 @@ public abstract class Operation {
     
     public final OperationResult doSynchronizedOperation(World world){
         synchronized(OPERATION_LOCK){
-            return doOperation(world);
+            try{
+                return doOperation(world);
+            }catch(Exception e){
+                String message = "Exception while doing operation.";
+                Logger.warning(message, e);
+                return new OperationResult(false, message);
+            }
         }
     }
     
-    protected abstract OperationResult doOperation(World world);
+    protected abstract OperationResult doOperation(World world) throws Exception;
     
     public final OperationResult undoSynchronizedOperation(World world){
         synchronized(OPERATION_LOCK){
-            return undoOperation(world);
+            try{
+                return undoOperation(world);
+            }catch(Exception e){
+                String message = "Exception while undoing operation.";
+                Logger.warning(message, e);
+                return new OperationResult(false, message);
+            }
         }
     }
     
-    protected abstract OperationResult undoOperation(World world);
+    protected abstract OperationResult undoOperation(World world) throws Exception;
     
-    public abstract Volume getVolume();
+    public abstract WorldVolume getWorldVolume();
     
-    public Collection<ChunkCoord> getChunkCoordsInOperation(BlockCoord smallestCoord){
-        return getVolume().getContainedChunkCoords(smallestCoord);
+    public Collection<ChunkCoord> getChunkCoordsInOperation(){
+        return getWorldVolume().getContainedChunkCoords();
     }
     
 }

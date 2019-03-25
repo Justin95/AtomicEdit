@@ -6,7 +6,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,7 +25,7 @@ public class NbtListTag extends NbtTag{
         for(int i = 0; i < dataLength; i++){
             temp.add(i, NbtTypes.getTypeFromId(tagId).instantiate(input, false));
         }
-        this.data = Collections.unmodifiableList(temp);
+        this.data = temp; //Collections.unmodifiableList(temp); //probably dont make this immutable
     }
     
     public NbtListTag(String name, List<NbtTag> data){
@@ -48,8 +47,8 @@ public class NbtListTag extends NbtTag{
     }
     
     @Override
-    public void write(DataOutputStream output) throws IOException{
-        output.write(tagId);
+    protected void write(DataOutputStream output) throws IOException{
+        output.writeByte(tagId);
         output.writeInt(data.size());
         for(NbtTag tag : data){
             tag.write(output);
@@ -155,14 +154,21 @@ public class NbtListTag extends NbtTag{
     }
     
     @Override
-    public String toString(){
+    public String toString(int indent){
         StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(String.format("%"+indent+"s", ""));
         strBuilder.append(this.getName());
-        strBuilder.append(":[\n");
+        strBuilder.append(":[");
+        if(!data.isEmpty()){
+            strBuilder.append("\n");
+        }
         data.forEach((NbtTag tag) -> {
-            strBuilder.append(tag.toString());
+            strBuilder.append(tag.toString(indent + 4));
             strBuilder.append("\n");
         });
+        if(!data.isEmpty()){
+            strBuilder.append(String.format("%"+indent+"s", ""));
+        }
         strBuilder.append("]");
         return strBuilder.toString();
     }

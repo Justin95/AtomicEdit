@@ -16,17 +16,24 @@ public class EditorSystem {
     private static Editor editor;
     private static EditorType editorType;
     private static AtomicEditRenderer renderer;
+    private static EditorPointer editorPointer;
     
     public static void initialize(AtomicEditRenderer aeRenderer){
         renderer = aeRenderer;
+        editorPointer = new EditorPointer();
+        editorPointer.updatePosition(renderer.getCamera().getPosition(), renderer.getCamera().getRotation(), 0);
     }
     
     public static void renderTick(){
-        
+        synchronized(EDITOR_LOCK){
+            editor.renderTick();
+        }
     }
     
-    public static void handleInput(int key, int action, int mods){
-        
+    public static void handleInput(boolean isUiFocused, int key, int action, int mods){
+        synchronized(EDITOR_LOCK){
+            editor.handleInput(isUiFocused, key, action, mods);
+        }
     }
     
     public static OperationResult doOperation(OperationType opType, OperationParameters params){
@@ -43,7 +50,7 @@ public class EditorSystem {
             if(editor != null){
                 editor.destory();
             }
-            editor = newEditorType.createEditor(renderer);
+            editor = newEditorType.createEditor(renderer, editorPointer);
             editorType = newEditorType;
             editor.initialize();
         }

@@ -93,6 +93,9 @@ public class ChunkLoadingThread extends Thread {
                 for(ChunkCoord chunkCoord : neededChunks){
                     ChunkReader chunk = neededChunkReaders.get(chunkCoord);
                     if(chunk == null) continue;
+                    if(chunk.needsRedraw()){
+                        chunk.clearNeedsRedraw();
+                    }
                     ChunkReader xMinus = neededChunkReaders.get(new ChunkCoord(chunkCoord.x - 1, chunkCoord.z));
                     ChunkReader xPlus =  neededChunkReaders.get(new ChunkCoord(chunkCoord.x + 1, chunkCoord.z));
                     ChunkReader zMinus = neededChunkReaders.get(new ChunkCoord(chunkCoord.x, chunkCoord.z - 1));

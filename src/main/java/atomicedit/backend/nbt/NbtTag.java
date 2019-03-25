@@ -1,6 +1,7 @@
 
 package atomicedit.backend.nbt;
 
+import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,10 +32,24 @@ public abstract class NbtTag {
         this.name = name;
     }
     
-    public abstract void write(DataOutputStream writer) throws IOException;
+    protected abstract void write(DataOutputStream writer) throws IOException;
     
     protected static String readUtfString(DataInputStream input) throws IOException{
         return input.readUTF();
     }
+    
+    public static void writeTag(DataOutputStream writer, NbtTag tag) throws IOException{
+        //Logger.info("Writing nbt tag:\n" + tag.toString()); //this is a great log message for debugging
+        writer.writeByte(tag.getType().ordinal());
+        writer.writeUTF(tag.name);
+        tag.write(writer);
+    }
+    
+    @Override
+    public String toString(){
+        return toString(2);
+    }
+    
+    protected abstract String toString(int indent);
     
 }

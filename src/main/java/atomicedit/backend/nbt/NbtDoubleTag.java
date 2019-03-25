@@ -24,7 +24,7 @@ public class NbtDoubleTag extends NbtTag{
     }
     
     @Override
-    public void write(DataOutputStream output) throws IOException{
+    protected void write(DataOutputStream output) throws IOException{
         output.writeDouble(data);
     }
     
@@ -32,8 +32,9 @@ public class NbtDoubleTag extends NbtTag{
         return this.data;
     }
     
-    public String toString(){
-        return this.getName() + ":" + data;
+    @Override
+    public String toString(int indent){
+        return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
     }
     
 }

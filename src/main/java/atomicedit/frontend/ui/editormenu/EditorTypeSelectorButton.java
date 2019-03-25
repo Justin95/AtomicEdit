@@ -48,9 +48,4 @@ public class EditorTypeSelectorButton extends RadioButton{
         return icon;
     }
     
-    @Override
-    public boolean isFocused(){ //turn off focusing on this button
-        return false;
-    }
-    
 }

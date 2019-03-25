@@ -1,21 +1,20 @@
 
 package atomicedit.operations.implementations;
 
-import atomicedit.backend.BlockCoord;
 import atomicedit.backend.BlockState;
 import atomicedit.backend.World;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.blockprovider.BlockProvider;
 import atomicedit.backend.blockprovider.FillBlockProvider;
 import atomicedit.backend.chunk.ChunkController;
-import atomicedit.backend.utils.CopyUtils;
+import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
 import atomicedit.operations.utils.OperationParameterDescriptor;
 import atomicedit.operations.utils.OperationParameterType;
 import atomicedit.operations.utils.OperationParameters;
-import atomicedit.volumes.Volume;
+import atomicedit.volumes.WorldVolume;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -50,8 +49,8 @@ public class SetBlocksOperationType implements OperationType {
     }
     
     @Override
-    public SetBlocksOperation getOperationInstance(Volume volume, BlockCoord smallestCoord, OperationParameters parameters){
-        return new SetBlocksOperation(volume, smallestCoord, parameters);
+    public SetBlocksOperation getOperationInstance(WorldVolume volume, OperationParameters parameters){
+        return new SetBlocksOperation(volume, parameters);
     }
     
     @Override
@@ -66,50 +65,40 @@ public class SetBlocksOperationType implements OperationType {
     
     public class SetBlocksOperation extends Operation {
         
-        private final Volume operationVolume; //volume operated on
+        private final WorldVolume operationVolume; //volume operated on
         private Schematic schematicBackup; //backup for undos
         private final BlockState blockState; //block type to fill
-        private final BlockCoord smallestCoord; //the smallest world space block coord in the volume, used to give the volume param a fixed position
 
-        public SetBlocksOperation(Volume volume, BlockCoord smallestCoord, OperationParameters parameters){
+        public SetBlocksOperation(WorldVolume volume, OperationParameters parameters){
             this.operationVolume = volume;
             this.blockState = parameters.getParamAsBlockState(TO_SET_BLOCKTYPE_DESC);
-            this.smallestCoord = smallestCoord;
             if(this.blockState == null){
                 throw new RuntimeException("Cannot do a set blocks operation with no block to set to");
             }
         }
         
         @Override
-        protected OperationResult doOperation(World world){
-            try{
-                Collection<ChunkController> chunkControllers = world.getMutableChunks(getChunkCoordsInOperation(smallestCoord)).values();
-                this.schematicBackup = Schematic.createSchematicFromWorld(world, operationVolume, smallestCoord);
-                setBlocks(chunkControllers);
-            }catch(Exception e){
-                return new OperationResult(false, e);
-            }
+        protected OperationResult doOperation(World world) throws Exception{
+            Collection<ChunkController> chunkControllers = world.getLoadedChunkStage().getMutableChunks(getChunkCoordsInOperation()).values();
+            this.schematicBackup = Schematic.createSchematicFromWorld(world, operationVolume);
+            setBlocks(chunkControllers);
             return new OperationResult(true);
         }
         
         @Override
-        protected OperationResult undoOperation(World world){
-            try{
-                Schematic.putSchematicIntoWorld(world, schematicBackup, smallestCoord);
-            }catch(Exception e){
-                return new OperationResult(false, e);
-            }
+        protected OperationResult undoOperation(World world) throws Exception{
+            Schematic.putSchematicIntoWorld(world, schematicBackup, operationVolume.getSmallestPoint());
             return new OperationResult(true);
         }
         
         @Override
-        public Volume getVolume(){
+        public WorldVolume getWorldVolume(){
             return this.operationVolume;
         }
         
         private void setBlocks(Collection<ChunkController> chunkControllers) throws Exception{
             BlockProvider fill = new FillBlockProvider(operationVolume, blockState);
-            CopyUtils.writeIntoChunks(chunkControllers, fill, smallestCoord);
+            ChunkUtils.writeBlocksIntoChunks(chunkControllers, fill, operationVolume.getSmallestPoint());
         }
         
     }

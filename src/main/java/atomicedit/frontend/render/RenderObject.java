@@ -1,6 +1,7 @@
 
 package atomicedit.frontend.render;
 
+import atomicedit.frontend.render.shaders.DataBufferLayoutFormat;
 import atomicedit.frontend.render.shaders.ShaderProgram;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import atomicedit.frontend.render.utils.RenderMatrixUtils;
@@ -22,6 +23,8 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
  */
 public class RenderObject {
     
+    public static DataBufferLayoutFormat BUFFER_FORMAT = DataBufferLayoutFormat.DEFAULT_DATA_BUFFER_LAYOUT;
+    
     protected Vector3f position;
     protected Vector3f rotation;
     protected final boolean containsTranslucent;
@@ -30,6 +33,8 @@ public class RenderObject {
     protected int vao;
     protected int shaderProgram;
     protected int numIndicies;
+    protected int drawingShape;
+    protected DataBufferLayoutFormat bufferFormat;
     protected boolean openGlInitialized;
     protected boolean destroyed;
     protected float[] vertexData;
@@ -47,6 +52,8 @@ public class RenderObject {
         this.destroyed = false;
         this.vertexData = vertexData;
         this.indicies = indicies;
+        this.drawingShape = GL_TRIANGLES;
+        this.bufferFormat = BUFFER_FORMAT;
     }
     
     public void initialize(){
@@ -55,7 +62,7 @@ public class RenderObject {
             return;
         }
         this.openGlInitialized = true;
-        this.vao = VaoCreater.createVao(vertexData, indicies);
+        this.vao = VaoCreater.createVao(this.bufferFormat, vertexData, indicies);
         this.vertexData = null;
         this.indicies = null; //dont need this anymore, let it be GC
     }
@@ -94,10 +101,12 @@ public class RenderObject {
             return;
         }
         UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.MODEL_MATRIX, shaderProgram, modelMatrix);
-        texture.bind(0); //bind to texture 0
+        if(texture != null){
+            texture.bind(0); //bind to texture 0
+        } 
         glUseProgram(shaderProgram);
         GL30.glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, numIndicies, GL_UNSIGNED_INT, 0);
+        glDrawElements(this.drawingShape, numIndicies, GL_UNSIGNED_INT, 0);
     }
     
     

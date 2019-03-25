@@ -24,16 +24,17 @@ public class NbtByteTag extends NbtTag{
     }
     
     @Override
-    public void write(DataOutputStream output) throws IOException{
-        output.write(data);
+    protected void write(DataOutputStream output) throws IOException{
+        output.writeByte(data);
     }
     
     public byte getPayload(){
         return this.data;
     }
     
-    public String toString(){
-        return this.getName() + ":" + data;
+    @Override
+    public String toString(int indent){
+        return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
     }
     
 }

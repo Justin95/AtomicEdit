@@ -10,10 +10,11 @@ import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.nbt.NbtCompoundTag;
-import atomicedit.backend.utils.CopyUtils;
+import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.OperationResult;
 import atomicedit.volumes.Volume;
-import java.util.List;
+import atomicedit.volumes.WorldVolume;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -24,12 +25,12 @@ import java.util.Map;
 public class Schematic {
     
     public final Volume volume;
-    private short[] blocks; //blocks stored in y,z,x order, skipping blocks not in the volume
-    private List<Entity> entities;
-    private List<BlockEntity> blockEntities;
+    private short[] blocks; //blocks stored in y,z,x order, any blocks not in the volume are undefined
+    private Collection<Entity> entities;
+    private Collection<BlockEntity> blockEntities;
     
     
-    private Schematic(Volume volume, short[] blocks, List<Entity> entities, List<BlockEntity> blockEntities){
+    private Schematic(Volume volume, short[] blocks, Collection<Entity> entities, Collection<BlockEntity> blockEntities){
         if(volume.getEnclosingBox().getNumBlocksContained() != blocks.length) throw new IllegalArgumentException("Number of blocks and volume size differ");
         this.volume = volume;
         this.blocks = blocks;
@@ -45,8 +46,16 @@ public class Schematic {
         throw new UnsupportedOperationException(); //TODO
     }
     
-    public static Schematic createSchematicFromWorld(World world, Volume volume, BlockCoord smallestCoord){
-        throw new UnsupportedOperationException(); //TODO
+    public static Schematic createSchematicFromWorld(World world, WorldVolume volume) throws Exception{
+        return createSchematicFromWorld(world, volume, true, true);
+    }
+    
+    public static Schematic createSchematicFromWorld(World world, WorldVolume volume, boolean includeEntities, boolean includeBlockEntities) throws Exception{
+        Map<ChunkCoord, ChunkController> controllers = world.getLoadedChunkStage().getMutableChunks(volume.getContainedChunkCoords());
+        short[] blocks = ChunkUtils.readBlocksFromChunks(controllers, volume);
+        Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunks(controllers, volume) : null;
+        Collection<BlockEntity> blockEntities = includeBlockEntities ? ChunkUtils.readBlockEntitiesFromChunks(controllers, volume) : null;
+        return new Schematic(volume, blocks, entities, blockEntities);
     }
     
     /**
@@ -59,10 +68,10 @@ public class Schematic {
      */
     public static OperationResult putSchematicIntoWorld(World world, Schematic schematic, BlockCoord smallestCoord) throws Exception{
         BlockProvider provider = new SchematicBlockProvider(schematic);
-        Map<ChunkCoord, ChunkController> chunkControllers = world.getMutableChunks(schematic.volume.getContainedChunkCoords(smallestCoord));
-        CopyUtils.writeIntoChunks(chunkControllers.values(), provider, smallestCoord);
-        CopyUtils.writeBlockEntitiesIntoChunks(chunkControllers, schematic.blockEntities);
-        CopyUtils.writeEntitiesIntoChunks(chunkControllers, schematic.entities);
+        Map<ChunkCoord, ChunkController> chunkControllers = world.getLoadedChunkStage().getMutableChunks(schematic.volume.getContainedChunkCoords(smallestCoord));
+        ChunkUtils.writeBlocksIntoChunks(chunkControllers.values(), provider, smallestCoord);
+        ChunkUtils.writeBlockEntitiesIntoChunks(chunkControllers, schematic.blockEntities);
+        ChunkUtils.writeEntitiesIntoChunks(chunkControllers, schematic.entities);
         return new OperationResult(true);
     }
     
@@ -74,12 +83,24 @@ public class Schematic {
         return this.blocks;
     }
     
-    public List<Entity> getEntities(){
+    public Collection<Entity> getEntities(){
         return this.entities;
     }
     
-    public List<BlockEntity> getBlockEntities(){
+    public Collection<BlockEntity> getBlockEntities(){
         return this.blockEntities;
     }
     
+    /*
+    private void uncompressSchematic(){ //schematic nbts will be compressed but not in schematic objects
+        if(uncompressedBlocks != null) return;
+        uncompressedBlocks = new short[volume.getEnclosingBox().getNumBlocksContained()];
+        int xLen = volume.getEnclosingBox().getXLength();
+        int zLen = volume.getEnclosingBox().getZLength();
+        doForBlock((x, y, z, block) -> {
+            //if a block isn't set it defaults to 0 which is always counted as minecraft:air, but we shouldnt try to access those anyway as they aren't in the schematic
+            uncompressedBlocks[GeneralUtils.getIndexYZX(x, y, z, xLen, zLen)] = block;
+        });
+    }
+    */
 }

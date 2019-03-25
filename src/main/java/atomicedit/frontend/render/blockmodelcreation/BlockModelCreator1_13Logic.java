@@ -3,6 +3,7 @@ package atomicedit.frontend.render.blockmodelcreation;
 
 import atomicedit.backend.BlockState;
 import atomicedit.backend.GlobalBlockStateMap;
+import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.shaders.DataBufferLayoutFormat;
 import atomicedit.jarreading.blockmodels.ModelBox;
 import atomicedit.jarreading.blockmodels.ModelBox.ModelBoxFace;
@@ -85,7 +86,7 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic{
         float lightC = (modelBox.getUseShade() && posC.y < 0.01 ? SHADE : 1f) * light;
         float lightD = (modelBox.getUseShade() && posD.y < 0.01 ? SHADE : 1f) * light;
         
-        addFaceIndicies(vertexData.size() / DataBufferLayoutFormat.NUM_ELEMENTS_PER_VERTEX, new int[]{0, 1, 2, 0, 2, 3}, indicies);
+        addFaceIndicies(vertexData.size() / RenderObject.BUFFER_FORMAT.NUM_ELEMENTS_PER_VERTEX, new int[]{0, 1, 2, 0, 2, 3}, indicies);
         addAll(vertexData, new float[]{
             x + posA.x, y + posA.y, z + posA.z,   texA.x, texA.y,    lightA * tint.x, lightA * tint.y, lightA * tint.z, 1,
             x + posB.x, y + posB.y, z + posB.z,   texB.x, texB.y,    lightB * tint.x, lightB * tint.y, lightB * tint.z, 1,

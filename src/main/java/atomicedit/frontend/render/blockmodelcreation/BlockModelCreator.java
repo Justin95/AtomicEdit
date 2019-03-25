@@ -1,8 +1,6 @@
 
 package atomicedit.frontend.render.blockmodelcreation;
 
-import atomicedit.AtomicEdit;
-import atomicedit.settings.AtomicEditSettings;
 import java.util.List;
 
 /**
@@ -21,7 +19,7 @@ public class BlockModelCreator {
     
     public static BlockModelCreator getInstance(){
         if(INSTANCE == null){
-            BlockModelCreatorLogic logic = (BlockModelCreatorLogic)AtomicEdit.getSettings().getSettingValueAsClassInstance(AtomicEditSettings.BLOCK_MODEL_CREATOR, BlockModelCreatorLogic.class);
+            BlockModelCreatorLogic logic = BlockModelCreator1_13Logic.getInstance(); //TODO: this should be chosen based on chunk DataVersion nbt tag
             INSTANCE = new BlockModelCreator(logic);
         }
         return INSTANCE;

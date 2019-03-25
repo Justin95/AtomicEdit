@@ -1,7 +1,6 @@
 
-
-
 import atomicedit.AtomicEdit;
+import atomicedit.logging.Logger;
 
 
 
@@ -13,8 +12,10 @@ public class Main {
     
     
     public static void main(String[] args){
+        Logger.initialize();
         AtomicEdit atomicEdit = AtomicEdit.getInstance();
         atomicEdit.run();
+        Logger.cleanUp();
     }
     
 }

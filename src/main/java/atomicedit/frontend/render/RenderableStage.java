@@ -107,6 +107,26 @@ public class RenderableStage {
         }
     }
     
+    public void addRenderable(Renderable toAdd){
+        if(toAdd == null){
+            return;
+        }
+        synchronized(this){
+            this.unchangedSinceLastSort = false;
+            this.otherRenderObjects.addAll(toAdd.getRenderObjects());
+        }
+    }
+    
+    public void removeRenderable(Renderable toRemove){
+        if(toRemove == null){
+            return;
+        }
+        synchronized(this){
+            this.unchangedSinceLastSort = false;
+            this.otherRenderObjects.removeAll(toRemove.getRenderObjects());
+            toDestroy.addAll(toRemove.getRenderObjects());
+        }
+    }
     
     public void addRenderObject(RenderObject toAdd){
         if(toAdd == null){

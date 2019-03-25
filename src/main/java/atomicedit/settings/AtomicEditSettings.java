@@ -1,7 +1,6 @@
 
 package atomicedit.settings;
 
-import atomicedit.frontend.render.blockmodelcreation.BlockModelCreator1_13Logic;
 import atomicedit.logging.Logger;
 import java.io.File;
 import javax.swing.JFileChooser;
@@ -37,6 +36,7 @@ public enum AtomicEditSettings {
         null,
         () -> 9
     ),
+    /* This setting is unnessesary it remains only as an example for how to set up a class choice setting.
     BLOCK_MODEL_CREATOR(
         "Block Model Creator",
         "block_model_creator",
@@ -45,14 +45,8 @@ public enum AtomicEditSettings {
             new ClassInstanceOption(BlockModelCreator1_13Logic.getInstance())
         },
         () -> BlockModelCreator1_13Logic.getInstance()
-    ),
-    USE_TRANSLUCENCY(
-        "Use Experemental Translucency",
-        "use_translucency",
-        SettingDataType.BOOLEAN,
-        null,
-        () -> true
     )
+    */
     ;
     
     private static final String HOME_DIR = System.getProperty("user.home");

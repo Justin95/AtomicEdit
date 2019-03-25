@@ -21,7 +21,7 @@ public interface WorldFormat {
      */
     public void setWorld(String filepath);
     
-    public void writeChunks(Map<ChunkCoord, ChunkController> chunks) throws IOException;
+    public void writeChunks(Map<ChunkCoord, ChunkController> chunks) throws IOException, CorruptedRegionFileException;
     
     public Map<ChunkCoord, Chunk> readChunks(Collection<ChunkCoord> chunkCoords);
     

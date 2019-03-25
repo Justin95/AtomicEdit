@@ -32,14 +32,24 @@ public class NbtCompoundTag extends NbtTag{
         this.dataSize = data.size();
     }
     
+    public NbtCompoundTag(String name, NbtTag... nbtTags){
+        super(NbtTypes.TAG_COMPOUND, name);
+        ArrayList<NbtTag> tagData = new ArrayList<>();
+        for(NbtTag nbtTag : nbtTags){
+            tagData.add(nbtTag);
+        }
+        this.data = tagData;
+        this.dataSize = tagData.size();
+    }
+    
     @Override
-    public void write(DataOutputStream output) throws IOException{
+    protected void write(DataOutputStream output) throws IOException{
         for(NbtTag tag : data){
-            output.write(tag.getType().ordinal());
+            output.writeByte(tag.getType().ordinal());
             output.writeUTF(tag.getName());
             tag.write(output);
         }
-        output.write(0); //write null terminator / TAG_END
+        output.writeByte(0); //write null terminator / TAG_END
     }
     
     public ArrayList<NbtTag> getPayload(){
@@ -53,6 +63,27 @@ public class NbtCompoundTag extends NbtTag{
             }
         }
         throw new MalformedNbtTagException("Compound tag does not contain: " + name);
+    }
+    
+    /**
+     * Add a tag to this compound tag. If this compound tag already contains
+     * a tag with the same name as the tagToAdd then replace that tag.
+     * @param tagToAdd 
+     */
+    public void putTag(NbtTag tagToAdd){
+        NbtTag matchedTag = null;
+        for(NbtTag tag : data){
+            if(tag.getName().equals(tagToAdd.getName())){
+                matchedTag = tag;
+                break;
+            }
+        }
+        if(matchedTag != null){
+            data.remove(matchedTag);
+            this.dataSize--;
+        }
+        data.add(tagToAdd);
+        this.dataSize++;
     }
     
     public boolean contains(String name){
@@ -142,14 +173,22 @@ public class NbtCompoundTag extends NbtTag{
         return (NbtStringTag) tag;
     }
     
-    public String toString(){
+    @Override
+    public String toString(int indent){
         StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(String.format("%"+indent+"s", ""));
         strBuilder.append(this.getName());
-        strBuilder.append(":{\n");
+        strBuilder.append(":{");
+        if(!data.isEmpty()){
+            strBuilder.append("\n");
+        }
         data.forEach((NbtTag tag) -> {
-            strBuilder.append(tag.toString());
+            strBuilder.append(tag.toString(indent + 4));
             strBuilder.append("\n");
         });
+        if(!data.isEmpty()){
+            strBuilder.append(String.format("%"+indent+"s", ""));
+        }
         strBuilder.append("}");
         return strBuilder.toString();
     }

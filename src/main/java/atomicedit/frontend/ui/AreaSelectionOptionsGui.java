@@ -3,9 +3,10 @@ package atomicedit.frontend.ui;
 
 import atomicedit.frontend.ui.atomicedit_legui.StringOperationParameterComponent;
 import atomicedit.frontend.editor.AreaSelectionEditor;
-import atomicedit.frontend.editor.EditorSystem;
 import atomicedit.frontend.ui.atomicedit_legui.AeStandardPanel;
 import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
+import atomicedit.logging.Logger;
+import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
 import atomicedit.operations.OperationTypes;
 import atomicedit.operations.utils.OperationParameterDescriptor;
@@ -38,7 +39,7 @@ public class AreaSelectionOptionsGui extends Panel{
     private static final float GUI_Y = 45; //use 'top bar UI element' height
     private static final String DO_OP_TEXT = "Do Operation";
     
-    private AreaSelectionEditor editor;
+    private final AreaSelectionEditor editor;
     private Map<OperationParameterDescriptor, OperationParameterGuiElement> opParameterComponents;
     private Label firstPointLabel;
     private Label secondPointLabel;
@@ -47,8 +48,8 @@ public class AreaSelectionOptionsGui extends Panel{
     private AeStandardPanel operationPanel;
     private Button doOpButton;
     
-    public AreaSelectionOptionsGui(){
-        
+    public AreaSelectionOptionsGui(AreaSelectionEditor editor){
+        this.editor = editor;
         this.operationsSelectBox = createOpSelectBox();
         this.add(operationsSelectBox);
         this.doOpButton = createDoOpButton();
@@ -93,7 +94,7 @@ public class AreaSelectionOptionsGui extends Panel{
             OperationParameterGuiElement paramComp;
             switch(descriptor.parameterType){
                 case BLOCK_SELECTOR:
-                    paramComp = new BlockSelectorComponent(descriptor.name); //TODO add label in block selector component
+                    paramComp = new BlockSelectorComponent(descriptor.name);
                     break;
                 case STRING:
                     paramComp = new StringOperationParameterComponent(descriptor.name);
@@ -152,7 +153,8 @@ public class AreaSelectionOptionsGui extends Panel{
             OperationParameterGuiElement paramComp = this.opParameterComponents.get(descriptor);
             params.setParam(descriptor, paramComp.getInputValue());
         }
-        EditorSystem.doOperation(opType, params);
+        OperationResult result = editor.doOperation(opType, params);
+        Logger.info("Operation Result: " + result);
     }
     
 }

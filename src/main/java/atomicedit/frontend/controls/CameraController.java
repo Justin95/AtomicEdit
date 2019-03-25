@@ -4,7 +4,6 @@ package atomicedit.frontend.controls;
 import atomicedit.frontend.render.Camera;
 import java.util.EnumMap;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 /**
  *

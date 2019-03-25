@@ -45,4 +45,9 @@ public class OperationResult {
         return exception;
     }
     
+    @Override
+    public String toString(){
+        return "{sucess: "+success+", message: \""+message+"\", exception: "+exception+"}";
+    }
+    
 }

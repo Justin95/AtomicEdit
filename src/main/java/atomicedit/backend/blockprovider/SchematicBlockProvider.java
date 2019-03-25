@@ -2,11 +2,10 @@
 package atomicedit.backend.blockprovider;
 
 import atomicedit.backend.schematic.Schematic;
+import atomicedit.backend.utils.BitArray;
 import atomicedit.backend.utils.GeneralUtils;
-import atomicedit.logging.Logger;
 import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
-import java.util.BitSet;
 
 /**
  *
@@ -20,9 +19,6 @@ public class SchematicBlockProvider implements BlockProvider{
     
     
     public SchematicBlockProvider(Schematic schematic){
-        if(schematic.volume.getNumBlocksContained() != blocks.length){
-            throw new IllegalArgumentException("Volume size and number of blocks differ");
-        }
         this.volume = schematic.volume;
         this.blocks = schematic.getBlocks();
         this.uncompressedBlocks = null;
@@ -38,42 +34,31 @@ public class SchematicBlockProvider implements BlockProvider{
         if(!volume.containsXYZ(x, y, z)){
             throw new IllegalArgumentException("Volume does not contain (" + x + ", " + y + ", " + z + ")");
         }
+        /* no longer store schematic blocks compressed
         if(uncompressedBlocks == null){
-            Logger.warning("Uncompressing schematic in schematic block provider");
+            Logger.notice("Uncompressing schematic in schematic block provider");
             uncompressSchematic();
-        }
+        }*/
         int index = GeneralUtils.getIndexYZX(x, y, z, volume.getEnclosingBox().getXLength(), volume.getEnclosingBox().getZLength());
-        return uncompressedBlocks[index];
+        return blocks[index];
     }
     
+    @Override
     public void doForBlock(ActionForBlock action){
-        int volumeIndex = 0;
-        int enclosingBoxIndex = 0;
+        int schematicIndex = 0;
         
         Box enclosingBox = volume.getEnclosingBox();
-        BitSet includedSet = volume.getIncludedSet();
+        BitArray includedSet = volume.getIncludedSet();
         for(int y = 0; y < enclosingBox.getYLength(); y++){
             for(int z = 0; z < enclosingBox.getZLength(); z++){
                 for(int x = 0; x < enclosingBox.getXLength(); x++){
-                    if(includedSet.get(enclosingBoxIndex)){
-                        action.doAction(x, y, z, blocks[volumeIndex]);
-                        volumeIndex++;
+                    if(includedSet.get(schematicIndex)){
+                        action.doAction(x, y, z, blocks[schematicIndex]);
                     }
-                    enclosingBoxIndex++;
+                    schematicIndex++;
                 }
             }
         }
-    }
-    
-    private void uncompressSchematic(){
-        if(uncompressedBlocks != null) return;
-        uncompressedBlocks = new short[volume.getEnclosingBox().getNumBlocksContained()];
-        int xLen = volume.getEnclosingBox().getXLength();
-        int zLen = volume.getEnclosingBox().getZLength();
-        doForBlock((x, y, z, block) -> {
-            //if a block isn't set it defaults to 0 which is always counted as minecraft:air, but we shouldnt try to access those anyway as they aren't in the schematic
-            uncompressedBlocks[GeneralUtils.getIndexYZX(x, y, z, xLen, zLen)] = block;
-        });
     }
     
 }

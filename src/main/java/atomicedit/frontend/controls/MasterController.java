@@ -32,9 +32,11 @@ public class MasterController {
         this.centerMouse = false;
     }
     
-    public void handleInput(int key, int action, int mods){
-        KeyControls.getKeyControlsFromKey(key).doAction(this, action, mods);
-        EditorSystem.handleInput(key, action, mods);
+    public void handleInput(boolean isUiFocused, int key, int action, int mods){
+        if(!isUiFocused){
+            KeyControls.getKeyControlsFromKey(key).doAction(this, action, mods);
+        }
+        EditorSystem.handleInput(isUiFocused, key, action, mods);
     }
     
     public void renderUpdate(){

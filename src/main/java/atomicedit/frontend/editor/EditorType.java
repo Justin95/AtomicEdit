@@ -9,10 +9,10 @@ import atomicedit.frontend.AtomicEditRenderer;
  */
 public enum EditorType {
     AREA_SELECTION(
-        (renderer) -> new AreaSelectionEditor(renderer)
+        (renderer, editorPointer) -> new AreaSelectionEditor(renderer, editorPointer)
     ),
     BRUSH_ACTION(
-        (renderer) -> new AreaSelectionEditor(renderer) //TODO write brush action editor
+        (renderer, editorPointer) -> new AreaSelectionEditor(renderer, editorPointer) //TODO write brush action editor
     ),
     //SCHEMATIC_TOOL,
     ;
@@ -22,12 +22,12 @@ public enum EditorType {
         this.editorCreator = creator;
     }
     
-    public Editor createEditor(AtomicEditRenderer renderer){
-        return this.editorCreator.createEditor(renderer);
+    public Editor createEditor(AtomicEditRenderer renderer, EditorPointer editorPointer){
+        return this.editorCreator.createEditor(renderer, editorPointer);
     }
     
     private interface EditorCreator{
-        public Editor createEditor(AtomicEditRenderer renderer);
+        public Editor createEditor(AtomicEditRenderer renderer, EditorPointer editorPointer);
     }
     
 }

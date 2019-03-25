@@ -4,10 +4,10 @@ package atomicedit.volumes;
 import atomicedit.backend.BlockCoord;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.backend.chunk.ChunkCoord;
+import atomicedit.backend.utils.BitArray;
 import atomicedit.backend.utils.GeneralUtils;
 import atomicedit.logging.Logger;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collection;
 import org.joml.Vector3i;
 
@@ -17,12 +17,12 @@ import org.joml.Vector3i;
  */
 public class Volume {
     
-    private BitSet includedSet;
-    private Box enclosingBox;
+    private final BitArray includedSet;
+    private final Box enclosingBox;
     private Collection<ChunkCoord> containedChunkCoords;
     private Collection<ChunkSectionCoord> containedChunkSectionCoords;
     
-    public Volume(Box enclosingBox, BitSet includedSet){
+    public Volume(Box enclosingBox, BitArray includedSet){
         this.enclosingBox = enclosingBox;
         this.includedSet = includedSet;
         if(includedSet.size() != enclosingBox.getNumBlocksContained()){
@@ -40,12 +40,8 @@ public class Volume {
      */
     public static Volume getInstance(Vector3i pointA, Vector3i pointB){
         Box box = new Box(pointA, pointB);
-        BitSet bitSet = GeneralUtils.getAllTrueBitSet(box.getNumBlocksContained());
+        BitArray bitSet = new BitArray(box.getNumBlocksContained(), true);
         return new Volume(box, bitSet);
-    }
-    
-    public int getNumBlocksContained(){
-        return includedSet.cardinality();
     }
     
     /**
@@ -53,7 +49,7 @@ public class Volume {
      * indicating if this block is inside this Volume.
      * @return 
      */
-    public BitSet getIncludedSet(){
+    public BitArray getIncludedSet(){
         return this.includedSet;
     }
     
@@ -62,6 +58,15 @@ public class Volume {
     }
     
     
+    /**
+     * Check if this volume contains the relative coordinates x, y, z.
+     * The coordinates are relative to the smallest point in this volume.
+     * This means they stretch from 0 to the box length in that direction.
+     * @param x
+     * @param y
+     * @param z
+     * @return 
+     */
     public boolean containsXYZ(int x, int y, int z){
         int index = GeneralUtils.getIndexYZX(x, y, z, enclosingBox.getXLength(), enclosingBox.getZLength());
         if(!enclosingBox.isInsideBox(x, y, z)){
@@ -116,14 +121,15 @@ public class Volume {
      * @param action 
      */
     public void doForXyz(ActionForXYZ action){
-        int index = 0; //start at first block in volume
         int x;
         int y;
         int z;
         int xLen = this.enclosingBox.getXLength();
         int zLen = this.enclosingBox.getZLength();
-        for(int i = 0; i < this.getNumBlocksContained(); i++){
-            index = includedSet.nextSetBit(index);
+        for(int index = 0; index < this.enclosingBox.getNumBlocksContained(); index++){
+            if(!includedSet.get(index)){
+                continue;
+            }
             x = GeneralUtils.getXFromIndexYZX(index, xLen);
             y = GeneralUtils.getYFromIndexYZX(index, xLen, zLen);
             z = GeneralUtils.getZFromIndexYZX(index, xLen, zLen);

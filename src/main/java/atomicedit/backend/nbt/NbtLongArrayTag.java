@@ -31,7 +31,7 @@ public class NbtLongArrayTag extends NbtTag{
     }
     
     @Override
-    public void write(DataOutputStream output) throws IOException{
+    protected void write(DataOutputStream output) throws IOException{
         output.writeInt(dataSize);
         for(int i = 0; i < dataSize; i++){
             output.writeLong(data[i]);
@@ -47,8 +47,8 @@ public class NbtLongArrayTag extends NbtTag{
     }
     
     @Override
-    public String toString(){
-        return this.getName() + ":" + Arrays.toString(data);
+    public String toString(int indent){
+        return String.format("%"+indent+"s", "") + this.getName() + ":" + Arrays.toString(data);
     }
     
 }

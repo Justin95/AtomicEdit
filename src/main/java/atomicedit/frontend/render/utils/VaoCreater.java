@@ -15,11 +15,12 @@ public class VaoCreater {
     
     /**
      * Create a VAO and the VBOs in it.
+     * @param bufferFormat
      * @param vertexData vertex data in the format specified in DataBufferLayoutFormat.java
      * @param indicies
      * @return a valid VAO id
      */
-    public static int createVao(float[] vertexData, int[] indicies){
+    public static int createVao(DataBufferLayoutFormat bufferFormat, float[] vertexData, int[] indicies){
         int vao = glGenVertexArrays();
         glBindVertexArray(vao);
         
@@ -31,7 +32,7 @@ public class VaoCreater {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiciesVbo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STATIC_DRAW);
         
-        DataBufferLayoutFormat.defineBufferLayout();
+        bufferFormat.defineBufferLayout();
         
         glBindVertexArray(0);
         glDeleteBuffers(vertexVbo); //data stays valid until vao destoryed

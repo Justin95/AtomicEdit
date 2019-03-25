@@ -9,18 +9,22 @@ import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkSection;
 import atomicedit.backend.entity.Entity;
+import atomicedit.backend.entity.EntityCoord;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
+import atomicedit.volumes.WorldVolume;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author Justin Bonner
  */
-public class CopyUtils {
+public class ChunkUtils {
     
     
     /**
@@ -29,9 +33,9 @@ public class CopyUtils {
      * @param chunkControllers all the chunks that are contained in the block provider's volume
      * @param blockProvider the source of the blocks to write into the chunks
      * @param smallestPoint
-     * @throws Exception 
+     * @throws MalformedNbtTagException 
      */
-    public static void writeIntoChunks(Collection<ChunkController> chunkControllers, BlockProvider blockProvider, BlockCoord smallestPoint) throws Exception{
+    public static void writeBlocksIntoChunks(Collection<ChunkController> chunkControllers, BlockProvider blockProvider, BlockCoord smallestPoint) throws MalformedNbtTagException{
         Volume volume = blockProvider.getVolume();
         Box enclosingBox = volume.getEnclosingBox();
         BlockCoord largestPoint = new BlockCoord(smallestPoint.x + enclosingBox.getXLength(), smallestPoint.y + enclosingBox.getYLength(), smallestPoint.z + enclosingBox.getZLength());
@@ -107,7 +111,7 @@ public class CopyUtils {
         
     }
     
-    public static void writeBlockEntitiesIntoChunks(Collection<ChunkController> controllers, Collection<BlockEntity> blockEntities) throws Exception{
+    public static void writeBlockEntitiesIntoChunks(Collection<ChunkController> controllers, Collection<BlockEntity> blockEntities) throws MalformedNbtTagException{
         Map<ChunkCoord, ChunkController> controllerMap = new HashMap<>();
         for(ChunkController controller : controllers){
             controllerMap.put(controller.getChunkCoord(), controller);
@@ -115,7 +119,7 @@ public class CopyUtils {
         writeBlockEntitiesIntoChunks(controllerMap, blockEntities);
     }
     
-    public static void writeBlockEntitiesIntoChunks(Map<ChunkCoord, ChunkController> controllers, Collection<BlockEntity> blockEntities) throws Exception{
+    public static void writeBlockEntitiesIntoChunks(Map<ChunkCoord, ChunkController> controllers, Collection<BlockEntity> blockEntities) throws MalformedNbtTagException{
         for(BlockEntity blockEntity : blockEntities){
             BlockCoord coord = blockEntity.getBlockCoord();
             ChunkController controller = controllers.get(coord.getChunkCoord());
@@ -123,20 +127,96 @@ public class CopyUtils {
         }
     }
     
-    public static void writeEntitiesIntoChunks(Collection<ChunkController> controllers, Collection<Entity> entities) throws Exception{
-        Map<ChunkCoord, ChunkController> controllerMap = new HashMap<>();
-        for(ChunkController controller : controllers){
-            controllerMap.put(controller.getChunkCoord(), controller);
-        }
+    public static void writeEntitiesIntoChunks(Collection<ChunkController> controllers, Collection<Entity> entities) throws MalformedNbtTagException{
+        Map<ChunkCoord, ChunkController> controllerMap = getChunkControllerMap(controllers);
         writeEntitiesIntoChunks(controllerMap, entities);
     }
     
-    public static void writeEntitiesIntoChunks(Map<ChunkCoord, ChunkController> controllers, Collection<Entity> entities) throws Exception{
+    public static void writeEntitiesIntoChunks(Map<ChunkCoord, ChunkController> controllers, Collection<Entity> entities) throws MalformedNbtTagException{
         for(Entity entity : entities){
             BlockCoord coord = entity.getCoord().getBlockCoord();
             ChunkController controller = controllers.get(coord.getChunkCoord());
             controller.addEntity(entity);
         }
+    }
+    
+    private static Map<ChunkCoord, ChunkController> getChunkControllerMap(Collection<ChunkController> controllers) throws MalformedNbtTagException{
+        Map<ChunkCoord, ChunkController> controllerMap = new HashMap<>();
+        for(ChunkController controller : controllers){
+            controllerMap.put(controller.getChunkCoord(), controller);
+        }
+        return controllerMap;
+    }
+    
+    public static short[] readBlocksFromChunks(Collection<ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+        BlockCoord smallestPoint = readVolume.getSmallestPoint();
+        Box enclosingBox = readVolume.getEnclosingBox();
+        BlockCoord largestPoint = new BlockCoord(smallestPoint.x + enclosingBox.getXLength(), smallestPoint.y + enclosingBox.getYLength(), smallestPoint.z + enclosingBox.getZLength());
+        ChunkSectionCoord largestChunk = largestPoint.getChunkSectionCoord();
+        ChunkSectionCoord smallestChunk = smallestPoint.getChunkSectionCoord();
+        
+        int xLengthInChunks = largestChunk.x - smallestChunk.x + 1; //inclusive
+        int yLengthInChunks = largestPoint.getSubChunkIndex() - smallestPoint.getSubChunkIndex() + 1;
+        int zLengthInChunks = largestChunk.z - smallestChunk.z + 1; //inclusive
+        ChunkSectionBlocks[] chunkSectionBlocks = getChunkSectionBlocks(controllers, smallestChunk, largestChunk, xLengthInChunks, yLengthInChunks, zLengthInChunks);
+        int xOffset = smallestPoint.getChunkLocalX();
+        int yOffset = smallestPoint.getSubChunkLocalY();
+        int zOffset = smallestPoint.getChunkLocalZ();
+        short[] blocks = new short[enclosingBox.getNumBlocksContained()]; //blocks not in volume are undefined, left as 0 in this case
+        readVolume.doForXyz((x, y, z) -> {
+            int chunkSectionIndex = GeneralUtils.getIndexYZX((x + xOffset) / ChunkSection.SIDE_LENGTH,
+                                                             (y + yOffset) / ChunkSection.SIDE_LENGTH,
+                                                             (z + zOffset) / ChunkSection.SIDE_LENGTH,
+                                                             xLengthInChunks,
+                                                             zLengthInChunks);
+            int indexInSection = GeneralUtils.getIndexYZX((x + xOffset) % ChunkSection.SIDE_LENGTH,
+                                                          (y + yOffset) % ChunkSection.SIDE_LENGTH,
+                                                          (z + zOffset) % ChunkSection.SIDE_LENGTH,
+                                                          ChunkSection.SIDE_LENGTH);
+            int blocksIndex = GeneralUtils.getIndexYZX(x, y, z, enclosingBox.getXLength(), enclosingBox.getZLength());
+            blocks[blocksIndex] = chunkSectionBlocks[chunkSectionIndex].blocks[indexInSection];
+        });
+        return blocks;
+    }
+    
+    public static short[] readBlocksFromChunks(Map<ChunkCoord, ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+        return readBlocksFromChunks(controllers.values(), readVolume);
+    }
+    
+    public static Collection<Entity> readEntitiesFromChunks(Collection<ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+        List<Entity> entities = new ArrayList<>();
+        for(ChunkController controller : controllers){
+            for(Entity entity : controller.getEntities()){
+                EntityCoord coord = entity.getCoord();
+                if(readVolume.containsCoord((int)coord.x, (int)coord.y, (int)coord.z)){
+                    //could add an 'entity filter' test that can be passed in as an optional param
+                    entities.add(entity);
+                }
+            }
+        }
+        return entities;
+    }
+    
+    public static Collection<Entity> readEntitiesFromChunks(Map<ChunkCoord, ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+        return readEntitiesFromChunks(controllers.values(), readVolume);
+    }
+    
+    public static Collection<BlockEntity> readBlockEntitiesFromChunks(Collection<ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+        List<BlockEntity> blockEntities = new ArrayList<>();
+        for(ChunkController controller : controllers){
+            for(BlockEntity blockEntity : controller.getBlockEntities()){
+                BlockCoord coord = blockEntity.getBlockCoord();
+                if(readVolume.containsCoord((int)coord.x, (int)coord.y, (int)coord.z)){
+                    //could add a 'block entity filter' test that can be passed in as an optional param
+                    blockEntities.add(blockEntity);
+                }
+            }
+        }
+        return blockEntities;
+    }
+    
+    public static Collection<BlockEntity> readBlockEntitiesFromChunks(Map<ChunkCoord, ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+        return readBlockEntitiesFromChunks(controllers.values(), readVolume);
     }
     
 }

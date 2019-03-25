@@ -7,7 +7,7 @@ import atomicedit.backend.schematic.Schematic;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
-import atomicedit.volumes.Volume;
+import atomicedit.volumes.WorldVolume;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -56,11 +56,11 @@ public class BackendController {
     }
     
     public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords) throws Exception{
-        return this.world.getReadOnlyChunks(chunkCoords);
+        return this.world.getLoadedChunkStage().getReadOnlyChunks(chunkCoords);
     }
     
-    public Schematic createSchematic(Volume volume, BlockCoord smallestPoint){
-        return Schematic.createSchematicFromWorld(world, volume, smallestPoint);
+    public Schematic createSchematic(WorldVolume volume) throws Exception{
+        return Schematic.createSchematicFromWorld(world, volume);
     }
     
     public BlockState getBlockType(short blockRuntimeId){

@@ -21,13 +21,15 @@ public class BlockState {
     public static final BlockState AIR = getBlockState("minecraft:air", null); //need a block to fill empty chunk sections with
     
     private BlockState(String name, BlockStateProperty[] blockStateProperties){
-        if(name == null) throw new IllegalArgumentException("Block name cannot be null");
+        if(name == null){
+            throw new IllegalArgumentException("Block name cannot be null");
+        }
         if(blockStateProperties != null && blockStateProperties.length == 0){
             blockStateProperties = null;
         }
         this.name = name;
         this.blockStateProperties = blockStateProperties;
-        this.stringDesc = "{" + name + ":" + (blockStateProperties != null ? Arrays.toString(blockStateProperties) : "[]") + "}";
+        this.stringDesc = "{" + name + (blockStateProperties != null ? ":" + Arrays.toString(blockStateProperties) : "") + "}";
     }
     
     public static BlockState getBlockState(String name, BlockStateProperty[] blockStateProperties){

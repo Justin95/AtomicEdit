@@ -27,7 +27,7 @@ public class NbtStringTag extends NbtTag{
     }
     
     @Override
-    public void write(DataOutputStream output) throws IOException{
+    protected void write(DataOutputStream output) throws IOException{
         output.writeUTF(data);
     }
     
@@ -40,8 +40,8 @@ public class NbtStringTag extends NbtTag{
     }
     
     @Override
-    public String toString(){
-        return this.getName() + ":\"" + data + "\"";
+    public String toString(int indent){
+        return String.format("%"+indent+"s", "") + this.getName() + ":\"" + data + "\"";
     }
     
 }

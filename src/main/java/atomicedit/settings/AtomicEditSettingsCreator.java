@@ -2,6 +2,8 @@
 package atomicedit.settings;
 
 import atomicedit.logging.Logger;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
@@ -69,7 +71,6 @@ public class AtomicEditSettingsCreator {
     
     private static void writeSettingsFile(AeSettingValues settings, File settingsFile) throws IOException{
         String settingsJson = createJson(settings);
-        Logger.info(settingsJson);
         if(!new File(AtomicEditSettings.ATOMIC_EDIT_INSTALL_PATH).exists()){
             new File(AtomicEditSettings.ATOMIC_EDIT_INSTALL_PATH).mkdir();
         }
@@ -87,7 +88,8 @@ public class AtomicEditSettingsCreator {
             Object value = settingAndValue.getValue();
             root.addProperty(setting.SETTING_ID, setting.createValueId(value));
         });
-        return root.toString();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(root);
     }
     
 }

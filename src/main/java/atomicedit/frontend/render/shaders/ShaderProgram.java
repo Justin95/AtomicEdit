@@ -18,6 +18,10 @@ public enum ShaderProgram {
     DEFAULT_SHADER_PROGRAM(
         "DefaultVertexShader",
         "DefaultFragmentShader"
+    ),
+    NO_TEXTURE_SHADER_PROGRAM(
+        "NoTextureVertexShader",
+        "NoTextureFragmentShader"
     )
     ;
     

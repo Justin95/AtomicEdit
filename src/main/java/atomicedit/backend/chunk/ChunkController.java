@@ -21,6 +21,7 @@ public abstract class ChunkController implements ChunkReader{
     }
     
     public Chunk getChunk(){
+        flushCacheToChunkNbt();
         return this.chunk;
     }
     
@@ -40,6 +41,8 @@ public abstract class ChunkController implements ChunkReader{
     public abstract void removeBlockEntity(BlockEntity tileEntity) throws MalformedNbtTagException;;
     
     public abstract void setChunkNbtTag(NbtTag tag) throws MalformedNbtTagException; //call this after editing the NbtTag from getChunkAsNbtTag
+    
+    protected abstract void flushCacheToChunkNbt();
     
     protected void declareNbtChanged(){
         this.chunk.setNeedsSaving(true);

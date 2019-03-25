@@ -82,4 +82,18 @@ public class MathUtils {
         return avg;
     }
     
+    /**
+     * Create a directional vector from a rotational vector.
+     * OpenGL's right handed coordinate scheme is used.
+     * @param rotation the rotation about the x and y axis, the z rotation is unused here
+     * @return 
+     */
+    public static Vector3f rotationVectorToDirectionVector(Vector3f rotation){
+        Vector3f dir = new Vector3f(0, 0, -1);
+        dir.rotateX((float)Math.toRadians(-rotation.x));
+        dir.rotateY((float)Math.toRadians(-rotation.y));
+        dir.normalize();
+        return dir;
+    }
+    
 }

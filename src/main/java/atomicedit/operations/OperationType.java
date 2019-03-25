@@ -1,10 +1,9 @@
 
 package atomicedit.operations;
 
-import atomicedit.backend.BlockCoord;
 import atomicedit.operations.utils.OperationParameterDescriptor;
 import atomicedit.operations.utils.OperationParameters;
-import atomicedit.volumes.Volume;
+import atomicedit.volumes.WorldVolume;
 import java.util.List;
 
 /**
@@ -24,11 +23,10 @@ public interface OperationType {
     /**
      * Create an operation of this operation type.
      * @param volume the volume the operation will work over
-     * @param smallestCoord the smallest coordinate in the volume, this gives the volume a specific world location
      * @param parameters the operation parameters for the operation, should match what this OperationType describes.
      * @return a ready to run operation
      */
-    public Operation getOperationInstance(Volume volume, BlockCoord smallestCoord, OperationParameters parameters);
+    public Operation getOperationInstance(WorldVolume volume, OperationParameters parameters);
     
     /**
      * Get the string used to display this operation in the UI.

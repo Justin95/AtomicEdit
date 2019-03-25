@@ -8,7 +8,6 @@ import atomicedit.frontend.ui.AtomicEditGui;
 import atomicedit.frontend.worldmaintinance.ChunkLoadingThread;
 import atomicedit.logging.Logger;
 import org.liquidengine.legui.animation.AnimatorProvider;
-import org.liquidengine.legui.component.Component;
 import org.liquidengine.legui.listener.processor.EventProcessor;
 import org.liquidengine.legui.system.context.CallbackKeeper;
 import org.liquidengine.legui.system.context.DefaultCallbackKeeper;
@@ -58,14 +57,10 @@ public class AtomicEditFrontEnd {
         CallbackKeeper.registerCallbacks(renderer.getGlfwWindow(), keeper);
         keeper.getChainWindowCloseCallback().add(w -> keepRunning = false);
         keeper.getChainMouseButtonCallback().add((window, button, action, mods) -> {
-            if(!isUiFocused(renderer)){ //only update camera if no UI component has focus
-                masterController.handleInput(button, action, mods);
-            }
+            masterController.handleInput(isUiFocused(renderer), button, action, mods);
         });
         keeper.getChainKeyCallback().add((long window, int key, int scancode, int action, int mods) -> {
-            if(!isUiFocused(renderer)){ //only update camera if no UI component has focus
-                masterController.handleInput(key, action, mods);
-            }
+            masterController.handleInput(isUiFocused(renderer), key, action, mods);
         });
         systemEventProcessor = new SystemEventProcessor();
         systemEventProcessor.addDefaultCallbacks(keeper);
@@ -73,11 +68,13 @@ public class AtomicEditFrontEnd {
     }
     
     private static boolean isUiFocused(AtomicEditRenderer renderer){
+        return renderer.getContext().getMouseTargetGui() != null; //is mouse over gui?
+        /*
         Component focusedGui = renderer.getContext().getFocusedGui();
         return !(
                focusedGui == null 
             || focusedGui == renderer.getFrame().getContainer()
-            );
+            );*/
     }
     
     private void mainLoop(){
