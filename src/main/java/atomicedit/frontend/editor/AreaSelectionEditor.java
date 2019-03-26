@@ -110,19 +110,21 @@ public class AreaSelectionEditor implements Editor{
     }
     
     private static RenderObject createEditorPointerRenderObject(Vector3i position){
+        float min = -0.01f;
+        float max = 1.01f;
         return new NoTextureRenderObject(
             new Vector3f(position),
             new Vector3f(0,0,0),
             true,
             new float[]{
-                0,0,0,    .33f, .33f, .66f,  .7f,
-                0,0,1,    .66f, .66f, .66f,  .7f,
-                0,1,0,    .66f, .66f, .66f,  .7f,
-                0,1,1,    .66f, .66f, .66f,  .7f,
-                1,0,0,    .66f, .66f, .66f,  .7f,
-                1,0,1,    .66f, .66f, .66f,  .7f,
-                1,1,0,    .66f, .66f, .66f,  .7f,
-                1,1,1,    .99f, .99f, .66f,  .7f,
+                min,min,min,    .33f, .33f, .66f,  .7f,
+                min,min,max,    .66f, .66f, .66f,  .7f,
+                min,max,min,    .66f, .66f, .66f,  .7f,
+                min,max,max,    .66f, .66f, .66f,  .7f,
+                max,min,min,    .66f, .66f, .66f,  .7f,
+                max,min,max,    .66f, .66f, .66f,  .7f,
+                max,max,min,    .66f, .66f, .66f,  .7f,
+                max,max,max,    .99f, .99f, .66f,  .7f,
             },
             new int[]{
                 0,1,3,  0,3,2, //x = 0 face
@@ -138,17 +140,18 @@ public class AreaSelectionEditor implements Editor{
     private static Renderable createSelectionBoxRenderable(Vector3i pointA, Vector3i pointB){
         Vector3f position = new Vector3f(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
         Vector3f rotation = new Vector3f(0,0,0);
-        float xLen = Math.abs(pointA.x - pointB.x) + 1;
-        float yLen = Math.abs(pointA.y - pointB.y) + 1;
-        float zLen = Math.abs(pointA.z - pointB.z) + 1;
+        float min = -0.02f;
+        float xLen = Math.abs(pointA.x - pointB.x) + 1 + .02f;
+        float yLen = Math.abs(pointA.y - pointB.y) + 1 + .02f;
+        float zLen = Math.abs(pointA.z - pointB.z) + 1 + .02f;
         float[] vertexData = new float[]{
-               0,   0,   0,    .33f, .33f, .66f,  .6f,
-               0,   0,zLen,    .66f, .66f, .66f,  .6f,
-               0,yLen,   0,    .66f, .66f, .66f,  .6f,
-               0,yLen,zLen,    .66f, .66f, .66f,  .6f,
-            xLen,   0,   0,    .66f, .66f, .66f,  .6f,
-            xLen,   0,zLen,    .66f, .66f, .66f,  .6f,
-            xLen,yLen,   0,    .66f, .66f, .66f,  .6f,
+             min, min, min,    .33f, .33f, .66f,  .6f,
+             min, min,zLen,    .66f, .66f, .66f,  .6f,
+             min,yLen, min,    .66f, .66f, .66f,  .6f,
+             min,yLen,zLen,    .66f, .66f, .66f,  .6f,
+            xLen, min, min,    .66f, .66f, .66f,  .6f,
+            xLen, min,zLen,    .66f, .66f, .66f,  .6f,
+            xLen,yLen, min,    .66f, .66f, .66f,  .6f,
             xLen,yLen,zLen,    .99f, .99f, .66f,  .6f,
         };
         int[] faceIndicies = new int[]{

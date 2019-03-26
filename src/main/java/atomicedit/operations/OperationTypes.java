@@ -1,7 +1,7 @@
 
 package atomicedit.operations;
 
-import atomicedit.operations.implementations.SetBlocksOperationType;
+import atomicedit.operations.implementations.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,7 +16,8 @@ public class OperationTypes {
      * in this array.
      */
     private static final OperationType[] OPERATION_TYPES = {
-        SetBlocksOperationType.getInstance()
+        SetBlocksOperationType.getInstance(),
+        ReplaceBlocksOperationType.getInstance()
     };
     
     public static List<OperationType> getOperationTypes(){

@@ -5,7 +5,7 @@ package atomicedit.operations.utils;
  *
  * @author Justin Bonner
  */
-public interface OperationParameterGuiElement {
+public interface OperationParameterSupplier {
     
     public Object getInputValue();
     

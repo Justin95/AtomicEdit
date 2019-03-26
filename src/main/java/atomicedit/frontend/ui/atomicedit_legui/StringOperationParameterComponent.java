@@ -1,16 +1,15 @@
 
 package atomicedit.frontend.ui.atomicedit_legui;
 
-import atomicedit.operations.utils.OperationParameterGuiElement;
+import atomicedit.frontend.ui.OperationParameterComponent;
 import org.liquidengine.legui.component.Label;
-import org.liquidengine.legui.component.Panel;
 import org.liquidengine.legui.component.TextInput;
 
 /**
  *
  * @author Justin Bonner
  */
-public class StringOperationParameterComponent extends Panel implements OperationParameterGuiElement{
+public class StringOperationParameterComponent extends OperationParameterComponent {
     
     private static final int INPUT_FONT_SIZE = 20;
     private static final int LABEL_FONT_SIZE = 20;
@@ -26,7 +25,8 @@ public class StringOperationParameterComponent extends Panel implements Operatio
     private TextInput textInput;
     
     public StringOperationParameterComponent(String labelText){
-        super(400,400, TOTAL_WIDTH, TOTAL_HEIGHT);
+        this.setPosition(0, 0);
+        this.setSize(TOTAL_WIDTH, TOTAL_HEIGHT);
         this.label = new Label(0,0, LABEL_WIDTH, LABEL_HEIGHT);
         this.label.getTextState().setText(labelText);
         this.label.getTextState().setFontSize(LABEL_FONT_SIZE);
