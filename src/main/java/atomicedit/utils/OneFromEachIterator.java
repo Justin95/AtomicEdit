@@ -54,8 +54,9 @@ public class OneFromEachIterator<T> implements Iterator<List<T>> {
         }
         List<T> combination = new ArrayList<>(source.size());
         for(int i = 0; i < source.size(); i++) {
-            combination.set(i, source.get(i)[indexes[i]]);
+            combination.add(source.get(i)[indexes[i]]);
         }
+        indexesReady = false;
         return combination;
     }
     

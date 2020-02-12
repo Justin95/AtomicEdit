@@ -3,7 +3,9 @@ package atomicedit.backend;
 
 import atomicedit.backend.lighting.LightingBehavior;
 import atomicedit.logging.Logger;
+import atomicedit.utils.ArrayUtils;
 import atomicedit.utils.OneFromEachIterator;
+import atomicedit.utils.Tuple;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -218,7 +220,7 @@ public class BlockState {
                     if (values.size() == 0) {
                         throw new RuntimeException("Block State Property cannot have no valid values.");
                     }
-                    rawProperties.set(i, new BlockStateProperty[values.size()]);
+                    rawProperties.add(new BlockStateProperty[values.size()]);
                     for (int j = 0; j < values.size(); j++) {
                         BlockStateProperty property;
                         switch(propType) {
@@ -252,22 +254,76 @@ public class BlockState {
                     }
                 }
             }
-            
-            
-            LightingBehavior lightBehavior;
-            if (stateJson.has("light_behavior")) {
-                JsonObject lightJson = stateJson.getAsJsonObject("light_behavior");
-                int emitLevel = lightJson.get("emit_light_level").getAsInt();
-                boolean allowBlockLight = lightJson.get("allow_block_light").getAsBoolean();
-                boolean allowSkyLight = lightJson.get("allow_sky_light").getAsBoolean();
-                lightBehavior = LightingBehavior.getInstance(emitLevel, allowBlockLight, allowSkyLight);
-            } else {
-                lightBehavior = LightingBehavior.DEFAULT;
+            //each tuple is a list of required block state properties for the lighting behavior to be valid for a blockstate
+            List<Tuple<List<BlockStateProperty>, LightingBehavior>> propsToLighting = new ArrayList<>();
+            if (stateJson.has("lighting_behavior")) {
+                JsonElement lightBehaviorRoot = stateJson.get("lighting_behavior");
+                if (lightBehaviorRoot.isJsonObject()) {
+                    JsonObject lightJson = stateJson.getAsJsonObject("lighting_behavior");
+                    int emitLevel = lightJson.get("emit_light_level").getAsInt();
+                    boolean allowBlockLight = lightJson.get("allow_block_light").getAsBoolean();
+                    boolean allowSkyLight = lightJson.get("allow_sky_light").getAsBoolean();
+                    LightingBehavior lightBehavior = LightingBehavior.getInstance(emitLevel, allowBlockLight, allowSkyLight);
+                    //no required block state properties for this lighting behavior
+                    propsToLighting.add(new Tuple<>(new ArrayList<>(), lightBehavior));
+                } else if (lightBehaviorRoot.isJsonArray()) {
+                    JsonArray lightBehaviorArray = lightBehaviorRoot.getAsJsonArray();
+                    for (int i = 0; i < lightBehaviorArray.size(); i++) {
+                        JsonObject lightDescObj = lightBehaviorArray.get(i).getAsJsonObject();
+                        JsonObject whenObj = lightDescObj.getAsJsonObject("when");
+                        List<BlockStateProperty> reqProps = new ArrayList<>();
+                        for (Entry<String, JsonElement> propEntry : whenObj.entrySet()) {
+                            BlockStateProperty prop;
+                            if (propEntry.getValue().getAsJsonPrimitive().isString()) {
+                                prop = BlockStateProperty.getInstance(propEntry.getKey(), propEntry.getValue().getAsString());
+                            } else if (propEntry.getValue().getAsJsonPrimitive().isNumber()) {
+                                prop = BlockStateProperty.getInstance(propEntry.getKey(), propEntry.getValue().getAsInt());
+                            } else if (propEntry.getValue().getAsJsonPrimitive().isBoolean()) {
+                                prop = BlockStateProperty.getInstance(propEntry.getKey(), propEntry.getValue().getAsBoolean());
+                            } else {
+                                throw new RuntimeException("known_block_states.json in wrong format.");
+                            }
+                            //if this block has no properties or does not have this property
+                            if (allowedProperties == null || !ArrayUtils.contains(allowedProperties, prop)) {
+                                throw new RuntimeException("Lighting behavior is set for non existant property: " + prop);
+                            }
+                            reqProps.add(prop);
+                        }
+                        
+                        JsonObject lightJson = lightDescObj.getAsJsonObject("lighting_behavior");
+                        int emitLevel = lightJson.get("emit_light_level").getAsInt();
+                        boolean allowBlockLight = lightJson.get("allow_block_light").getAsBoolean();
+                        boolean allowSkyLight = lightJson.get("allow_sky_light").getAsBoolean();
+                        LightingBehavior lightBehavior = LightingBehavior.getInstance(emitLevel, allowBlockLight, allowSkyLight);
+                        //only use this lighting behavior if all required properties are present in the blockstate
+                        propsToLighting.add(new Tuple<>(reqProps, lightBehavior));
+                    }
+                } else {
+                    throw new RuntimeException("Incorrectly formatted known_block_states.json");
+                }
             }
-            BlockState.createBlockState(name, properties, lightBehavior);
+            
+            if (allowedProperties == null) {
+                LightingBehavior lightingBehavior = propsToLighting.isEmpty() ? LightingBehavior.DEFAULT : propsToLighting.get(0).right;
+                BlockState.createBlockState(name, null, lightingBehavior);
+            } else {
+                for (int i = 0; i < allowedProperties.length; i++) {
+                    LightingBehavior lightingBehavior = LightingBehavior.DEFAULT;
+                    if (!propsToLighting.isEmpty()) {
+                        FindLightingLoop:
+                        for (Tuple<List<BlockStateProperty>, LightingBehavior> possLight : propsToLighting) {
+                            if (ArrayUtils.containsAll(allowedProperties[i], possLight.left)) {
+                                lightingBehavior = possLight.right;
+                                break FindLightingLoop;
+                            }
+                        }
+                    }
+                    BlockState.createBlockState(name, allowedProperties[i], lightingBehavior);
+                }
+            }
         }
     }
-        
+    
     
     private static String readFile(String filepath){
         try{
