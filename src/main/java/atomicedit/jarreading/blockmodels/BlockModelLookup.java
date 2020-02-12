@@ -2,7 +2,6 @@
 package atomicedit.jarreading.blockmodels;
 
 import atomicedit.logging.Logger;
-import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 

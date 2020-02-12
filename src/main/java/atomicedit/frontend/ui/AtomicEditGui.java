@@ -3,10 +3,10 @@ package atomicedit.frontend.ui;
 
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
-import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
+import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import java.io.File;
@@ -98,11 +98,12 @@ public class AtomicEditGui {
         
         //blah
         Button tempButton = new Button(190, 5, 80, 20);
-        tempButton.getTextState().setText("Print block states");
+        tempButton.getTextState().setText("Debug Button");
         tempButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
         tempButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
-                BlockState.debugPrintAllBlockStates();
+                //BlockState.debugPrintAllBlockStates();
+                BlockStateModelLookup.debugPrintFootprint();
             }
         });
         testPanel.add(tempButton);

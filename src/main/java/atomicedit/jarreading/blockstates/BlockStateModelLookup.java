@@ -6,6 +6,7 @@ import atomicedit.logging.Logger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -61,6 +62,15 @@ public class BlockStateModelLookup {
             blockStateToModels.put(blockState, blockStateModels);
         }
         return blockStateModels;
+    }
+    
+    public static void debugPrintFootprint() {
+        Logger.info("Number of blockstates with stored models: " + blockStateToModels.size());
+        int numModels = 0;
+        for (Entry<BlockState, List<BlockStateModel>> entry : blockStateToModels.entrySet()) {
+            numModels += entry.getValue().size();
+        }
+        Logger.info("Number of stored blockstate models: " + numModels);
     }
     
 }
