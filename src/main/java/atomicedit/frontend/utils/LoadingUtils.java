@@ -29,11 +29,15 @@ public class LoadingUtils {
         return strBuilder.toString();
     }
     
-    public static String getNewestMinecraftJarFilePath(String minecraftDirectory){
+    public static String gePreferedtMinecraftJarFilePath(String minecraftDirectory, String minecraftVersion){
         String directory = minecraftDirectory + "/versions";
-        File jarsDirectory = new File(directory);
-        File newestVersion = getHighestVersionedDir(jarsDirectory.listFiles());
-        return directory + "/" + newestVersion.getName() + "/" + newestVersion.getName() + ".jar";
+        if (minecraftVersion.equals("latest")) {
+            File jarsDirectory = new File(directory);
+            File newestVersion = getHighestVersionedDir(jarsDirectory.listFiles());
+            return directory + "/" + newestVersion.getName() + "/" + newestVersion.getName() + ".jar";
+        } else {
+            return directory + "/" + minecraftVersion + "/" + minecraftVersion + ".jar";
+        }
     }
     
     private static File getHighestVersionedDir(File[] files){

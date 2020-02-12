@@ -3,8 +3,8 @@ package atomicedit.frontend.ui;
 
 import atomicedit.frontend.ui.atomicedit_legui.StringOperationParameterComponent;
 import atomicedit.frontend.editor.AreaSelectionEditor;
-import atomicedit.frontend.ui.atomicedit_legui.AeStandardPanel;
-import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
+import atomicedit.frontend.ui.atomicedit_legui.ComponentListPanel;
+import atomicedit.frontend.ui.atomicedit_legui.LabeledBlockSelectorComponent;
 import atomicedit.logging.Logger;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
@@ -32,7 +32,7 @@ import atomicedit.operations.utils.OperationParameterSupplier;
  */
 public class AreaSelectionOptionsGui extends Panel{
     
-    private static final int BUFFER_WIDTH = 10;
+    
     private static final float GUI_WIDTH = 350;
     private static final float GUI_HEIGHT = 800;
     private static final float GUI_X = 0;
@@ -45,7 +45,7 @@ public class AreaSelectionOptionsGui extends Panel{
     private Label secondPointLabel;
     private SelectBox<OperationType> operationsSelectBox;
     //create custom operation panel from operation parameter descriptiors
-    private AeStandardPanel operationPanel;
+    private ComponentListPanel operationPanel;
     private Button doOpButton;
     
     public AreaSelectionOptionsGui(AreaSelectionEditor editor){
@@ -86,16 +86,15 @@ public class AreaSelectionOptionsGui extends Panel{
         this.add(operationPanel);
     }
     
-    private AeStandardPanel createOpPanel(){
+    private ComponentListPanel createOpPanel(){
         List<OperationParameterDescriptor> descriptors = operationsSelectBox.getSelection().getOperationParameterDescription();
         this.opParameterComponents = new HashMap<>();
-        AeStandardPanel opPanel = new AeStandardPanel();
-        float placeIndex = BUFFER_WIDTH;
+        ComponentListPanel opPanel = new ComponentListPanel();
         for(OperationParameterDescriptor descriptor : descriptors){
             OperationParameterComponent paramComp;
             switch(descriptor.parameterType){
                 case BLOCK_SELECTOR:
-                    paramComp = new BlockSelectorComponent(descriptor.name);
+                    paramComp = new LabeledBlockSelectorComponent(descriptor.name);
                     break;
                 case STRING:
                     paramComp = new StringOperationParameterComponent(descriptor.name);
@@ -107,10 +106,8 @@ public class AreaSelectionOptionsGui extends Panel{
                 default:
                     continue;
             }
-            paramComp.getStyle().setTop(paramComp.getPosition().y + placeIndex);
             this.opParameterComponents.put(descriptor, paramComp);
             opPanel.addComponent((Component)paramComp);
-            placeIndex += BUFFER_WIDTH + paramComp.getSize().y;
         }
         return opPanel;
     }

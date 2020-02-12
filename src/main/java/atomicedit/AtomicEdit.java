@@ -2,6 +2,7 @@
 package atomicedit;
 
 import atomicedit.backend.BackendController;
+import atomicedit.backend.BlockState;
 import atomicedit.frontend.AtomicEditFrontEnd;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.jarreading.blockmodels.BlockModelLookup;
@@ -36,6 +37,7 @@ public class AtomicEdit {
     }
     
     private void initialize(){
+        BlockState.loadKnownBlockStates();
         TextureLoader.getMinecraftDefaultTexture(); //force load textures
         BlockModelLookup.initialize();
         BlockStateModelLookup.initialize();

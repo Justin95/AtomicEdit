@@ -36,6 +36,13 @@ public enum AtomicEditSettings {
         null,
         () -> 9
     ),
+    PREFERED_MINECRAFT_VERSION(
+        "Prefered Minecraft Version",
+        "prefered_minecraft_version",
+        SettingDataType.STRING,
+        null,
+        () -> "latest"
+    ),
     /* This setting is unnessesary it remains only as an example for how to set up a class choice setting.
     BLOCK_MODEL_CREATOR(
         "Block Model Creator",

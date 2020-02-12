@@ -65,6 +65,10 @@ public abstract class ChunkController implements ChunkReader{
         return this.chunk.needsLightingCalc();
     }
     
+    public void clearNeedsLightingCalc() {
+        this.chunk.setNeedsLightingCalc(false);
+    }
+    
     public void clearNeedsRedraw(){
         this.chunk.setNeedsRedraw(false);
     }
