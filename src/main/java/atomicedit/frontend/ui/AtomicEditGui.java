@@ -3,6 +3,7 @@ package atomicedit.frontend.ui;
 
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
+import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
@@ -94,6 +95,19 @@ public class AtomicEditGui {
             }
         });
         testPanel.add(selectWorldButton);
+        
+        //blah
+        Button tempButton = new Button(190, 5, 80, 20);
+        tempButton.getTextState().setText("Print block states");
+        tempButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
+        tempButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
+            if(event.getAction() == MouseClickAction.CLICK){
+                BlockState.debugPrintAllBlockStates();
+            }
+        });
+        testPanel.add(tempButton);
+        //blah
+        
         Button saveWorldButton = new Button(100, 5, 80, 20);
         saveWorldButton.getTextState().setText("Save World");
         saveWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {

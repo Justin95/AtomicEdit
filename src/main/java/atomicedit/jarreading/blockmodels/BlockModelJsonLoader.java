@@ -20,7 +20,10 @@ public class BlockModelJsonLoader {
     private static final String INTERNAL_EXT = ".json";
     public static Map<String, String> loadBlockModelJsonMap(){
         Map<String, String> blockModeMap = new HashMap<>();
-        String jarFilePath = LoadingUtils.getNewestMinecraftJarFilePath(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION));
+        String jarFilePath = LoadingUtils.gePreferedtMinecraftJarFilePath(
+            AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION),
+            AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.PREFERED_MINECRAFT_VERSION)
+        );
         Logger.info("Getting block models from minecraft version: " + jarFilePath);
         try{
             ZipFile jarFile = new ZipFile(jarFilePath);

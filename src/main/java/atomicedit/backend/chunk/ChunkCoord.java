@@ -2,6 +2,8 @@
 package atomicedit.backend.chunk;
 
 import atomicedit.backend.BlockCoord;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -51,6 +53,30 @@ public class ChunkCoord {
     public boolean equals(Object other){
         if(!(other instanceof ChunkCoord)) return false;
         return ((ChunkCoord) other).x == this.x && ((ChunkCoord) other).z == this.z;
+    }
+    
+    /**
+     * Create a list of chunk coords containing every given chunk coord and
+     * their adjacent chunk coordinates.
+     * @param baseCoords the starting chunk coords
+     * @return those chunk coords and the ones adjacent
+     */
+    public static List<ChunkCoord> expandToAdjacentCoords(List<ChunkCoord> baseCoords) {
+        List<ChunkCoord> baseAndAdjCoords = new ArrayList<>(baseCoords);
+        for(ChunkCoord baseCoord : baseCoords) {
+            ChunkCoord[] adjcents = new ChunkCoord[] {
+                new ChunkCoord(baseCoord.x + 1, baseCoord.z),
+                new ChunkCoord(baseCoord.x - 1, baseCoord.z),
+                new ChunkCoord(baseCoord.x, baseCoord.z + 1),
+                new ChunkCoord(baseCoord.x, baseCoord.z - 1)
+            };
+            for(ChunkCoord adjcent : adjcents) {
+                if(!baseAndAdjCoords.contains(adjcent)) {
+                    baseAndAdjCoords.add(adjcent);
+                }
+            }
+        }
+        return baseAndAdjCoords;
     }
     
 }

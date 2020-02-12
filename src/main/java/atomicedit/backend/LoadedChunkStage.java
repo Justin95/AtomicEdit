@@ -86,7 +86,7 @@ public class LoadedChunkStage {
                 chunksToReadIn.add(coord);
             }
         }
-        Map<ChunkCoord, ChunkController> readInControllers = getChunkControllers(chunksToReadIn);
+        Map<ChunkCoord, ChunkController> readInControllers = getChunkControllers(chunksToReadIn); //TODO will need to make sure the same chunk cant be read in twice here
         for(ChunkCoord coord : readInControllers.keySet()){
             ChunkController controller = readInControllers.get(coord);
             chunkControllers.put(coord, controller);

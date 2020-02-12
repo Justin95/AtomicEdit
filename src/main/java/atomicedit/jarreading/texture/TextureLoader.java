@@ -60,7 +60,7 @@ public class TextureLoader {
     private static Map<String, BufferedImage> loadBlockTextures() {
         Map<String, BufferedImage> imageMap = new HashMap<>();
         try{
-            String jarFilePath = LoadingUtils.getNewestMinecraftJarFilePath(getMinecraftDirectory());
+            String jarFilePath = LoadingUtils.gePreferedtMinecraftJarFilePath(getMinecraftDirectory(), getPreferedMinecraftVersion());
             Logger.info("Getting textures from minecraft version: " + jarFilePath);
             ZipFile jarFile = new ZipFile(jarFilePath);
             jarFile.stream().filter(
@@ -91,6 +91,10 @@ public class TextureLoader {
     
     private static String getMinecraftDirectory(){
         return AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION);
+    }
+    
+    private static String getPreferedMinecraftVersion() {
+        return AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.PREFERED_MINECRAFT_VERSION);
     }
     
     public static BufferedImage testCreateUnknownTexture(){

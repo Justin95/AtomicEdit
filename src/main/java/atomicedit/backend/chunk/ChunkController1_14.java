@@ -26,10 +26,11 @@ import java.util.List;
 
 
 /**
- *
+ * Changes since ChunkController_1_13:
+ * LIGHT_BLOCKING height map removed from chunk format
  * @author Justin Bonner
  */
-public class ChunkController1_13 extends ChunkController{
+public class ChunkController1_14 extends ChunkController{
     
     
     private ChunkCoord coord;
@@ -38,7 +39,7 @@ public class ChunkController1_13 extends ChunkController{
     private boolean chunkSectionCacheIsDirty;
     
     
-    public ChunkController1_13(Chunk chunk) throws MalformedNbtTagException{
+    public ChunkController1_14(Chunk chunk) throws MalformedNbtTagException{
         super(chunk);
         this.chunkNbt = chunk.getChunkTag();
         this.coord = new ChunkCoord(getLevel().getIntTag("xPos").getPayload(), getLevel().getIntTag("zPos").getPayload());

@@ -4,6 +4,7 @@ package atomicedit.backend;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkController;
+import atomicedit.backend.lighting.LightingUtil;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.worldformats.CorruptedRegionFileException;
 import atomicedit.backend.worldformats.MinecraftAnvilWorldFormat;
@@ -14,8 +15,10 @@ import atomicedit.operations.OperationResult;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -57,7 +60,27 @@ public class World {
      * Chunks that are modified by this lighting calculation will be added to the unsaved chunk map.
      */
     public void doLightingCalculation(){
-        //TODO
+        Logger.info("Beginning lighting calc.");
+        List<ChunkCoord> chunkCoordsToLight = ChunkCoord.expandToAdjacentCoords(unsavedChunkMap.entrySet().stream().filter(
+            (entry) -> entry.getValue().needsLightingCalc()
+        ).map(
+            (entry) -> entry.getKey()
+        ).collect(Collectors.toList()));
+        if(chunkCoordsToLight.isEmpty()) {
+            return;
+        }
+        Map<ChunkCoord, ChunkController> toLight;
+        try {
+            toLight = this.loadedChunkStage.getMutableChunks(chunkCoordsToLight);
+        } catch(MalformedNbtTagException e) {
+            Logger.error("Exception while trying to do lighting calculation.", e);
+            return; //this will leave the chunks unlit
+        }
+        LightingUtil.doLightingCalculation(toLight);
+        for(ChunkController chunk : toLight.values()) {
+            chunk.clearNeedsLightingCalc();
+        }
+        Logger.info("Finished lighting calc.");
     }
     
     public OperationResult doOperation(Operation op){

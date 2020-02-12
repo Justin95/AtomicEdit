@@ -37,49 +37,56 @@ public class Logger {
         logWriter.close();
     }
     
-    public static void info(String message){
+    private static void log(String message) {
         logWriter.println(message);
+        System.out.println(message);
+    }
+    
+    private static void log(String message, Exception e) {
+        logWriter.println(message);
+        printException(logWriter, e);
+        System.out.println(message);
+        e.printStackTrace(System.out);
+    }
+    
+    public static void info(String message){
+        log(message);
     }
     
     public static void info(String message, Exception e){
-        logWriter.println(message);
-        printException(logWriter, e);
+        log(message, e);
     }
     
     public static void notice(String message){
-        logWriter.println(message);
+        log(message);
     }
     
     public static void notice(String message, Exception e){
-        logWriter.println(message);
-        printException(logWriter, e);
+        log(message, e);
     }
     
     public static void warning(String message){
-        logWriter.println(message);
+        log(message);
     }
     
     public static void warning(String message, Exception e){
-        logWriter.println(message);
-        printException(logWriter, e);
+        log(message, e);
     }
     
     public static void error(String message){
-        logWriter.println(message);
+        log(message);
     }
     
     public static void error(String message, Exception e){
-        logWriter.println(message);
-        printException(logWriter, e);
+        log(message, e);
     }
     
     public static void critical(String message){
-        logWriter.println(message);
+        log(message);
     }
     
     public static void critical(String message, Exception e){
-        logWriter.println(message);
-        printException(logWriter, e);
+        log(message, e);
     }
     
     private static void printException(PrintWriter location, Exception e){
