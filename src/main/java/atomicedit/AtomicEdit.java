@@ -3,6 +3,7 @@ package atomicedit;
 
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockState;
+import atomicedit.backend.GcThread;
 import atomicedit.frontend.AtomicEditFrontEnd;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.jarreading.blockmodels.BlockModelLookup;
@@ -24,12 +25,14 @@ public class AtomicEdit {
     private static AeSettingValues settings;
     private static BackendController backendController;
     private AtomicEditRenderer renderer;
+    private final GcThread gcThread;
     
     private AtomicEdit(){
         initializeSettings();
         backendController = new BackendController();
         renderer = new AtomicEditRenderer();
         frontEnd = new AtomicEditFrontEnd(renderer, backendController);
+        gcThread = new GcThread();
     }
     
     public static AtomicEdit getInstance(){
@@ -41,11 +44,17 @@ public class AtomicEdit {
         TextureLoader.getMinecraftDefaultTexture(); //force load textures
         BlockModelLookup.initialize();
         BlockStateModelLookup.initialize();
+        gcThread.start();
+    }
+    
+    public void cleanUp() {
+        gcThread.shutdown();
     }
     
     public void run(){
         initialize();
         frontEnd.run();
+        cleanUp();
     }
     
     public static AeSettingValues getSettings(){

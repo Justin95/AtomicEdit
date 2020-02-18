@@ -50,8 +50,8 @@ public class ChunkLoadingThread extends Thread {
             if(!AtomicEdit.getBackendController().hasWorld()) continue;
             if(camera == null) continue;
             ChunkCoord cameraCoord = ChunkCoord.getInstanceFromWorldPos(camera.getPosition().x, camera.getPosition().z);
-            ChunkCoord maxCoord = new ChunkCoord(cameraCoord.x + renderDistInChunks, cameraCoord.z + renderDistInChunks);
-            ChunkCoord minCoord = new ChunkCoord(cameraCoord.x - renderDistInChunks, cameraCoord.z - renderDistInChunks);
+            ChunkCoord maxCoord = ChunkCoord.getInstance(cameraCoord.x + renderDistInChunks, cameraCoord.z + renderDistInChunks);
+            ChunkCoord minCoord = ChunkCoord.getInstance(cameraCoord.x - renderDistInChunks, cameraCoord.z - renderDistInChunks);
             ArrayList<ChunkRenderable> toRemove = new ArrayList<>();
             Set<ChunkCoord> neededChunks = new HashSet<>();
             String currWorldPath = AtomicEdit.getBackendController().getWorldPath();
@@ -70,7 +70,7 @@ public class ChunkLoadingThread extends Thread {
             removeFromLoadedChunks.forEach((ChunkCoord coord) -> loadedChunks.remove(coord));
             for(int x = minCoord.x; x <= maxCoord.x; x++){
                 for(int z = minCoord.z; z <= maxCoord.z; z++){
-                    ChunkCoord coord = new ChunkCoord(x, z);
+                    ChunkCoord coord = ChunkCoord.getInstance(x, z);
                     if(!loadedChunks.containsKey(coord)){
                         neededChunks.add(coord);
                     }else if(AtomicEdit.getBackendController().doesChunkNeedRedraw(coord)){
@@ -96,10 +96,10 @@ public class ChunkLoadingThread extends Thread {
                     if(chunk.needsRedraw()){
                         chunk.clearNeedsRedraw();
                     }
-                    ChunkReader xMinus = neededChunkReaders.get(new ChunkCoord(chunkCoord.x - 1, chunkCoord.z));
-                    ChunkReader xPlus =  neededChunkReaders.get(new ChunkCoord(chunkCoord.x + 1, chunkCoord.z));
-                    ChunkReader zMinus = neededChunkReaders.get(new ChunkCoord(chunkCoord.x, chunkCoord.z - 1));
-                    ChunkReader zPlus =  neededChunkReaders.get(new ChunkCoord(chunkCoord.x, chunkCoord.z + 1));
+                    ChunkReader xMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x - 1, chunkCoord.z));
+                    ChunkReader xPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x + 1, chunkCoord.z));
+                    ChunkReader zMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z - 1));
+                    ChunkReader zPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z + 1));
                     ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
                     loadedChunks.put(chunkCoord, renderable);
                     renderer.getRenderableStage().addChunkRenderable(renderable);
@@ -111,10 +111,10 @@ public class ChunkLoadingThread extends Thread {
     private static Set<ChunkCoord> expandToAdjacentChunks(Set<ChunkCoord> originals){
         Set<ChunkCoord> originalsAndAdjacents = new HashSet<>(originals);
         originals.forEach((ChunkCoord coord) -> {
-            originalsAndAdjacents.add(new ChunkCoord(coord.x + 1, coord.z));
-            originalsAndAdjacents.add(new ChunkCoord(coord.x - 1, coord.z));
-            originalsAndAdjacents.add(new ChunkCoord(coord.x, coord.z + 1));
-            originalsAndAdjacents.add(new ChunkCoord(coord.x, coord.z - 1));
+            originalsAndAdjacents.add(ChunkCoord.getInstance(coord.x + 1, coord.z));
+            originalsAndAdjacents.add(ChunkCoord.getInstance(coord.x - 1, coord.z));
+            originalsAndAdjacents.add(ChunkCoord.getInstance(coord.x, coord.z + 1));
+            originalsAndAdjacents.add(ChunkCoord.getInstance(coord.x, coord.z - 1));
         });
         return originalsAndAdjacents;
     }

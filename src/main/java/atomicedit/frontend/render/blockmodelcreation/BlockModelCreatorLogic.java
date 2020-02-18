@@ -2,7 +2,8 @@
 package atomicedit.frontend.render.blockmodelcreation;
 
 import atomicedit.settings.SettingSelectableClass;
-import java.util.List;
+import atomicedit.utils.FloatList;
+import atomicedit.utils.IntList;
 
 /**
  *
@@ -10,6 +11,6 @@ import java.util.List;
  */
 public interface BlockModelCreatorLogic extends SettingSelectableClass{
     
-    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Integer> indicies, boolean includeTranslucent);
+    void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, FloatList vertexData, IntList indicies, boolean includeTranslucent);
     
 }

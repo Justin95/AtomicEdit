@@ -9,6 +9,7 @@ import atomicedit.backend.utils.GeneralUtils;
  * @author Justin Bonner
  */
 public class ChunkSectionPlus {
+    
     public final int xCoord;
     public final int yCoord;
     public final int zCoord;
@@ -35,12 +36,12 @@ public class ChunkSectionPlus {
     }
 
     public short getBlockAt(int x, int y, int z){
-        return getShortAt(x, y, z, this::getBlockAt);
+        return getShortAt(x, y, z, ChunkSectionPlus::getBlockAt);
     }
     
     public short getTotalLightAt(int x, int y, int z){
-        short blockLight = getShortAt(x, y, z, this::getBlockLightAt);
-        short skyLight = getShortAt(x, y, z, this::getSkyLightAt);
+        short blockLight = getShortAt(x, y, z, ChunkSectionPlus::getBlockLightAt);
+        short skyLight = getShortAt(x, y, z, ChunkSectionPlus::getSkyLightAt);
         return blockLight > skyLight ? blockLight : skyLight;
     }
     
@@ -71,7 +72,7 @@ public class ChunkSectionPlus {
         return getOp.getShortOp(selectionX, selectionY, selectionZ, selectedSection);
     }
     
-    private short getBlockLightAt(int x, int y, int z, ChunkSection selectedSection){
+    private static short getBlockLightAt(int x, int y, int z, ChunkSection selectedSection){
         if(selectedSection == null){
             return 0;
         }
@@ -79,7 +80,7 @@ public class ChunkSectionPlus {
         return getLightAt(x, y, z, light);
     }
     
-    private short getSkyLightAt(int x, int y, int z, ChunkSection selectedSection){
+    private static short getSkyLightAt(int x, int y, int z, ChunkSection selectedSection){
         if(selectedSection == null){
             return 15;
         }
@@ -87,7 +88,7 @@ public class ChunkSectionPlus {
         return getLightAt(x, y, z, light);
     }
     
-    private short getLightAt(int x, int y, int z, byte[] light){
+    private static short getLightAt(int x, int y, int z, byte[] light){
         int totalSkyLightIndex = GeneralUtils.getIndexYZX(x, y, z, ChunkSection.SIDE_LENGTH);
         int index = totalSkyLightIndex / 2;
         int offset = totalSkyLightIndex % 2;
@@ -95,7 +96,7 @@ public class ChunkSectionPlus {
         return lightVal;
     }
     
-    private short getBlockAt(int x, int y, int z, ChunkSection selectedSection){
+    private static short getBlockAt(int x, int y, int z, ChunkSection selectedSection){
         if(selectedSection == null){
             return 0; //AIR in empty sections
         }

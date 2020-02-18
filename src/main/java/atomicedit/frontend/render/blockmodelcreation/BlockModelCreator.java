@@ -1,7 +1,8 @@
 
 package atomicedit.frontend.render.blockmodelcreation;
 
-import java.util.List;
+import atomicedit.utils.FloatList;
+import atomicedit.utils.IntList;
 
 /**
  *
@@ -25,7 +26,7 @@ public class BlockModelCreator {
         return INSTANCE;
     }
     
-    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, List<Float> vertexData, List<Integer> indicies, boolean includeTranslucent){
+    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, FloatList vertexData, IntList indicies, boolean includeTranslucent){
         modelCreatorLogic.addBlockRenderData(x, y, z, section, vertexData, indicies, includeTranslucent);
     }
     

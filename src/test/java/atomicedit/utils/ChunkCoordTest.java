@@ -14,9 +14,9 @@ public class ChunkCoordTest {
     
     @Test
     public void test(){
-        ChunkCoord a = new ChunkCoord(10,10);
-        ChunkCoord b = new ChunkCoord(10,10);
-        ChunkCoord c = new ChunkCoord(1,3);
+        ChunkCoord a = ChunkCoord.getInstance(10,10);
+        ChunkCoord b = ChunkCoord.getInstance(10,10);
+        ChunkCoord c = ChunkCoord.getInstance(1,3);
         assertTrue(a.equals(b));
         assertTrue(!a.equals(c));
     }

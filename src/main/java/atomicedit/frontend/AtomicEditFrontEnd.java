@@ -8,10 +8,11 @@ import atomicedit.frontend.ui.AtomicEditGui;
 import atomicedit.frontend.worldmaintinance.ChunkLoadingThread;
 import atomicedit.logging.Logger;
 import org.liquidengine.legui.animation.AnimatorProvider;
-import org.liquidengine.legui.listener.processor.EventProcessor;
+import org.liquidengine.legui.listener.processor.EventProcessorProvider;
 import org.liquidengine.legui.system.context.CallbackKeeper;
 import org.liquidengine.legui.system.context.DefaultCallbackKeeper;
 import org.liquidengine.legui.system.handler.processor.SystemEventProcessor;
+import org.liquidengine.legui.system.handler.processor.SystemEventProcessorImpl;
 import org.liquidengine.legui.system.layout.LayoutManager;
 import org.lwjgl.opengl.GL11;
 
@@ -49,7 +50,7 @@ public class AtomicEditFrontEnd {
         renderer.initialize();
         this.masterController = new MasterController(renderer);
         chunkLoadingThread.start();
-        this.systemEventProcessor = new SystemEventProcessor();
+        this.systemEventProcessor = new SystemEventProcessorImpl();
         EditorSystem.initialize(renderer); //editor system must be initialized before gui
         AtomicEditGui.initializeGui(renderer.getFrame(), renderer.getContext(), backendController, renderer);
         
@@ -62,8 +63,7 @@ public class AtomicEditFrontEnd {
         keeper.getChainKeyCallback().add((long window, int key, int scancode, int action, int mods) -> {
             masterController.handleInput(isUiFocused(renderer), key, action, mods);
         });
-        systemEventProcessor = new SystemEventProcessor();
-        systemEventProcessor.addDefaultCallbacks(keeper);
+        SystemEventProcessor.addDefaultCallbacks(keeper, systemEventProcessor);
         Logger.info("\nGL Version: " + GL11.glGetString(GL11.GL_VERSION));
     }
     
@@ -82,7 +82,7 @@ public class AtomicEditFrontEnd {
             renderer.render();
             systemEventProcessor.processEvents(renderer.getFrame(), this.renderer.getContext());
             masterController.renderUpdate();
-            EventProcessor.getInstance().processEvents();
+            EventProcessorProvider.getInstance().processEvents();
             LayoutManager.getInstance().layout(renderer.getFrame());
             AnimatorProvider.getAnimator().runAnimations();
             AtomicEditGui.updateGui(renderer);

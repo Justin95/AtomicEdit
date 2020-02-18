@@ -3,10 +3,15 @@ package atomicedit.jarreading.blockmodels;
 
 import atomicedit.frontend.texture.MinecraftTexture;
 import atomicedit.jarreading.texture.TextureLoader;
+import atomicedit.utils.ArrayUtils;
 import atomicedit.utils.MathUtils;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.joml.Vector4f;
 
 /**
@@ -14,6 +19,8 @@ import org.joml.Vector4f;
  * @author Justin Bonner
  */
 public class ModelBox {
+    
+    private static final HashMap<ModelBox, ModelBox> instanceCache = new HashMap<>();
     
     static final Vector3f NO_BLOCK_TINT = new Vector3f(1f, 1f, 1f);
     static final Vector3f RED_BLOCK_TINT = new Vector3f(1f, .2f, .2f);
@@ -56,8 +63,42 @@ public class ModelBox {
         setTextureCoords(texCoordData, precursor);
         boolean hasTranslucency = checkTranslucency(precursor);
         Vector3f[] blockTintColors = createBlockTintColorData(precursor);
-        return new ModelBox(posData, texCoordData, blockTintColors, existingFaces, hasTranslucency, precursor.useShade);
+        ModelBox box = new ModelBox(posData, texCoordData, blockTintColors, existingFaces, hasTranslucency, precursor.useShade);
+        if (instanceCache.containsKey(box)) {
+            return instanceCache.get(box);
+        }
+        instanceCache.put(box, box); //yes this is dumb but we have to look up the instance with itself to see if we have a match and then use that match
+        return box;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ModelBox)) {
+            return false;
+        }
+        ModelBox other = (ModelBox) obj;
+        return ArrayUtils.equals(this.posData, other.posData)
+            && ArrayUtils.equals(this.texCoordData, other.texCoordData)
+            && (this.isFullBlock == other.isFullBlock)
+            && Arrays.equals(this.blockTintColorData, other.blockTintColorData)
+            && Arrays.equals(this.existingFaces, other.existingFaces)
+            && (this.hasTranslucency == other.hasTranslucency)
+            && (this.useShade == other.useShade);
+        //comparison of the center fields is not needed since we already compare position data
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + (this.isFullBlock ? 1 : 0);
+        hash = 67 * hash + Arrays.deepHashCode(this.blockTintColorData);
+        hash = 67 * hash + Arrays.hashCode(this.existingFaces);
+        hash = 67 * hash + (this.hasTranslucency ? 1 : 0);
+        hash = 67 * hash + (this.useShade ? 1 : 0);
+        hash = 67 * hash + Objects.hashCode(this.center);
+        return hash;
+    }
+    
     
     public boolean isFullBlock(){
         return this.isFullBlock;
@@ -234,6 +275,18 @@ public class ModelBox {
             posVec.y = posData[3 * i + 1] - rotateAbout.y;
             posVec.z = posData[3 * i + 2] - rotateAbout.z;
             MathUtils.rotateAllAxis(posVec, rotation);
+            //apply rotation scaling WIP
+            /*
+            posVec.y *= 1 / Math.cos(Math.abs(((rotation.x + 45) % 90) - 45)); //scale angle to 0 to 45 degrees
+            posVec.z *= 1 / Math.cos(Math.abs(((rotation.x + 45) % 90) - 45));
+            
+            posVec.x *= 1 / Math.cos(Math.abs(((rotation.y + 45) % 90) - 45));
+            posVec.z *= 1 / Math.cos(Math.abs(((rotation.y + 45) % 90) - 45));
+            
+            posVec.x *= 1 / Math.cos(Math.abs(((rotation.z + 45) % 90) - 45));
+            posVec.y *= 1 / Math.cos(Math.abs(((rotation.z + 45) % 90) - 45));
+            */
+            //translate back
             posData[3 * i    ] = posVec.x + rotateAbout.x;
             posData[3 * i + 1] = posVec.y + rotateAbout.y;
             posData[3 * i + 2] = posVec.z + rotateAbout.z;
@@ -326,8 +379,90 @@ public class ModelBox {
             this.adjDirection = adjDirection;
         }
         
-        public Vector3i getAdjacentDirection(){
+        public Vector3ic getAdjacentDirection(){
             return this.adjDirection;
+        }
+        
+        /**
+         * 
+         * @param axis 0 = x, 1 = y, 2 = z
+         * @return 
+         */
+        private ModelBoxFace rotate(int axis) {
+            switch (this) {
+                case X_PLUS:
+                    if (axis == 0) { //x axis
+                        return this;
+                    } else if (axis == 1) { //y axis
+                        return Z_PLUS;
+                    } else if (axis == 2) { //z axis
+                        return Y_MINUS;
+                    }
+                    break;
+                case X_MINUS:
+                    if (axis == 0) { //x axis
+                        return this;
+                    } else if (axis == 1) { //y axis
+                        return Z_MINUS;
+                    } else if (axis == 2) { //z axis
+                        return Y_PLUS;
+                    }
+                    break;
+                case Y_PLUS:
+                    if (axis == 0) { //x axis
+                        return Z_MINUS;
+                    } else if (axis == 1) { //y axis
+                        return this;
+                    } else if (axis == 2) { //z axis
+                        return X_PLUS;
+                    }
+                    break;
+                case Y_MINUS:
+                    if (axis == 0) { //x axis
+                        return Z_PLUS;
+                    } else if (axis == 1) { //y axis
+                        return this;
+                    } else if (axis == 2) { //z axis
+                        return X_MINUS;
+                    }
+                    break;
+                case Z_PLUS:
+                    if (axis == 0) { //x axis
+                        return Y_PLUS;
+                    } else if (axis == 1) { //y axis
+                        return X_MINUS;
+                    } else if (axis == 2) { //z axis
+                        return this;
+                    }
+                    break;
+                case Z_MINUS:
+                    if (axis == 0) { //x axis
+                        return Y_MINUS;
+                    } else if (axis == 1) { //y axis
+                        return X_PLUS;
+                    } else if (axis == 2) { //z axis
+                        return this;
+                    }
+                    break;
+            }
+            throw new RuntimeException("Switch over enum missed.");
+        }
+        
+        public ModelBoxFace rotate(int xTurns, int yTurns, int zTurns) {
+            xTurns %= 4;
+            yTurns %= 4;
+            zTurns %= 4;
+            ModelBoxFace result = this;
+            for (int i = 0; i < xTurns; i++) {
+                result = result.rotate(0);
+            }
+            for (int i = 0; i < yTurns; i++) {
+                result = result.rotate(1);
+            }
+            for (int i = 0; i < zTurns; i++) {
+                result = result.rotate(2);
+            }
+            return result;
         }
         
     }

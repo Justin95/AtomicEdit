@@ -41,6 +41,29 @@ public class ArrayUtils {
         return false;
     }
     
-    
+    /**
+     * Check if two float arrays are equal. They are equal if the
+     * arrays have the same length and the floats at each index equal
+     * each other within a tolerance of the 3 least significant mantissa bits.
+     * @param a one float array
+     * @param b another float array
+     * @return true if each float is equal
+     */
+    public static boolean equals(float[] a, float[] b) {
+        final int TOLERANCE_BITS = 3; //max lower bits the mantissa's of the floats my differ by
+        final int MAX_DIFF = ~(~0 << TOLERANCE_BITS); 
+        if (a == null | b == null || a.length != b.length) {
+            return false;
+        }
+        for (int i = 0 ; i < a.length; i++) {
+            int aBits = Float.floatToIntBits(a[i]);
+            int bBits = Float.floatToIntBits(b[i]);
+            if ((aBits & ~bBits) < MAX_DIFF) {
+                //not equal
+                return false;
+            }
+        }
+        return true;
+    }
     
 }

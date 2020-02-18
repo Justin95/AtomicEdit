@@ -26,7 +26,7 @@ public class BlockModel {
     }
     
     public static BlockModel getInstance(BlockModelPrecursor precursor){
-        List<ModelBox> models = new ArrayList<>();
+        List<ModelBox> models = new ArrayList<>(precursor.boxes.size());
         for(ModelBoxPrecursor boxPrecursor : precursor.boxes){
             models.add(ModelBox.getInstance(boxPrecursor));
         }

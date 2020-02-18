@@ -42,7 +42,7 @@ public class ChunkController1_14 extends ChunkController{
     public ChunkController1_14(Chunk chunk) throws MalformedNbtTagException{
         super(chunk);
         this.chunkNbt = chunk.getChunkTag();
-        this.coord = new ChunkCoord(getLevel().getIntTag("xPos").getPayload(), getLevel().getIntTag("zPos").getPayload());
+        this.coord = ChunkCoord.getInstance(getLevel().getIntTag("xPos").getPayload(), getLevel().getIntTag("zPos").getPayload());
         this.chunkSectionCache = new ChunkSection[Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK];
         this.chunkSectionCacheIsDirty = false;
     }

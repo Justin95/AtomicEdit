@@ -89,7 +89,7 @@ public class Volume {
         this.containedChunkCoords = new ArrayList<>();
         for(int x = smallestCoord.getChunkCoord().x; x <= largestCoord.getChunkCoord().x; x++){
             for(int z = smallestCoord.getChunkCoord().z; z <= largestCoord.getChunkCoord().z; z++){
-                this.containedChunkCoords.add(new ChunkCoord(x, z));
+                this.containedChunkCoords.add(ChunkCoord.getInstance(x, z));
             }
         }
         return new ArrayList<>(this.containedChunkCoords); //dont let the internal array leak, dont want it modified accidentally

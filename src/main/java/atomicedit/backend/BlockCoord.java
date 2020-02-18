@@ -43,7 +43,7 @@ public class BlockCoord {
      * @return 
      */
     public ChunkCoord getChunkCoord(){
-        return new ChunkCoord(Math.floorDiv(x, Chunk.X_LENGTH), Math.floorDiv(z, Chunk.Z_LENGTH));
+        return ChunkCoord.getInstance(Math.floorDiv(x, Chunk.X_LENGTH), Math.floorDiv(z, Chunk.Z_LENGTH));
     }
     
     public ChunkSectionCoord getChunkSectionCoord(){

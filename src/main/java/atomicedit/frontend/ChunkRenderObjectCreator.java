@@ -10,6 +10,8 @@ import atomicedit.frontend.render.ChunkSectionRenderObject;
 import atomicedit.frontend.render.blockmodelcreation.BlockModelCreator;
 import atomicedit.frontend.render.blockmodelcreation.ChunkSectionPlus;
 import atomicedit.logging.Logger;
+import atomicedit.utils.FloatList;
+import atomicedit.utils.IntList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,27 +35,32 @@ public class ChunkRenderObjectCreator {
      */
     public static Collection<ChunkSectionRenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
         ArrayList<ChunkSectionRenderObject> renderObjects = new ArrayList<>();
+        FloatList vertexBuffer = new FloatList();
+        IntList indiciesBuffer = new IntList();
         for(int i = 0; i < Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK; i++){
             try{
                 if(Arrays.equals(chunk.getBlocks(i), EMPTY_BLOCK_ARRAY)){
                     continue;
                 }
-                ChunkSectionPlus section = new ChunkSectionPlus(chunk.getChunkSection(i),
-                                                                xPlus != null ? xPlus.getChunkSection(i) : null,
-                                                                xMinus != null ? xMinus.getChunkSection(i) : null,
-                                                                zPlus != null ? zPlus.getChunkSection(i) : null,
-                                                                zMinus != null ? zMinus.getChunkSection(i) : null,
-                                                                i == Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK - 1 ? null : chunk.getChunkSection(i + 1),
-                                                                i == 0 ? null : chunk.getChunkSection(i - 1),
-                                                                chunk.getChunkCoord().x,
-                                                                i,
-                                                                chunk.getChunkCoord().z
+                ChunkSectionPlus section = new ChunkSectionPlus(
+                    chunk.getChunkSection(i),
+                    xPlus != null ? xPlus.getChunkSection(i) : null,
+                    xMinus != null ? xMinus.getChunkSection(i) : null,
+                    zPlus != null ? zPlus.getChunkSection(i) : null,
+                    zMinus != null ? zMinus.getChunkSection(i) : null,
+                    i == Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK - 1 ? null : chunk.getChunkSection(i + 1),
+                    i == 0 ? null : chunk.getChunkSection(i - 1),
+                    chunk.getChunkCoord().x,
+                    i,
+                    chunk.getChunkCoord().z
                 );
-                ChunkSectionRenderObject sectionRenderObject = createChunkSectionRenderObject(section, true);
+                ChunkSectionRenderObject sectionRenderObject = createChunkSectionRenderObject(section, true, vertexBuffer, indiciesBuffer);
                 if(sectionRenderObject != null){
                     renderObjects.add(sectionRenderObject);
                 }
-                sectionRenderObject = createChunkSectionRenderObject(section, false);
+                vertexBuffer.reset();
+                indiciesBuffer.reset();
+                sectionRenderObject = createChunkSectionRenderObject(section, false, vertexBuffer, indiciesBuffer);
                 if(sectionRenderObject != null){
                     renderObjects.add(sectionRenderObject);
                 }
@@ -62,6 +69,8 @@ public class ChunkRenderObjectCreator {
             }catch(Exception e){
                 Logger.warning("Exception while trying to create chunk render object", e);
             }
+            vertexBuffer.reset();
+            indiciesBuffer.reset();
         }
         return renderObjects;
     }
@@ -71,10 +80,8 @@ public class ChunkRenderObjectCreator {
      * @param section
      * @return A render object to allow rendering of a chunk section
      */
-    private static ChunkSectionRenderObject createChunkSectionRenderObject(ChunkSectionPlus section, boolean onlyTranslucent){
+    private static ChunkSectionRenderObject createChunkSectionRenderObject(ChunkSectionPlus section, boolean onlyTranslucent, FloatList vertexData, IntList indicies){
         BlockModelCreator blockModelCreator = BlockModelCreator.getInstance();
-        ArrayList<Float> vertexData = new ArrayList<>();
-        ArrayList<Integer> indicies = new ArrayList<>();
         for(int y = 0; y < ChunkSection.SIDE_LENGTH; y++){
             for(int z = 0; z < ChunkSection.SIDE_LENGTH; z++){
                 for(int x = 0; x < ChunkSection.SIDE_LENGTH; x++){
@@ -88,7 +95,12 @@ public class ChunkRenderObjectCreator {
         if(vertexData.isEmpty()){
             return null;
         }
-        return new ChunkSectionRenderObject(new ChunkSectionCoord(section.xCoord, section.yCoord, section.zCoord), onlyTranslucent, vertexData, indicies);
+        return new ChunkSectionRenderObject(
+            new ChunkSectionCoord(section.xCoord, section.yCoord, section.zCoord),
+            onlyTranslucent,
+            vertexData.asArray(),
+            indicies.asArray()
+        );
     }
     
     

@@ -3,7 +3,9 @@ package atomicedit.backend.chunk;
 
 import atomicedit.backend.BlockCoord;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -11,17 +13,27 @@ import java.util.List;
  */
 public class ChunkCoord {
     
+    private static final Map<ChunkCoord, ChunkCoord> instanceCache = new HashMap<>();
+    
     public final int x;
     public final int z;
     
-    public ChunkCoord(int x, int z){
+    private ChunkCoord(int x, int z){
         this.x = x;
         this.z = z;
     }
     
+    public static ChunkCoord getInstance(int x, int z) {
+        ChunkCoord coord = new ChunkCoord(x, z);
+        if (instanceCache.containsKey(coord)) {
+            return instanceCache.get(coord);
+        }
+        instanceCache.put(coord, coord); //strange but can't get from a set
+        return coord;
+    }
     
     public static ChunkCoord getInstanceFromWorldPos(float x, float z){
-        return new ChunkCoord((int)Math.floor(x / Chunk.X_LENGTH), (int)Math.floor(z / Chunk.Z_LENGTH));
+        return ChunkCoord.getInstance((int)Math.floor(x / Chunk.X_LENGTH), (int)Math.floor(z / Chunk.Z_LENGTH));
     }
     
     /**
@@ -43,16 +55,26 @@ public class ChunkCoord {
     public String toString(){
         return "{"+x+","+z+"}";
     }
-    
+
     @Override
-    public int hashCode(){
-        return (x * 10000) + z;
+    public int hashCode() {
+        int hash = 5;
+        hash = 19 * hash + this.x;
+        hash = 19 * hash + this.z;
+        return hash;
     }
     
+    
     @Override
-    public boolean equals(Object other){
-        if(!(other instanceof ChunkCoord)) return false;
-        return ((ChunkCoord) other).x == this.x && ((ChunkCoord) other).z == this.z;
+    public boolean equals(Object obj){
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ChunkCoord)) {
+            return false;
+        }
+        ChunkCoord other = (ChunkCoord) obj;
+        return other.x == this.x && other.z == this.z;
     }
     
     /**
@@ -65,10 +87,10 @@ public class ChunkCoord {
         List<ChunkCoord> baseAndAdjCoords = new ArrayList<>(baseCoords);
         for(ChunkCoord baseCoord : baseCoords) {
             ChunkCoord[] adjcents = new ChunkCoord[] {
-                new ChunkCoord(baseCoord.x + 1, baseCoord.z),
-                new ChunkCoord(baseCoord.x - 1, baseCoord.z),
-                new ChunkCoord(baseCoord.x, baseCoord.z + 1),
-                new ChunkCoord(baseCoord.x, baseCoord.z - 1)
+                ChunkCoord.getInstance(baseCoord.x + 1, baseCoord.z),
+                ChunkCoord.getInstance(baseCoord.x - 1, baseCoord.z),
+                ChunkCoord.getInstance(baseCoord.x, baseCoord.z + 1),
+                ChunkCoord.getInstance(baseCoord.x, baseCoord.z - 1)
             };
             for(ChunkCoord adjcent : adjcents) {
                 if(!baseAndAdjCoords.contains(adjcent)) {
