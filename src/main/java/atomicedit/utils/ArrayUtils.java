@@ -66,4 +66,19 @@ public class ArrayUtils {
         return true;
     }
     
+    /**
+     * Determine if an array contains only the given value.
+     * @param source the array to check
+     * @param value the value to check for
+     * @return true if the array only consists of the given value
+     */
+    public static boolean containsOnly(short[] source, short value) {
+        for (int i = 0; i < source.length; i++) {
+            if (source[i] != value) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 }
