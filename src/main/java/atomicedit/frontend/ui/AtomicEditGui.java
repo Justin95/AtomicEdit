@@ -83,11 +83,14 @@ public class AtomicEditGui {
                         FileSelector selector = new FileSelector(
                                 AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves",
                                 (File saveFile) -> {
-                                    if (saveFile != null) {
-                                        String worldFilePath = saveFile.getAbsolutePath();
-                                        Logger.info("Selected world: " + worldFilePath);
-                                        backendController.setWorld(worldFilePath);
-                                        WORLD_SELECT_LOCK.unlock();
+                                    try {
+                                        if (saveFile != null) {
+                                            String worldFilePath = saveFile.getAbsolutePath();
+                                            Logger.info("Selected world: " + worldFilePath);
+                                            backendController.setWorld(worldFilePath);
+                                        }
+                                    } finally { //exceptions here are unexpected but we have to unlock
+                                        WORLD_SELECT_LOCK.unlock(); 
                                     }
                                 }
                         );
