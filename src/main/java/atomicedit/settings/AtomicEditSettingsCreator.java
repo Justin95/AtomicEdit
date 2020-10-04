@@ -25,7 +25,6 @@ public class AtomicEditSettingsCreator {
         if(settingsFile.exists()){
             try{
                 AeSettingValues settings = readSettings(settingsFile);
-                writeSettingsFile(settings, settingsFile);
                 return settings;
             }catch(Exception e){
                 Logger.notice("Unable to read settings because: " + e.getLocalizedMessage());
@@ -42,9 +41,9 @@ public class AtomicEditSettingsCreator {
     
     private static AeSettingValues readSettings(File file) throws Exception{
         StringBuilder settingsJson = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        reader.lines().forEach((String line) -> settingsJson.append(line).append("\n"));
-        reader.close();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            reader.lines().forEach((String line) -> settingsJson.append(line).append("\n"));
+        }
         return parseSettings(settingsJson.toString());
     }
     
@@ -69,16 +68,16 @@ public class AtomicEditSettingsCreator {
         return settings;
     }
     
-    private static void writeSettingsFile(AeSettingValues settings, File settingsFile) throws IOException{
+    private static void writeSettingsFile(AeSettingValues settings, File settingsFile) throws IOException {
         String settingsJson = createJson(settings);
         if(!new File(AtomicEditSettings.ATOMIC_EDIT_INSTALL_PATH).exists()){
             new File(AtomicEditSettings.ATOMIC_EDIT_INSTALL_PATH).mkdir();
         }
         settingsFile.createNewFile();//create new file if it doesnt exist
-        BufferedWriter writer = new BufferedWriter(new FileWriter(settingsFile));
-        writer.append(settingsJson);
-        writer.flush();
-        writer.close();
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(settingsFile))) {
+            writer.append(settingsJson);
+            writer.flush();
+        }
     }
     
     private static String createJson(AeSettingValues settings){

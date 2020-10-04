@@ -45,7 +45,25 @@ public class BlockModelParser {
         BlockModelPrecursor precursor;
         if(root.has("parent")){
             String parentName = root.get("parent").getAsString();
-            precursor = parseBlockModel(nameToJsonMap, parentName, getJsonObject(nameToJsonMap.get(parentName)), recursiveDepth + 1);
+            //some models are just 'block/blah' and some are 'minecraft:block/blah' in 1.16
+            Logger.debug("Lookup up parent model: " + parentName);
+            String precursorJsonStr;
+            if (nameToJsonMap.containsKey(parentName)) {
+                precursorJsonStr = nameToJsonMap.get(parentName);
+            } else if (parentName.startsWith("minecraft:")) {
+                String altParentName = parentName.substring("minecraft:".length());
+                if (!nameToJsonMap.containsKey(altParentName)) {
+                    Logger.warning("Could not find model precursor '" + altParentName + "'.");
+                    throw new RuntimeException("Could not find model precursor '" + altParentName + "'.");
+                }
+                precursorJsonStr = nameToJsonMap.get(altParentName);
+            } else if (nameToJsonMap.containsKey("minecraft:" + parentName)) {
+                precursorJsonStr = nameToJsonMap.get("minecraft:" + parentName);
+            } else {
+                Logger.warning("Could not find model precursor '" + parentName + "'.");
+                throw new RuntimeException("Could not find model precursor '" + parentName + "'.");
+            }
+            precursor = parseBlockModel(nameToJsonMap, parentName, getJsonObject(precursorJsonStr), recursiveDepth + 1);
         }else{
             precursor = new BlockModelPrecursor();
         }

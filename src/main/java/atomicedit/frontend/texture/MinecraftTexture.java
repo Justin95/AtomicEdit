@@ -116,7 +116,7 @@ public class MinecraftTexture extends Texture{
                     int alpha = ((tex.getRGB(x, y) >> 24) & 0xFF);
                     if(alpha > 0 && alpha < 255){ //not completely opaque and not completely transparent
                         translucencies[texNameToIndex.get(texName)] = true;
-                        Logger.info("Translucent texture: " + texName);
+                        Logger.debug("Translucent texture: " + texName);
                         continue outer;
                     }
                 }

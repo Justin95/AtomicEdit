@@ -2,7 +2,6 @@
 package atomicedit.frontend.ui.editormenu;
 
 import atomicedit.frontend.editor.EditorType;
-import org.joml.Vector2f;
 import org.liquidengine.legui.component.Panel;
 import org.liquidengine.legui.component.RadioButtonGroup;
 import org.liquidengine.legui.style.Style;

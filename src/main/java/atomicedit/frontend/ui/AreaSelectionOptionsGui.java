@@ -8,7 +8,6 @@ import atomicedit.frontend.ui.atomicedit_legui.LabeledBlockSelectorComponent;
 import atomicedit.logging.Logger;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
-import atomicedit.operations.OperationTypes;
 import atomicedit.operations.utils.OperationParameterDescriptor;
 import atomicedit.operations.utils.OperationParameters;
 import java.util.HashMap;
@@ -114,7 +113,7 @@ public class AreaSelectionOptionsGui extends Panel{
     
     private SelectBox<OperationType> createOpSelectBox(){
         SelectBox<OperationType> opBox = new SelectBox<>();
-        for(OperationType opType : OperationTypes.getOperationTypes()){
+        for(OperationType opType : OperationType.values()){
             opBox.addElement(opType);
         }
         opBox.setSelected(0, true);

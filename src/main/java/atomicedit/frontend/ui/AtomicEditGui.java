@@ -5,6 +5,7 @@ import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.frontend.AtomicEditRenderer;
+import atomicedit.frontend.gui.FileSelector;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
 import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.logging.Logger;
@@ -77,21 +78,26 @@ public class AtomicEditGui {
         selectWorldButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
         selectWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
-                new Thread(() -> {
-                    if(WORLD_SELECT_LOCK.tryLock()){
-                        try{
-                            String worldFilePath = getWorldFilePath();
-                            if(worldFilePath != null){
-                                Logger.info("Selected world: " + worldFilePath);
-                                backendController.setWorld(worldFilePath);
-                            }
-                        }catch(Exception e){
-                            Logger.error("Exception trying to select a world", e);
-                        }finally{
-                            WORLD_SELECT_LOCK.unlock();
-                        }
+                if(WORLD_SELECT_LOCK.tryLock()){
+                    try{
+                        FileSelector selector = new FileSelector(
+                                AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves",
+                                (File saveFile) -> {
+                                    if (saveFile != null) {
+                                        String worldFilePath = saveFile.getAbsolutePath();
+                                        Logger.info("Selected world: " + worldFilePath);
+                                        backendController.setWorld(worldFilePath);
+                                        WORLD_SELECT_LOCK.unlock();
+                                    }
+                                }
+                        );
+                        root.add(selector);
+                    }catch(Exception e){
+                        Logger.error("Exception trying to select a world", e);
+                    }finally{
+                        //WORLD_SELECT_LOCK.unlock();
                     }
-                }).start();
+                }
             }
         });
         testPanel.add(selectWorldButton);
@@ -134,17 +140,33 @@ public class AtomicEditGui {
     }
     
     private static String getWorldFilePath(){
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setName("Locate minecraft save folder");
-        fileChooser.setCurrentDirectory(new File(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"));
-        int status;
-        File choice;
-        //try to make this on top somehow
-        status = fileChooser.showOpenDialog(null);
-        choice = fileChooser.getSelectedFile();
-        if(choice == null) return null;
+        JFileChooser chooser = new JFileChooser();
+        
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setName("Locate minecraft save folder");
+        chooser.setCurrentDirectory(new File(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"));
+        
+        chooser.showOpenDialog(null);
+        File file = chooser.getSelectedFile();
+        if (file == null) {
+            return null;
+        }
+        return file.getPath();
+        
+        /*
+        final String title = "Locate minecraft save folder";
+        final String path = AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves";
+        String result = TinyFileDialogs.tinyfd_selectFolderDialog(title, path);
+        
+        if (result == null) {
+            return null;
+        }
+        File choice = new File(result);
+        if(!choice.exists()) {
+            return null;
+        }
         return choice.getPath();
+        */
     }
     
 }
