@@ -21,7 +21,7 @@ import org.joml.Vector3ic;
  * one instance per thread.
  * @author Justin Bonner
  */
-public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic{
+public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
     
     private static final float SHADE = .90f;
     private static final Vector3f BLOCK_STATE_ROTATION_ROTATE_ABOUT = new Vector3f(.5f, .5f, .5f);

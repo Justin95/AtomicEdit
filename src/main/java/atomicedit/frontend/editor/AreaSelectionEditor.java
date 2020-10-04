@@ -102,7 +102,12 @@ public class AreaSelectionEditor implements Editor{
         BlockCoord smallestCoord = new BlockCoord(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
         WorldVolume worldVolume = new WorldVolume(volume, smallestCoord);
         Operation op = opType.getOperationInstance(worldVolume, params);
-        OperationResult result = AtomicEdit.getBackendController().applyOperation(op);
+        OperationResult result;
+        try {
+            result = AtomicEdit.getBackendController().applyOperation(op);
+        } catch (Exception e) {
+            result = new OperationResult(false, "Operation threw Exception.", e);
+        }
         if(!result.getSuccess()){
             Logger.notice(result.getMessage(), result.getException());
         }

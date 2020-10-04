@@ -20,7 +20,15 @@ public class BlockModelLookup {
             Logger.error("Tried to use Block Model Lookup before initialization.");
             throw new RuntimeException("Block Model Lookup was not initialized.");
         }
-        return blockModelMap.get(modelName);
+        if (blockModelMap.containsKey(modelName)) {
+            return blockModelMap.get(modelName);
+        }
+        String altModelName = modelName.substring("minecraft:".length());
+        if (blockModelMap.containsKey(altModelName)) {
+            return blockModelMap.get(altModelName);
+        }
+        Logger.warning("Could not find block model: '" + modelName + "'.");
+        return null;
     }
     
     
@@ -39,7 +47,7 @@ public class BlockModelLookup {
     private static Map<String, BlockModel> createBlockModels(Map<String, BlockModelPrecursor> precursorMap){
         Map<String, BlockModel> blockModels = new HashMap<>();
         for(String modelName : precursorMap.keySet()){
-            Logger.info("Creating block model: " + modelName);
+            Logger.debug("Creating block model: " + modelName);
             BlockModel model = BlockModel.getInstance(precursorMap.get(modelName));
             blockModels.put(modelName, model);
         }

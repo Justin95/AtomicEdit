@@ -46,7 +46,7 @@ public class BlockStateProperty {
         //was not found
         BlockStateProperty newProp = new BlockStateProperty(name, type, value);
         possibilities.add(newProp);
-        Logger.info("Created new Block State Property: " + newProp);
+        Logger.debug("Created new Block State Property: " + newProp);
         return newProp;
     }
     

@@ -36,7 +36,7 @@ public class BlockStateJsonLoader {
                 (entry) -> entry.getName().startsWith(INTERNAL_PATH) && entry.getName().endsWith(INTERNAL_EXT)
             ).forEach((jsonEntry) -> {
                 String name = "minecraft:" + jsonEntry.getName().substring(INTERNAL_PATH.length(), jsonEntry.getName().length() - INTERNAL_EXT.length()); //remove extension
-                Logger.info("Loading minecraft block state: " + name);
+                Logger.debug("Loading minecraft block state: " + name);
                 String blockStateJson;
                 try{
                     blockStateJson = LoadingUtils.readInputStream(jarFile.getInputStream(jsonEntry));

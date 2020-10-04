@@ -7,8 +7,8 @@ package atomicedit.operations;
  */
 public class OperationResult {
     
-    private boolean success;
-    private String message;
+    private final boolean success;
+    private final String message;
     private Exception exception;
     
     public OperationResult(boolean success, String message){
@@ -47,7 +47,7 @@ public class OperationResult {
     
     @Override
     public String toString(){
-        return "{sucess: "+success+", message: \""+message+"\", exception: "+exception+"}";
+        return "{success: "+success+", message: \""+message+"\", exception: "+exception+"}";
     }
     
 }

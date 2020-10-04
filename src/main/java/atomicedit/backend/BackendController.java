@@ -43,15 +43,24 @@ public class BackendController {
         return this.world != null ? this.world.getFilePath() : null;
     }
     
-    public OperationResult applyOperation(Operation op){
+    public OperationResult applyOperation(Operation op) {
+        if (world == null) {
+            throw new IllegalStateException("Cannot perform operation because no world is loaded.");
+        }
         return world.doOperation(op);
     }
     
     public void undoOperation(){
+        if (world == null) {
+            throw new IllegalStateException("Cannot undo operation because no world is loaded.");
+        }
         this.world.undoLastOperation();
     }
     
-    public void saveChanges() throws IOException{
+    public void saveChanges() throws IOException {
+        if (world == null) {
+            throw new IllegalStateException("Cannot save world because no world is loaded.");
+        }
         world.saveChanges();
     }
     
