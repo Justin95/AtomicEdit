@@ -49,4 +49,21 @@ public class ReadPackedArrayTest {
         }
         return result.trim();
     }
+    
+    @Test
+    public void testNonPackedArray() {
+        long[] source = new long[]{
+            0b0010011011000000000000000000000000000000000000000000000110100001L,
+            0b1010001010100000000000000000000000000000000000000000000001101001L
+        };
+        int groupSize = 5;
+        int elementIndex = 12;
+        int result = GeneralUtils.readIntFromLongArray(groupSize, elementIndex, source);
+        int expectedResult = 0b01001;
+        if(result != expectedResult){
+            System.out.println("Result: " + StringUtils.leftPad(Integer.toBinaryString(result), groupSize, "0") + " Expected result: " + StringUtils.leftPad(Integer.toBinaryString(expectedResult), groupSize, "0"));
+        }
+        assertTrue(result == expectedResult);
+    }
+    
 }

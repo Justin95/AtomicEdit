@@ -77,30 +77,36 @@ public class AtomicEditGui {
         selectWorldButton.getTextState().setText("Select World");
         selectWorldButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
         selectWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
-            if(event.getAction() == MouseClickAction.CLICK){
-                if(WORLD_SELECT_LOCK.tryLock()){
-                    try{
+            if (event.getAction() == MouseClickAction.CLICK) {
+                backendController.setWorld("/home/justin/.minecraft/saves/AtomicEdit_1_16_Test");
+                /*
+                if (WORLD_SELECT_LOCK.tryLock()) {
+                    try {
                         FileSelector selector = new FileSelector(
-                                AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves",
-                                (File saveFile) -> {
-                                    try {
-                                        if (saveFile != null) {
-                                            String worldFilePath = saveFile.getAbsolutePath();
-                                            Logger.info("Selected world: " + worldFilePath);
-                                            backendController.setWorld(worldFilePath);
-                                        }
-                                    } finally { //exceptions here are unexpected but we have to unlock
-                                        WORLD_SELECT_LOCK.unlock(); 
+                            AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"
+                        );
+                        selector.setCallback(
+                            (File saveFile) -> {
+                                try {
+                                    if (saveFile != null) {
+                                        String worldFilePath = saveFile.getAbsolutePath();
+                                        Logger.info("Selected world: " + worldFilePath);
+                                        backendController.setWorld(worldFilePath);
                                     }
+                                } finally { //exceptions here are unexpected but we have to unlock
+                                    root.remove(selector);
+                                    WORLD_SELECT_LOCK.unlock(); 
                                 }
+                            }
                         );
                         root.add(selector);
-                    }catch(Exception e){
+                    } catch(Exception e) {
                         Logger.error("Exception trying to select a world", e);
-                    }finally{
+                    } finally {
                         //WORLD_SELECT_LOCK.unlock();
                     }
                 }
+                */
             }
         });
         testPanel.add(selectWorldButton);

@@ -20,17 +20,30 @@ public class ChunkControllerFactory {
         throw new MalformedNbtTagException("Chunk is either corrupt or of unsupported format");
     }
     
-    
+    /**
+     * Check if an int, check, is between min (inclusive) and max (exclusive).
+     * @param check
+     * @param min
+     * @param max
+     * @return 
+     */
+    private static boolean between(int check, int min, int max) {
+        return check >= min && check < max;
+    }
     
     private enum ChunkControllerType{
         VERSION_1_13(
-            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 1519, //1519 is full release minecraft 1.13
+            chunk -> between(chunk.getChunkTag().getIntTag("DataVersion").getPayload(), 1519, 1952), //1519 is full release minecraft 1.13
             chunk -> new ChunkController1_13(chunk)
         ),
         VERSION_1_14(
-            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 1952, //1952 is full release minecraft 1.14
+            chunk -> between(chunk.getChunkTag().getIntTag("DataVersion").getPayload(), 1952, 2566), //1952 is full release minecraft 1.14
             chunk -> new ChunkController1_14(chunk)
-        )
+        ),
+        VERSION_1_16(
+            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 2566, //2566 is full release minecraft 1.16
+            chunk -> new ChunkController1_16(chunk)
+        ),
         ;
         
         private final ChunkVersionChecker checker;

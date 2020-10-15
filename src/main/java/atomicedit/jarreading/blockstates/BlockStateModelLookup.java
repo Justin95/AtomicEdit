@@ -57,7 +57,7 @@ public class BlockStateModelLookup {
                 Logger.error("No block state model generator for block: " + blockState.name);
                 generator = blockNameToModelGenerator.get(BlockState.AIR.name);
             }
-            Logger.info("Creating block state models for: " + blockState);
+            Logger.debug("Creating block state models for: " + blockState);
             blockStateModels = generator.generateBlockStateModel(blockState);
             blockStateToModels.put(blockState, blockStateModels);
         }

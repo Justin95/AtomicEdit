@@ -39,43 +39,7 @@ public enum AtomicEditSettings {
         SettingDataType.STRING,
         () -> "latest"
     ),
-    WRITE_LOGS_TO_FILE(
-        "Write Logs to File",
-        "write_logs_to_file",
-        SettingDataType.BOOLEAN,
-        () -> false //no need to write a megabyte log file every program execution
-    ),
-    LOGGING_LEVEL(
-        "Logging Level",
-        "logging_level",
-        SettingDataType.STRING,
-        /*
-        new SettingOption[] {
-            "debug",
-            "info",
-            "notice",
-            "warning",
-            "error",
-            "critical"
-        },*/
-        () -> "info"
-    ),
-    /* This setting is unnessesary it remains only as an example for how to set up a class choice setting.
-    BLOCK_MODEL_CREATOR(
-        "Block Model Creator",
-        "block_model_creator",
-        SettingDataType.CLASS_OPTION,
-        new ClassInstanceOption[]{
-            new ClassInstanceOption(BlockModelCreator1_13Logic.getInstance())
-        },
-        () -> BlockModelCreator1_13Logic.getInstance()
-    )
-    */
     ;
-    
-    private static final String HOME_DIR = System.getProperty("user.home");
-    public static final String ATOMIC_EDIT_INSTALL_PATH = HOME_DIR + (HOME_DIR.endsWith("/") ? "" : "/") + ".AtomicEdit";
-    public static final String SETTINGS_FILEPATH = ATOMIC_EDIT_INSTALL_PATH + "/atomicEditSettings.json";
     
     public final String DISPLAY_NAME;
     public final String SETTING_ID;
@@ -129,6 +93,7 @@ public enum AtomicEditSettings {
         }
         return this.DATATYPE.storeAsString(value);
     }
+    
     
     enum SettingDataType{
         STRING(

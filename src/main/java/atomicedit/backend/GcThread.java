@@ -22,13 +22,14 @@ public class GcThread extends Thread {
             try {
                 Thread.sleep(GC_INTERVAL_MS);
             } catch (InterruptedException e) {
-
+                //don't care
             }
         }
     }
     
     public void shutdown() {
         this.keepRunning = false;
+        this.interrupt();
     }
     
 }

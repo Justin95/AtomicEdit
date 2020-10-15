@@ -1,8 +1,10 @@
 
 package atomicedit.logging;
 
-import atomicedit.AtomicEdit;
-import atomicedit.settings.AtomicEditSettings;
+import atomicedit.settings.AtomicEditConstants;
+import atomicedit.settings.LoggingSettingValues;
+import atomicedit.settings.LoggingSettings;
+import atomicedit.settings.LoggingSettingsCreator;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -15,17 +17,18 @@ import java.io.PrintWriter;
  */
 public class Logger {
     
-    private static final String LOG_FILE_PATH = AtomicEditSettings.ATOMIC_EDIT_INSTALL_PATH + "/AtomicEditLastLog.log";
     private static PrintWriter logWriter;
-    private static LogLevel minLevel = LogLevel.INFO; //use INFO until we can set the desired level from the settings
+    private static LogLevel minLevel;
     
     public static void initialize(){
-        minLevel = LogLevel.of(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.LOGGING_LEVEL));
-        if (AtomicEdit.getSettings().getSettingValueAsBoolean(AtomicEditSettings.WRITE_LOGS_TO_FILE)) {
-            if(!new File(AtomicEditSettings.ATOMIC_EDIT_INSTALL_PATH).exists()){
-                new File(AtomicEditSettings.ATOMIC_EDIT_INSTALL_PATH).mkdir();
+        LoggingSettingValues logSettings = LoggingSettingsCreator.createSettings();
+        minLevel = LogLevel.of(logSettings.getSettingValueAsString(LoggingSettings.LOGGING_LEVEL));
+        if (logSettings.getSettingValueAsBoolean(LoggingSettings.WRITE_LOGS_TO_FILE)) {
+            if(!new File(AtomicEditConstants.ATOMIC_EDIT_INSTALL_PATH).exists()){
+                new File(AtomicEditConstants.ATOMIC_EDIT_INSTALL_PATH).mkdir();
             }
-            File logFile = new File(LOG_FILE_PATH);
+            String logFilePath = logSettings.getSettingValueAsString(LoggingSettings.LOG_FILE_PATH);
+            File logFile = new File(logFilePath);
             logFile.delete();
             try{
                 logFile.createNewFile();
@@ -35,6 +38,7 @@ public class Logger {
                 e.printStackTrace(System.err);
             }
         }
+        info("Initialized Logging System.");
     }
     
     public static void cleanUp(){

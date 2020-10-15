@@ -15,6 +15,7 @@ import org.liquidengine.legui.system.handler.processor.SystemEventProcessor;
 import org.liquidengine.legui.system.handler.processor.SystemEventProcessorImpl;
 import org.liquidengine.legui.system.layout.LayoutManager;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 
 /**
@@ -39,7 +40,7 @@ public class AtomicEditFrontEnd {
     }
     
     
-    public void run(){
+    public void run() {
         initialize();
         mainLoop();
         cleanUp();
@@ -64,7 +65,13 @@ public class AtomicEditFrontEnd {
             masterController.handleInput(isUiFocused(renderer), key, action, mods);
         });
         SystemEventProcessor.addDefaultCallbacks(keeper, systemEventProcessor);
-        Logger.info("\nGL Version: " + GL11.glGetString(GL11.GL_VERSION));
+        Logger.info(
+            "OpenGL INFO:"
+            + "\nGL Renderer: " + GL11.glGetString(GL11.GL_RENDERER)
+            + "\nGL Vendor:   " + GL11.glGetString(GL11.GL_VENDOR)
+            + "\nGL Version:  " + GL11.glGetString(GL11.GL_VERSION)
+            + "\nGL Shader Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION)
+        );
     }
     
     private static boolean isUiFocused(AtomicEditRenderer renderer){
@@ -90,7 +97,12 @@ public class AtomicEditFrontEnd {
     }
     
     private void cleanUp(){
-        chunkLoadingThread.cleanUp();
+        chunkLoadingThread.shutdown();
+        try {
+            chunkLoadingThread.join();
+        } catch (InterruptedException e) {
+            //pass
+        }
         renderer.cleanUp();
     }
     
