@@ -12,25 +12,25 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map.Entry;
+import java.util.Map;
 
 /**
  *
  * @author Justin Bonner
  */
-public class AtomicEditSettingsCreator {
+public class LoggingSettingsCreator {
     
-    public static AeSettingValues createSettings(){
-        File settingsFile = new File(AtomicEditConstants.SETTINGS_FILEPATH);
+    public static LoggingSettingValues createSettings(){
+        File settingsFile = new File(AtomicEditConstants.LOGGING_SETTINGS_FILEPATH);
         if(settingsFile.exists()){
             try{
-                AeSettingValues settings = readSettings(settingsFile);
+                LoggingSettingValues settings = readSettings(settingsFile);
                 return settings;
             }catch(Exception e){
                 Logger.notice("Unable to read settings because: " + e.getLocalizedMessage());
             }
         }
-        AeSettingValues settings = createDefaultSettings();
+        LoggingSettingValues settings = createDefaultSettings();
         try{
             writeSettingsFile(settings, settingsFile);
         }catch(Exception e){
@@ -39,7 +39,7 @@ public class AtomicEditSettingsCreator {
         return settings;
     }
     
-    private static AeSettingValues readSettings(File file) throws Exception{
+    private static LoggingSettingValues readSettings(File file) throws Exception{
         StringBuilder settingsJson = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             reader.lines().forEach((String line) -> settingsJson.append(line).append("\n"));
@@ -47,12 +47,12 @@ public class AtomicEditSettingsCreator {
         return parseSettings(settingsJson.toString());
     }
     
-    private static AeSettingValues parseSettings(String settingJson){
-        AeSettingValues settings = new AeSettingValues();
+    private static LoggingSettingValues parseSettings(String settingJson){
+        LoggingSettingValues settings = new LoggingSettingValues();
         JsonObject root = new JsonParser().parse(settingJson).getAsJsonObject();
-        for(AtomicEditSettings setting : AtomicEditSettings.values()){
-            if(root.has(setting.SETTING_ID)){
-                settings.setSetting(setting, setting.createValueFromString(root.get(setting.SETTING_ID).getAsString()));
+        for(LoggingSettings setting : LoggingSettings.values()){
+            if(root.has(setting.settingId)){
+                settings.setSetting(setting, setting.parseFromJson(root.get(setting.settingId)));
             }else{
                 settings.setSetting(setting, setting.createDefaultValue());
             }
@@ -60,15 +60,15 @@ public class AtomicEditSettingsCreator {
         return settings;
     }
     
-    private static AeSettingValues createDefaultSettings(){
-        AeSettingValues settings = new AeSettingValues();
-        for(AtomicEditSettings setting : AtomicEditSettings.values()){
+    private static LoggingSettingValues createDefaultSettings(){
+        LoggingSettingValues settings = new LoggingSettingValues();
+        for(LoggingSettings setting : LoggingSettings.values()){
             settings.setSetting(setting, setting.createDefaultValue());
         }
         return settings;
     }
     
-    private static void writeSettingsFile(AeSettingValues settings, File settingsFile) throws IOException {
+    private static void writeSettingsFile(LoggingSettingValues settings, File settingsFile) throws IOException {
         String settingsJson = createJson(settings);
         if(!new File(AtomicEditConstants.ATOMIC_EDIT_INSTALL_PATH).exists()){
             new File(AtomicEditConstants.ATOMIC_EDIT_INSTALL_PATH).mkdir();
@@ -80,12 +80,12 @@ public class AtomicEditSettingsCreator {
         }
     }
     
-    private static String createJson(AeSettingValues settings){
+    private static String createJson(LoggingSettingValues settings){
         JsonObject root = new JsonObject();
-        settings.getSettingsStream().forEach((Entry<AtomicEditSettings, Object> settingAndValue) -> {
-            AtomicEditSettings setting = settingAndValue.getKey();
+        settings.getSettingsStream().forEach((Map.Entry<LoggingSettings, Object> settingAndValue) -> {
+            LoggingSettings setting = settingAndValue.getKey();
             Object value = settingAndValue.getValue();
-            root.addProperty(setting.SETTING_ID, setting.createValueId(value));
+            root.add(setting.settingId, setting.parseToJson(value));
         });
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(root);

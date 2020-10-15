@@ -76,6 +76,7 @@ public class TextureLoader {
                     texture = createUnknownTexture();
                 }
                 imageMap.put(name, texture);
+                imageMap.put("minecraft:" + name, texture); //1.16.x puts 'minecraft:' infront of the name
             });
         }catch(IOException e){
             Logger.error("IOException while trying to read minecraft textures: " + e.getLocalizedMessage());

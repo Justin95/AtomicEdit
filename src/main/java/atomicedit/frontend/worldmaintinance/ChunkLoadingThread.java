@@ -30,7 +30,7 @@ public class ChunkLoadingThread extends Thread {
     private AtomicEditRenderer renderer;
     private String worldPath;
     private final Map<ChunkCoord, ChunkRenderable> loadedChunks;
-    private boolean keepRunning;
+    private volatile boolean keepRunning;
     private int renderDistInChunks;
     
     public ChunkLoadingThread(AtomicEditRenderer renderer){
@@ -92,7 +92,9 @@ public class ChunkLoadingThread extends Thread {
             if(neededChunkReaders != null){
                 for(ChunkCoord chunkCoord : neededChunks){
                     ChunkReader chunk = neededChunkReaders.get(chunkCoord);
-                    if(chunk == null) continue;
+                    if(chunk == null) {
+                        continue;
+                    }
                     if(chunk.needsRedraw()){
                         chunk.clearNeedsRedraw();
                     }
@@ -103,6 +105,9 @@ public class ChunkLoadingThread extends Thread {
                     ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
                     loadedChunks.put(chunkCoord, renderable);
                     renderer.getRenderableStage().addChunkRenderable(renderable);
+                    if (!keepRunning) {
+                        break; //no need to finish this if we're shutting down
+                    }
                 }
             }
         }
@@ -127,7 +132,7 @@ public class ChunkLoadingThread extends Thread {
         }
     }
     
-    public void cleanUp(){
+    public void shutdown(){
         this.keepRunning = false;
     }
     
