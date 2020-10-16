@@ -22,7 +22,7 @@ import org.liquidengine.legui.style.flex.FlexStyle;
  * A file selector using LEGUI components.
  * @author Justin Bonner
  */
-public class FileSelector extends Widget {
+public class WorldFileSelector extends Widget {
     
     private static final int WIDTH = 600;
     private static final int HEIGHT = 700;
@@ -37,7 +37,7 @@ public class FileSelector extends Widget {
     private final Button selectButton;
     private volatile File selectedFile;
     
-    public FileSelector(String startingDir) {
+    public WorldFileSelector(String startingDir) {
         super("Select World File", 500, 800, 0, 0);
         Component panel = super.getContainer();
         this.getStyle().setDisplay(Style.DisplayType.FLEX);
@@ -93,7 +93,7 @@ public class FileSelector extends Widget {
         private File currDir;
         private List<FileOption> listedFiles;
         
-        FilePanel(String filePath, FileSelector fileSelector) {
+        FilePanel(String filePath, WorldFileSelector fileSelector) {
             super(0, 40, WIDTH, HEIGHT - 140);
             this.getStyle().setDisplay(Style.DisplayType.MANUAL);
             this.getStyle().getBackground().setColor(.3f, .3f, .8f, 1);
@@ -121,7 +121,7 @@ public class FileSelector extends Widget {
         
         private final File file;
         
-        FileOption(File file, FileSelector fileSelector) {
+        FileOption(File file, WorldFileSelector fileSelector) {
             super(file.getName());
             this.file = file;
             this.getStyle().setWidth(WIDTH - 10);
