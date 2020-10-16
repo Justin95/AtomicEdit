@@ -46,7 +46,34 @@ public class GeneralUtils {
     }
     
     /**
-     * Read an integer of varying length from an array of longs
+     * Write an array if ints of a paticular size (ex 4 bits) into a long array.
+     * @param source
+     * @param elementSize
+     * @return 
+     */
+    public static long[] writeIntArrayToLongArray(int[] source, int elementSize) {
+        final int arrayElementSize = 64; //64 bits in a long
+        int intsPerLong = arrayElementSize / elementSize;
+        int longsNeeded = source.length / intsPerLong + (source.length % intsPerLong == 0 ? 0 : 1);
+        long[] dest = new long[longsNeeded];
+        for(int sourceIndex = 0; sourceIndex < source.length; sourceIndex++){
+            int toWrite = source[sourceIndex];
+            writeIntToPackedLongArray(toWrite, elementSize, sourceIndex, dest);
+        }
+        return dest;
+    }
+    
+    public static void writeIntToLongArray(int toWrite, int elementSize, int index, long[] dest) {
+        final int arrayElementSize = 64; //64 bits in a long
+        int intsPerLong = arrayElementSize / elementSize;
+        int arrayIndex = index / intsPerLong;
+        int offsetInElement = index % intsPerLong;
+        int bitOffsetInArrayElement = offsetInElement * elementSize;
+        dest[arrayIndex] = dest[arrayIndex] | ((toWrite & getMask(elementSize)) << bitOffsetInArrayElement);
+    }
+    
+    /**
+     * Read an integer of varying length from an array of longs. Used in minecraft pre 1.16.
      * @param elementSize
      * @param offset
      * @param source
@@ -70,23 +97,26 @@ public class GeneralUtils {
         return result;
     }
     
-    private static short readShortFromPackedArray(int elementSize, int offset, long[] source){
-        int bitOffset = elementSize * offset;
-        int arrayElementSize = 64;
-        int arrayIndex = bitOffset / arrayElementSize;
-        int bitOffsetInArrayElement = bitOffset % arrayElementSize;
-        short result = 0;
-        for(int i = 0; i < elementSize; i++){
-            short bit = (short)(source[arrayIndex] >> (arrayElementSize - bitOffsetInArrayElement - 1) & 1);//im pretty sure this is incorrect
-            result = (short) (result << 1);
-            result += bit;
-            arrayIndex++;
-            if(bitOffsetInArrayElement >= arrayElementSize){
-                bitOffsetInArrayElement = 0;
-                arrayIndex++;
-            }
-        }
+    /**
+     * Read an integer of varying length from an array of longs. The integers are assumed not to span over multiple
+     * longs. Used in minecraft 1.16+
+     * @param elementSize
+     * @param offset
+     * @param source
+     * @return 
+     */
+    public static int readIntFromLongArray(int elementSize, int offset, long[] source) {
+        final int arrayElementSize = 64; //64 bits in a long
+        int intsPerElement = arrayElementSize / elementSize;
+        int arrayIndex = offset / intsPerElement;
+        int offsetInElement = offset % intsPerElement;
+        int bitOffsetInArrayElement = offsetInElement * elementSize;
+        int result = (int)((source[arrayIndex] >>> bitOffsetInArrayElement) & getMask(elementSize));
         return result;
+    }
+    
+    private static long getMask(int maskSize) {
+        return (1 << (maskSize)) - 1;
     }
     
     /**

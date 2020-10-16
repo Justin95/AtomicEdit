@@ -49,6 +49,11 @@ public class AtomicEdit {
     
     public void cleanUp() {
         gcThread.shutdown();
+        try {
+            gcThread.join();
+        } catch (InterruptedException e) {
+            //pass
+        }
     }
     
     public void run(){

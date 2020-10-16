@@ -1,7 +1,6 @@
 
 package atomicedit.settings;
 
-import atomicedit.logging.Logger;
 import java.io.File;
 import javax.swing.JFileChooser;
 
@@ -15,7 +14,6 @@ public enum AtomicEditSettings {
         "Minecraft Install Directory",
         "minecraft_install_directory",
         SettingDataType.FILE_LOCATION,
-        null,
         () -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Locate .minecraft folder");
@@ -33,50 +31,30 @@ public enum AtomicEditSettings {
         "Render Distance",
         "chunk_render_distance",
         SettingDataType.INT,
-        null,
         () -> 9
     ),
     PREFERED_MINECRAFT_VERSION(
         "Prefered Minecraft Version",
         "prefered_minecraft_version",
         SettingDataType.STRING,
-        null,
         () -> "latest"
     ),
-    /* This setting is unnessesary it remains only as an example for how to set up a class choice setting.
-    BLOCK_MODEL_CREATOR(
-        "Block Model Creator",
-        "block_model_creator",
-        SettingDataType.CLASS_OPTION,
-        new ClassInstanceOption[]{
-            new ClassInstanceOption(BlockModelCreator1_13Logic.getInstance())
-        },
-        () -> BlockModelCreator1_13Logic.getInstance()
-    )
-    */
     ;
-    
-    private static final String HOME_DIR = System.getProperty("user.home");
-    public static final String ATOMIC_EDIT_INSTALL_PATH = HOME_DIR + (HOME_DIR.endsWith("/") ? "" : "/") + ".AtomicEdit";
-    public static final String SETTINGS_FILEPATH = ATOMIC_EDIT_INSTALL_PATH + "/atomicEditSettings.json";
     
     public final String DISPLAY_NAME;
     public final String SETTING_ID;
     private final SettingDataType DATATYPE;
-    private final SettingOption[] OPTIONS;
     private final DefaultValueCreator DEFAULT_VALUE_CREATOR;
     
     AtomicEditSettings(
         String displayName,
         String settingId,
         SettingDataType dataType,
-        SettingOption[] options,
         DefaultValueCreator defaultValueCreator
     ){
         this.DISPLAY_NAME = displayName;
         this.SETTING_ID = settingId;
         this.DATATYPE = dataType;
-        this.OPTIONS = options;
         this.DEFAULT_VALUE_CREATOR = defaultValueCreator;
     }
     
@@ -116,6 +94,7 @@ public enum AtomicEditSettings {
         return this.DATATYPE.storeAsString(value);
     }
     
+    
     enum SettingDataType{
         STRING(
             String.class,
@@ -131,20 +110,6 @@ public enum AtomicEditSettings {
             Integer.class,
             (setting, strValue) -> Integer.valueOf(strValue),
             (value) -> value.toString()
-        ),
-        CLASS_OPTION(
-            SettingSelectableClass.class,
-            (setting, strValue) -> {
-                for(int i = 0; i < setting.OPTIONS.length; i++){
-                    SettingSelectableClass classInstance = (SettingSelectableClass)setting.OPTIONS[i].getValue();
-                    if(classInstance.getIdentifierString().equals(strValue)){
-                        return classInstance;
-                    }
-                }
-                Logger.warning("Could not recognize option " + strValue + " for setting " + setting.DISPLAY_NAME + " chosing default");
-                return setting.createDefaultValue();
-            },
-            (value) -> ((SettingSelectableClass)value).getIdentifierString()
         ),
         FILE_LOCATION(
             String.class,

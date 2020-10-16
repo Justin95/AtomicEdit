@@ -31,7 +31,7 @@ public class BlockModelJsonLoader {
                 (entry) -> entry.getName().startsWith(INTERNAL_PATH) && entry.getName().endsWith(INTERNAL_EXT)
             ).forEach((jsonEntry) -> {
                 String modelName = "block/" + jsonEntry.getName().substring(INTERNAL_PATH.length(), jsonEntry.getName().length() - INTERNAL_EXT.length());
-                Logger.info("Loading minecraft model: " + modelName);
+                Logger.debug("Loading minecraft model: " + modelName);
                 String modelJson;
                 try{
                     modelJson = LoadingUtils.readInputStream(jarFile.getInputStream(jsonEntry));
@@ -39,6 +39,7 @@ public class BlockModelJsonLoader {
                     Logger.warning("Unable to read block model json: " + modelName, e);
                     modelJson = null;
                 }
+                //some models are just 'block/blah' and some are 'minecraft:block/blah' in 1.16
                 blockModeMap.put(modelName, modelJson);
             });
         }catch(IOException e){

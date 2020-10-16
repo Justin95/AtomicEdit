@@ -72,20 +72,6 @@ public class AeSettingValues {
         return value;
     }
     
-    public SettingSelectableClass getSettingValueAsClassInstance(AtomicEditSettings setting, Class instanceType){
-        if(setting == null){
-            throw new NullPointerException("Cannot look up null setting");
-        }
-        if(setting.getDataType().BASE_TYPE != SettingSelectableClass.class){
-            throw new IllegalArgumentException("The given setting is not a class selection setting");
-        }
-        SettingSelectableClass value = (SettingSelectableClass) settingsValues.get(setting);
-        if(!instanceType.isAssignableFrom(value.getClass())){
-            throw new IllegalArgumentException("Selected Class "+value.getClass().getSimpleName()+" instance is not assignable from " + instanceType.getSimpleName());
-        }
-        return value;
-    }
-    
     //add other datatypes as needed
     
 }
