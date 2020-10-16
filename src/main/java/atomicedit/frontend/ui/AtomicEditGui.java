@@ -78,8 +78,8 @@ public class AtomicEditGui {
         selectWorldButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
         selectWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if (event.getAction() == MouseClickAction.CLICK) {
-                backendController.setWorld("/home/justin/.minecraft/saves/AtomicEdit_1_16_Test");
-                /*
+                //backendController.setWorld("/home/justin/.minecraft/saves/AtomicEdit_1_16_Test");
+                
                 if (WORLD_SELECT_LOCK.tryLock()) {
                     try {
                         FileSelector selector = new FileSelector(
@@ -106,7 +106,7 @@ public class AtomicEditGui {
                         //WORLD_SELECT_LOCK.unlock();
                     }
                 }
-                */
+                
             }
         });
         testPanel.add(selectWorldButton);
