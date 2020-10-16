@@ -5,7 +5,7 @@ import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.frontend.AtomicEditRenderer;
-import atomicedit.frontend.gui.FileSelector;
+import atomicedit.frontend.gui.WorldFileSelector;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
 import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.logging.Logger;
@@ -82,7 +82,7 @@ public class AtomicEditGui {
                 
                 if (WORLD_SELECT_LOCK.tryLock()) {
                     try {
-                        FileSelector selector = new FileSelector(
+                        WorldFileSelector selector = new WorldFileSelector(
                             AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"
                         );
                         selector.setCallback(
