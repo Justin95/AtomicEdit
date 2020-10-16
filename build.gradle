@@ -31,8 +31,6 @@ targetCompatibility = 1.8
 
 dependencies {
     compile "org.lwjgl:lwjgl:$lwjglVersion"
-    //https://mvnrepository.com/artifact/org.lwjgl/lwjgl-tinyfd/3.2.3
-    compile "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
     compile "org.liquidengine:legui:$leguiVersion"
     
     ["natives-windows", "natives-linux", "natives-macos"].each { lwjglNatives ->
