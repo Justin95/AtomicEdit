@@ -148,34 +148,4 @@ public class AtomicEditGui {
         coordsLabel.getTextState().setText(coordsString);
     }
     
-    private static String getWorldFilePath(){
-        JFileChooser chooser = new JFileChooser();
-        
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setName("Locate minecraft save folder");
-        chooser.setCurrentDirectory(new File(AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"));
-        
-        chooser.showOpenDialog(null);
-        File file = chooser.getSelectedFile();
-        if (file == null) {
-            return null;
-        }
-        return file.getPath();
-        
-        /*
-        final String title = "Locate minecraft save folder";
-        final String path = AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves";
-        String result = TinyFileDialogs.tinyfd_selectFolderDialog(title, path);
-        
-        if (result == null) {
-            return null;
-        }
-        File choice = new File(result);
-        if(!choice.exists()) {
-            return null;
-        }
-        return choice.getPath();
-        */
-    }
-    
 }
