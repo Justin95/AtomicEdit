@@ -12,7 +12,6 @@ import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import java.io.File;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.swing.JFileChooser;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
