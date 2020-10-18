@@ -58,7 +58,7 @@ public class GeneralUtils {
         long[] dest = new long[longsNeeded];
         for(int sourceIndex = 0; sourceIndex < source.length; sourceIndex++){
             int toWrite = source[sourceIndex];
-            writeIntToPackedLongArray(toWrite, elementSize, sourceIndex, dest);
+            writeIntToLongArray(toWrite, elementSize, sourceIndex, dest);
         }
         return dest;
     }
