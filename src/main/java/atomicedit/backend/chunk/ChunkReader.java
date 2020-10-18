@@ -4,6 +4,7 @@ package atomicedit.backend.chunk;
 import atomicedit.backend.BlockCoord;
 import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.BlockState;
+import atomicedit.backend.biomes.BiomeMap;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtTag;
@@ -16,6 +17,8 @@ import java.util.List;
 public interface ChunkReader {
     
     public ChunkCoord getChunkCoord() throws MalformedNbtTagException;
+    
+    public BiomeMap getBiomeMap() throws MalformedNbtTagException;
     
     public int getBiomeAt(BlockCoord coord) throws MalformedNbtTagException;
     

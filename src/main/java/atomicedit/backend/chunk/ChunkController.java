@@ -3,6 +3,7 @@ package atomicedit.backend.chunk;
 
 import atomicedit.backend.BlockCoord;
 import atomicedit.backend.BlockState;
+import atomicedit.backend.biomes.BiomeMap;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
@@ -12,7 +13,7 @@ import atomicedit.backend.nbt.NbtTag;
  *
  * @author Justin Bonner
  */
-public abstract class ChunkController implements ChunkReader{
+public abstract class ChunkController implements ChunkReader {
     
     protected Chunk chunk;
     
@@ -26,7 +27,7 @@ public abstract class ChunkController implements ChunkReader{
     }
     
     
-    public abstract void setBiomeAt(BlockCoord coord, int biome) throws MalformedNbtTagException;
+    public abstract void setBiomeMap(BiomeMap biomeMap) throws MalformedNbtTagException;
     
     public abstract void setBlockAt(BlockCoord coord, BlockState block) throws MalformedNbtTagException;
     
@@ -43,6 +44,18 @@ public abstract class ChunkController implements ChunkReader{
     public abstract void setChunkNbtTag(NbtTag tag) throws MalformedNbtTagException; //call this after editing the NbtTag from getChunkAsNbtTag
     
     protected abstract void flushCacheToChunkNbt();
+    
+    /**
+     * If this chunk data version supports cubic biomes.
+     * @return 
+     */
+    protected abstract boolean useCubicBiomes();
+    
+    /**
+     * The number of chunk sections high this chunk data version calls for.
+     * @return 
+     */
+    protected abstract int chunkHeightInSections();
     
     protected void declareNbtChanged(){
         this.chunk.setNeedsSaving(true);
