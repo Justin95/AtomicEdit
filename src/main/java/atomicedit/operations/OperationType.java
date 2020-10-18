@@ -67,4 +67,10 @@ public enum OperationType {
         Operation createInstance(WorldVolume volume, OperationParameters parameters);
     }
     
+    //toString is used in the GUI for the display name
+    @Override
+    public String toString() {
+        return this.displayName;
+    }
+    
 }
