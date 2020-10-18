@@ -11,6 +11,7 @@ import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.jarreading.texture.TextureLoader;
 import atomicedit.settings.AeSettingValues;
 import atomicedit.settings.AtomicEditSettingsCreator;
+import org.liquidengine.legui.style.font.FontRegistry;
 
 
 /**
@@ -40,6 +41,7 @@ public class AtomicEdit {
     }
     
     private void initialize(){
+        FontRegistry.setDefaultFont(FontRegistry.ROBOTO_REGULAR);
         BlockState.loadKnownBlockStates();
         TextureLoader.getMinecraftDefaultTexture(); //force load textures
         BlockModelLookup.initialize();

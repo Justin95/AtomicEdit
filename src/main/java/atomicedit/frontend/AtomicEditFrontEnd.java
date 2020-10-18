@@ -8,6 +8,7 @@ import atomicedit.frontend.ui.AtomicEditGui;
 import atomicedit.frontend.worldmaintinance.ChunkLoadingThread;
 import atomicedit.logging.Logger;
 import org.liquidengine.legui.animation.AnimatorProvider;
+import org.liquidengine.legui.component.Component;
 import org.liquidengine.legui.listener.processor.EventProcessorProvider;
 import org.liquidengine.legui.system.context.CallbackKeeper;
 import org.liquidengine.legui.system.context.DefaultCallbackKeeper;
@@ -75,13 +76,11 @@ public class AtomicEditFrontEnd {
     }
     
     private static boolean isUiFocused(AtomicEditRenderer renderer){
-        return renderer.getContext().getMouseTargetGui() != null; //is mouse over gui?
-        /*
-        Component focusedGui = renderer.getContext().getFocusedGui();
+        Component focusedGui = renderer.getContext().getMouseTargetGui();
         return !(
                focusedGui == null 
             || focusedGui == renderer.getFrame().getContainer()
-            );*/
+        );
     }
     
     private void mainLoop(){

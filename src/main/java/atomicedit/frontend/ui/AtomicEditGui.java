@@ -51,10 +51,6 @@ public class AtomicEditGui {
         
         Vector2f winSize = frame.getContainer().getSize();
         //context.setWindowSize(new Vector2i((int) winSize.x, (int) winSize.y));
-        coordsLabel = new Label(200, 20, 200, 20);
-        coordsLabel.getTextState().setTextColor(.3f, .3f, .3f, 1f);
-        frame.getContainer().add(coordsLabel);
-        
         
         EditorTypesMenu editorMenu = new EditorTypesMenu();
         frame.getContainer().add(editorMenu);
@@ -136,14 +132,23 @@ public class AtomicEditGui {
             }
         });
         testPanel.add(saveWorldButton);
+        
+        coordsLabel = new Label(280, 5, 200, 30);
+        coordsLabel.getStyle().setFontSize(17f);
+        coordsLabel.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
+        coordsLabel.getStyle().setTextColor(1f, 1f, 1f, 1f);
+        testPanel.add(coordsLabel);
         frame.getContainer().add(testPanel);
     }
     
     public static void updateGui(AtomicEditRenderer renderer){
         Vector3f cameraPos = renderer.getCamera().getPosition();
         ChunkSectionCoord sectionCoord = ChunkSectionCoord.getInstanceFromWorldPos(cameraPos.x, cameraPos.y, cameraPos.z);
-        String coordsString = "Pos: " + cameraPos.x + ", " + cameraPos.y + ", " + cameraPos.z + "\n"
-                            + "Chunk Section: " + sectionCoord.x + ", " + sectionCoord.y + ", " + sectionCoord.z;
+        String coordsFormatStr = "Pos: %.2f, %.2f, %.2f Chunk Section: %d, %d, %d";
+        String coordsString = String.format(coordsFormatStr,
+                cameraPos.x, cameraPos.y, cameraPos.z,
+                sectionCoord.x, sectionCoord.y, sectionCoord.z
+        );
         coordsLabel.getTextState().setText(coordsString);
     }
     
