@@ -97,7 +97,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
                 chunk = readChunkFromDataStream(regionInput);
             }
         }catch(IOException e){
-            Logger.error("IOException while reading chunk" + e);
+            Logger.error("IOException while reading chunk.", e);
         }
         try{
             regionInput.close();
