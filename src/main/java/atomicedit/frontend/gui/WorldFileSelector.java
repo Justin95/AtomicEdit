@@ -59,11 +59,11 @@ public class WorldFileSelector extends Widget {
         
         this.selectButton = new Button(WIDTH - 90, HEIGHT - 60, 70, 30);
         //this.selectButton.getStyle().getFlexStyle().setAlignContent(FlexStyle.AlignContent.CENTER);
-        this.selectButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_END);
+        //this.selectButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_END);
         //this.selectButton.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.COLUMN);
         //this.selectButton.getStyle().getBackground().setColor(.3f, .3f, .8f, 1);
         //this.selectButton.getTextState().setFontSize(12);
-        this.selectButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        //this.selectButton.getStyle().setPosition(Style.PositionType.RELATIVE);
         //this.selectButton.setEnabled(true);
         this.selectButton.getTextState().setText("Select World");
         this.selectButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
@@ -96,7 +96,7 @@ public class WorldFileSelector extends Widget {
         FilePanel(String filePath, WorldFileSelector fileSelector) {
             super(0, 40, WIDTH, HEIGHT - 140);
             this.getStyle().setDisplay(Style.DisplayType.MANUAL);
-            this.getStyle().getBackground().setColor(.3f, .3f, .8f, 1);
+            this.getStyle().getBackground().setColor(.4f, .4f, .9f, 1);
             this.currDir = new File(filePath);
             if (!currDir.exists()) {
                 throw new IllegalArgumentException("Directory `" + filePath + "` does not exist.");

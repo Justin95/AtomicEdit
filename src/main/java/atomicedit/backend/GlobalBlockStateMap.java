@@ -47,7 +47,7 @@ public class GlobalBlockStateMap {
     
     public static List<BlockState> getBlockTypes(){
         synchronized(idToBlockTypeMap){
-            return Collections.unmodifiableList(idToBlockTypeMap);
+            return new ArrayList(idToBlockTypeMap);
         }
     }
     
