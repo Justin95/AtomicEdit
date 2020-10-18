@@ -6,6 +6,7 @@ import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.frontend.ui.OperationParameterComponent;
 import org.liquidengine.legui.component.Label;
 import org.liquidengine.legui.component.SelectBox;
+import org.liquidengine.legui.style.font.FontRegistry;
 
 /**
  *
@@ -19,6 +20,8 @@ public class LabeledBlockSelectorComponent extends OperationParameterComponent {
     public LabeledBlockSelectorComponent(String labelName){ //Change this to be one selector for block type name, and choose properties another way
         super();
         this.blockSelect = new SelectBox<>();
+        this.blockSelect.getSelectionButton().getStyle().setFont(FontRegistry.ROBOTO_REGULAR);
+        this.blockSelect.getSelectionButton().getStyle().setFontSize(20f);
         this.nameLabel = new Label();
         BlockState b = BlockState.AIR; //TODO fix this, this just force loads class
         GlobalBlockStateMap.getBlockTypes().forEach((blockState) -> blockSelect.addElement(blockState)); //alphabetize later
@@ -27,8 +30,9 @@ public class LabeledBlockSelectorComponent extends OperationParameterComponent {
         this.nameLabel.getTextState().setText(labelName);
         this.nameLabel.setPosition(0, 0);
         this.nameLabel.setSize(80, 30);
-        this.nameLabel.getTextState().setFontSize(20);
-        this.nameLabel.getTextState().setTextColor(1, 1, 1, 1);
+        this.nameLabel.getStyle().setFontSize(20f);
+        this.nameLabel.getStyle().setFont(FontRegistry.ROBOTO_BOLD);
+        this.nameLabel.getStyle().setTextColor(1, 1, 1, 1);
         this.add(blockSelect);
         this.add(nameLabel);
         this.setSize(280, 30);

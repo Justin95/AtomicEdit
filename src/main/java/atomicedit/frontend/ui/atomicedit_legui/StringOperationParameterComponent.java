@@ -11,8 +11,8 @@ import org.liquidengine.legui.component.TextInput;
  */
 public class StringOperationParameterComponent extends OperationParameterComponent {
     
-    private static final int INPUT_FONT_SIZE = 20;
-    private static final int LABEL_FONT_SIZE = 20;
+    private static final float INPUT_FONT_SIZE = 20;
+    private static final float LABEL_FONT_SIZE = 20;
     private static final int LABEL_WIDTH = 50;
     private static final int LABEL_HEIGHT = 25;
     private static final int INPUT_WIDTH = 100;
@@ -29,9 +29,9 @@ public class StringOperationParameterComponent extends OperationParameterCompone
         this.setSize(TOTAL_WIDTH, TOTAL_HEIGHT);
         this.label = new Label(0,0, LABEL_WIDTH, LABEL_HEIGHT);
         this.label.getTextState().setText(labelText);
-        this.label.getTextState().setFontSize(LABEL_FONT_SIZE);
+        this.label.getStyle().setFontSize(LABEL_FONT_SIZE);
         this.textInput = new TextInput(LABEL_WIDTH + BUFFER_WIDTH,0, INPUT_WIDTH, INPUT_HEIGHT);
-        this.textInput.getTextState().setFontSize(INPUT_FONT_SIZE);
+        this.textInput.getStyle().setFontSize(INPUT_FONT_SIZE);
         this.getStyle().getBackground().setColor(0, 0, 0, 0); //fully transparent panel
         this.add(label);
         this.add(textInput);
