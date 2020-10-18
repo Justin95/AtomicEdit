@@ -2,6 +2,7 @@
 package atomicedit.backend.chunk;
 
 import atomicedit.backend.nbt.MalformedNbtTagException;
+import atomicedit.backend.nbt.NbtCompoundTag;
 
 /**
  *
@@ -11,10 +12,10 @@ public class ChunkControllerFactory {
     
     
     
-    public static ChunkController getChunkController(Chunk chunk) throws MalformedNbtTagException{
+    static ChunkNbtInterpreter getChunkNbtInterpreter(NbtCompoundTag chunkNbtTag) throws MalformedNbtTagException{
         for(ChunkControllerType option : ChunkControllerType.values()){
-            if(option.canWorkWith(chunk)){
-                return option.getChunkController(chunk);
+            if(option.canWorkWith(chunkNbtTag)){
+                return option.getChunkController(chunkNbtTag);
             }
         }
         throw new MalformedNbtTagException("Chunk is either corrupt or of unsupported format");
@@ -33,16 +34,16 @@ public class ChunkControllerFactory {
     
     private enum ChunkControllerType{
         VERSION_1_13(
-            chunk -> between(chunk.getChunkTag().getIntTag("DataVersion").getPayload(), 1519, 1952), //1519 is full release minecraft 1.13
-            chunk -> new ChunkController1_13(chunk)
+            chunkNbt -> between(chunkNbt.getIntTag("DataVersion").getPayload(), 1519, 1952), //1519 is full release minecraft 1.13
+            chunkNbt -> new ChunkController1_13()
         ),
         VERSION_1_14(
-            chunk -> between(chunk.getChunkTag().getIntTag("DataVersion").getPayload(), 1952, 2566), //1952 is full release minecraft 1.14
-            chunk -> new ChunkController1_14(chunk)
+            chunkNbt -> between(chunkNbt.getIntTag("DataVersion").getPayload(), 1952, 2566), //1952 is full release minecraft 1.14
+            chunkNbt -> new ChunkController1_14()
         ),
         VERSION_1_16(
-            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 2566, //2566 is full release minecraft 1.16
-            chunk -> new ChunkController1_16(chunk)
+            chunkNbt -> chunkNbt.getIntTag("DataVersion").getPayload() >= 2566, //2566 is full release minecraft 1.16
+            chunkNbt -> new ChunkController1_16()
         ),
         ;
         
@@ -54,24 +55,24 @@ public class ChunkControllerFactory {
             this.getter = getter;
         }
         
-        public boolean canWorkWith(Chunk chunk){
+        public boolean canWorkWith(NbtCompoundTag chunkTag){
             try{
-                return this.checker.isCorrectVersion(chunk);
+                return this.checker.isCorrectVersion(chunkTag);
             }catch(MalformedNbtTagException e){
                 return false;
             }
         }
         
-        public ChunkController getChunkController(Chunk chunk) throws MalformedNbtTagException{
-            return this.getter.getChunkController(chunk);
+        public ChunkNbtInterpreter getChunkController(NbtCompoundTag chunkNbt) throws MalformedNbtTagException{
+            return this.getter.getChunkController(chunkNbt);
         }
         
         private interface ChunkVersionChecker{
-            public boolean isCorrectVersion(Chunk chunk) throws MalformedNbtTagException;
+            public boolean isCorrectVersion(NbtCompoundTag chunkTag) throws MalformedNbtTagException;
         }
         
         private interface ChunkControllerGetter{
-            public ChunkController getChunkController(Chunk chunk) throws MalformedNbtTagException;
+            public ChunkNbtInterpreter getChunkController(NbtCompoundTag chunkNbt) throws MalformedNbtTagException;
         }
     }
     

@@ -6,7 +6,7 @@ import atomicedit.backend.World;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.blockprovider.BlockProvider;
 import atomicedit.backend.blockprovider.ReplaceBlockProvider;
-import atomicedit.backend.chunk.ChunkController;
+import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
@@ -55,7 +55,7 @@ public class ReplaceBlocksOperation extends Operation {
     
     @Override
     protected OperationResult doOperation(World world) throws Exception{
-        Collection<ChunkController> chunkControllers = world.getLoadedChunkStage().getMutableChunks(getChunkCoordsInOperation()).values();
+        Collection<Chunk> chunkControllers = world.getLoadedChunkStage().getMutableChunks(getChunkCoordsInOperation()).values();
         this.initialSchematic = Schematic.createSchematicFromWorld(world, operationVolume);
         setBlocks(chunkControllers);
         return new OperationResult(true);
@@ -72,7 +72,7 @@ public class ReplaceBlocksOperation extends Operation {
         return this.operationVolume;
     }
     
-    private void setBlocks(Collection<ChunkController> chunkControllers) throws Exception{
+    private void setBlocks(Collection<Chunk> chunkControllers) throws Exception{
         BlockProvider replace = new ReplaceBlockProvider(operationVolume, initialSchematic, fromBlockState, toBlockState);
         ChunkUtils.writeBlocksIntoChunks(chunkControllers, replace, operationVolume.getSmallestPoint());
     }

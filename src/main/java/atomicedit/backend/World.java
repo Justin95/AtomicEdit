@@ -3,7 +3,6 @@ package atomicedit.backend;
 
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.Chunk;
-import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.lighting.LightingUtil;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.worldformats.CorruptedRegionFileException;
@@ -29,7 +28,7 @@ public class World {
     /**
      * Hold chunks that have been modified but not yet saved to disk.
      */
-    private final Map<ChunkCoord, ChunkController> unsavedChunkMap;
+    private final Map<ChunkCoord, Chunk> unsavedChunkMap;
     private final LoadedChunkStage loadedChunkStage;
     private final Stack<Operation> operationHistory;
     private static final int MAX_UNDO_OPS = 20;
@@ -69,7 +68,7 @@ public class World {
         if(chunkCoordsToLight.isEmpty()) {
             return;
         }
-        Map<ChunkCoord, ChunkController> toLight;
+        Map<ChunkCoord, Chunk> toLight;
         try {
             toLight = this.loadedChunkStage.getMutableChunks(chunkCoordsToLight);
         } catch(MalformedNbtTagException e) {
@@ -77,23 +76,23 @@ public class World {
             return; //this will leave the chunks unlit
         }
         LightingUtil.doLightingCalculation(toLight);
-        for(ChunkController chunk : toLight.values()) {
-            chunk.clearNeedsLightingCalc();
+        for(Chunk chunk : toLight.values()) {
+            chunk.setNeedsLightingCalc(false);
         }
         Logger.info("Finished lighting calc.");
     }
     
     public OperationResult doOperation(Operation op){
         OperationResult result = op.doSynchronizedOperation(this);
-        Map<ChunkCoord, ChunkController> operationChunks;
+        Map<ChunkCoord, Chunk> operationChunks;
         try{
             operationChunks = loadedChunkStage.getMutableChunks(op.getChunkCoordsInOperation());
         }catch(MalformedNbtTagException e){
             return new OperationResult(false, e);
         }
-        operationChunks.forEach((ChunkCoord coord, ChunkController chunkController) -> {
-            if(chunkController.getChunk().needsSaving()){
-                this.unsavedChunkMap.put(coord, chunkController);
+        operationChunks.forEach((ChunkCoord coord, Chunk chunk) -> {
+            if(chunk.needsSaving()){
+                this.unsavedChunkMap.put(coord, chunk);
             }
         });
         if(operationHistory.size() >= MAX_UNDO_OPS){

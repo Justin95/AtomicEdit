@@ -2,13 +2,13 @@
 package atomicedit.backend.worldformats;
 
 import atomicedit.backend.chunk.Chunk;
-import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtInterpreter;
 import atomicedit.backend.nbt.NbtTag;
-import atomicedit.backend.nbt.NbtTypes;
+import atomicedit.backend.nbt.NbtCompoundTag;
 import atomicedit.backend.utils.GeneralUtils;
+import atomicedit.backend.chunk.ChunkParserV1;
 import atomicedit.logging.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author Justin Bonner
  */
-public class MinecraftAnvilWorldFormat implements WorldFormat{
+public class MinecraftAnvilWorldFormat implements WorldFormat {
     
     private static final int NUM_CHUNKS_IN_REGION_FILE = 1024;
     private static final int SECTOR_SIZE_IN_BYTES = 4096;
@@ -51,7 +51,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     @Override
-    public void writeChunks(Map<ChunkCoord, ChunkController> chunks) throws IOException, CorruptedRegionFileException {
+    public void writeChunks(Map<ChunkCoord, Chunk> chunks) throws IOException, CorruptedRegionFileException {
         Map<String, Map<ChunkCoord, Chunk>> regionFileNameToChunksMap = catigorizeByRegionFile(chunks);
         for(String regionFileName : regionFileNameToChunksMap.keySet()){
             Map<ChunkCoord, Chunk> chunksInThisRegion = regionFileNameToChunksMap.get(regionFileName);
@@ -119,7 +119,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
             //this is a good place to print chunk data to look at chunk formats
             return interpretChunk(chunkNbt);
         }catch(MalformedNbtTagException e){
-            Logger.error("Malformed Nbt in chunk");
+            Logger.error("Malformed Nbt in chunk", e);
             return null;
         }
     }
@@ -152,7 +152,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     public Chunk interpretChunk(NbtTag chunkNbt) throws MalformedNbtTagException{
-        return new Chunk(NbtTypes.getAsCompoundTag(chunkNbt));
+        return ChunkParserV1.getInstance().parseChunk((NbtCompoundTag)chunkNbt);
     }
     
     /**
@@ -160,14 +160,14 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
      * @param chunks
      * @return a map from region file name to a map from a chunk's coord to the chunk.
      */
-    private static Map<String, Map<ChunkCoord, Chunk>> catigorizeByRegionFile(Map<ChunkCoord, ChunkController> chunks){
+    private static Map<String, Map<ChunkCoord, Chunk>> catigorizeByRegionFile(Map<ChunkCoord, Chunk> chunks){
         Map<String, Map<ChunkCoord, Chunk>> regionToChunkMap = new HashMap<>();
         for(ChunkCoord coord : chunks.keySet()){
             String regionFileName = getRegionFileName(coord);
             if(!regionToChunkMap.containsKey(regionFileName)){
                 regionToChunkMap.put(regionFileName, new HashMap<>());
             }
-            regionToChunkMap.get(regionFileName).put(coord, chunks.get(coord).getChunk());
+            regionToChunkMap.get(regionFileName).put(coord, chunks.get(coord));
         }
         return regionToChunkMap;
     }

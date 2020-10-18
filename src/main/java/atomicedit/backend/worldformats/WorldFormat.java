@@ -2,7 +2,6 @@
 package atomicedit.backend.worldformats;
 
 import atomicedit.backend.chunk.Chunk;
-import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
 import java.io.IOException;
 import java.util.Collection;
@@ -21,7 +20,7 @@ public interface WorldFormat {
      */
     public void setWorld(String filepath);
     
-    public void writeChunks(Map<ChunkCoord, ChunkController> chunks) throws IOException, CorruptedRegionFileException;
+    public void writeChunks(Map<ChunkCoord, Chunk> chunks) throws IOException, CorruptedRegionFileException;
     
     public Map<ChunkCoord, Chunk> readChunks(Collection<ChunkCoord> chunkCoords);
     

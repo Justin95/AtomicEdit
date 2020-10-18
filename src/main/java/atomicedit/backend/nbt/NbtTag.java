@@ -1,7 +1,6 @@
 
 package atomicedit.backend.nbt;
 
-import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

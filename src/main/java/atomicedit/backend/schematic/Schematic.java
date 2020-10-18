@@ -6,7 +6,7 @@ import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.World;
 import atomicedit.backend.blockprovider.BlockProvider;
 import atomicedit.backend.blockprovider.SchematicBlockProvider;
-import atomicedit.backend.chunk.ChunkController;
+import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.nbt.NbtCompoundTag;
@@ -51,10 +51,10 @@ public class Schematic {
     }
     
     public static Schematic createSchematicFromWorld(World world, WorldVolume volume, boolean includeEntities, boolean includeBlockEntities) throws Exception{
-        Map<ChunkCoord, ChunkController> controllers = world.getLoadedChunkStage().getMutableChunks(volume.getContainedChunkCoords());
-        short[] blocks = ChunkUtils.readBlocksFromChunks(controllers, volume);
-        Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunks(controllers, volume) : null;
-        Collection<BlockEntity> blockEntities = includeBlockEntities ? ChunkUtils.readBlockEntitiesFromChunks(controllers, volume) : null;
+        Map<ChunkCoord, Chunk> chunks = world.getLoadedChunkStage().getMutableChunks(volume.getContainedChunkCoords());
+        short[] blocks = ChunkUtils.readBlocksFromChunks(chunks, volume);
+        Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunks(chunks, volume) : null;
+        Collection<BlockEntity> blockEntities = includeBlockEntities ? ChunkUtils.readBlockEntitiesFromChunks(chunks, volume) : null;
         return new Schematic(volume, blocks, entities, blockEntities);
     }
     
@@ -68,7 +68,7 @@ public class Schematic {
      */
     public static OperationResult putSchematicIntoWorld(World world, Schematic schematic, BlockCoord smallestCoord) throws Exception{
         BlockProvider provider = new SchematicBlockProvider(schematic);
-        Map<ChunkCoord, ChunkController> chunkControllers = world.getLoadedChunkStage().getMutableChunks(schematic.volume.getContainedChunkCoords(smallestCoord));
+        Map<ChunkCoord, Chunk> chunkControllers = world.getLoadedChunkStage().getMutableChunks(schematic.volume.getContainedChunkCoords(smallestCoord));
         ChunkUtils.writeBlocksIntoChunks(chunkControllers.values(), provider, smallestCoord);
         ChunkUtils.writeBlockEntitiesIntoChunks(chunkControllers, schematic.blockEntities);
         ChunkUtils.writeEntitiesIntoChunks(chunkControllers, schematic.entities);

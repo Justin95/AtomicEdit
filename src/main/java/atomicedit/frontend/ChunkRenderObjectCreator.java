@@ -3,7 +3,6 @@ package atomicedit.frontend;
 
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.backend.chunk.Chunk;
-import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.chunk.ChunkSection;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.frontend.render.ChunkSectionRenderObject;
@@ -33,7 +32,7 @@ public class ChunkRenderObjectCreator {
      * @param zPlus
      * @return 
      */
-    public static Collection<ChunkSectionRenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
+    public static Collection<ChunkSectionRenderObject> createRenderObjects(Chunk chunk, Chunk xMinus, Chunk xPlus, Chunk zMinus, Chunk zPlus){
         ArrayList<ChunkSectionRenderObject> renderObjects = new ArrayList<>();
         FloatList vertexBuffer = new FloatList();
         IntList indiciesBuffer = new IntList();
@@ -64,9 +63,9 @@ public class ChunkRenderObjectCreator {
                 if(sectionRenderObject != null){
                     renderObjects.add(sectionRenderObject);
                 }
-            }catch(MalformedNbtTagException e){
+            }catch (MalformedNbtTagException e){
                 Logger.warning("MalformedNbtTagException while trying to create render object", e);
-            }catch(Exception e){
+            }catch (Exception e){
                 Logger.warning("Exception while trying to create chunk render object", e);
             }
             vertexBuffer.reset();

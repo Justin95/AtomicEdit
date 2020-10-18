@@ -2,10 +2,7 @@
 package atomicedit.backend;
 
 import atomicedit.backend.chunk.Chunk;
-import atomicedit.backend.chunk.ChunkController;
-import atomicedit.backend.chunk.ChunkControllerFactory;
 import atomicedit.backend.chunk.ChunkCoord;
-import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.worldformats.MinecraftAnvilWorldFormat;
 import atomicedit.backend.worldformats.WorldFormat;
@@ -27,86 +24,78 @@ public class LoadedChunkStage {
     /**
      * A list of chunk controllers. This should be sorted later for look up speed. TODO
      */
-    private final ArrayList<WeakReference<ChunkController>> controllerList;
+    private final ArrayList<WeakReference<Chunk>> chunkList;
     private final Object STAGE_LOCK = new Object();
     
     public LoadedChunkStage(String worldFilepath){
         this.worldFilepath = worldFilepath;
-        this.controllerList = new ArrayList<>();
+        this.chunkList = new ArrayList<>();
     }
     
-    private void purgeControllerList(){
+    private void purgeChunkList(){
         synchronized(STAGE_LOCK){
-            List<WeakReference<ChunkController>> toRemove = new ArrayList<>();
-            for(WeakReference<ChunkController> controllerRef : controllerList){
-                if(controllerRef.get() == null){
-                    toRemove.add(controllerRef);
+            List<WeakReference<Chunk>> toRemove = new ArrayList<>();
+            for(WeakReference<Chunk> chunkRef : chunkList){
+                if(chunkRef.get() == null){
+                    toRemove.add(chunkRef);
                 }
             }
-            controllerList.removeAll(toRemove);
+            chunkList.removeAll(toRemove);
             //Logger.info("Purged " + toRemove.size() + " chunks from cache. Chunk cache now has " + controllerList.size() + " chunks.");
         }
     }
     
-    private void addChunkControllerToCache(ChunkController controller) throws MalformedNbtTagException{
-        WeakReference<ChunkController> controllerRef = new WeakReference<>(controller);
+    private void addChunkControllerToCache(Chunk chunk) throws MalformedNbtTagException{
+        WeakReference<Chunk> controllerRef = new WeakReference<>(chunk);
         synchronized(STAGE_LOCK){
-            this.controllerList.add(controllerRef);
+            this.chunkList.add(controllerRef);
         }
     }
     
-    private Map<ChunkCoord, ChunkController> getCachedChunkControllers(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
-        purgeControllerList();
-        Map<ChunkCoord, ChunkController> controllers = new HashMap<>();
+    private Map<ChunkCoord, Chunk> getCachedChunks(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
+        purgeChunkList();
+        Map<ChunkCoord, Chunk> chunks = new HashMap<>();
         synchronized(STAGE_LOCK){
             CoordLoop:
             for(ChunkCoord coord : chunkCoords){
-                for(WeakReference<ChunkController> controllerRef : controllerList){
-                    ChunkController controller = controllerRef.get();
-                    if(controller == null){
+                for(WeakReference<Chunk> chunkRef : chunkList){
+                    Chunk chunk = chunkRef.get();
+                    if(chunk == null){
                         continue;
                     }
-                    if(controller.getChunkCoord().equals(coord)){
-                        controllers.put(coord, controller);
+                    if(chunk.getChunkCoord().equals(coord)){
+                        chunks.put(coord, chunk);
                         continue CoordLoop;
                     }
                 }
-                controllers.put(coord, null);
+                chunks.put(coord, null);
             }
         }
         
-        return controllers;
+        return chunks;
     }
     
-    public Map<ChunkCoord, ChunkController> getMutableChunks(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
-        Map<ChunkCoord, ChunkController> chunkControllers = getCachedChunkControllers(chunkCoords);
+    public Map<ChunkCoord, Chunk> getMutableChunks(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
+        Map<ChunkCoord, Chunk> chunkControllers = getCachedChunks(chunkCoords);
         List<ChunkCoord> chunksToReadIn = new ArrayList<>();
         for(ChunkCoord coord : chunkCoords){
             if(chunkControllers.get(coord) == null){
                 chunksToReadIn.add(coord);
             }
         }
-        Map<ChunkCoord, ChunkController> readInControllers = getChunkControllers(chunksToReadIn); //TODO will need to make sure the same chunk cant be read in twice here
+        Map<ChunkCoord, Chunk> readInControllers = readChunks(chunksToReadIn); //TODO will need to make sure the same chunk cant be read in twice here
         for(ChunkCoord coord : readInControllers.keySet()){
-            ChunkController controller = readInControllers.get(coord);
+            Chunk controller = readInControllers.get(coord);
             chunkControllers.put(coord, controller);
             addChunkControllerToCache(controller);
         }
         return chunkControllers;
     }
     
-    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
-        return (Map<ChunkCoord, ChunkReader>)(Map)getMutableChunks(chunkCoords);
+    public Map<ChunkCoord, Chunk> getChunks(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException {
+        return getMutableChunks(chunkCoords);
     }
     
-    private Map<ChunkCoord, ChunkController> getChunkControllers(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
-        Map<ChunkCoord, ChunkController> coordToController = new HashMap<>();
-        Map<ChunkCoord, Chunk> coordToChunk = readChunks(chunkCoords);
-        for(ChunkCoord coord : coordToChunk.keySet()){
-            coordToController.put(coord, ChunkControllerFactory.getChunkController(coordToChunk.get(coord)));
-        }
-        return coordToController;
-    }
     
     private Map<ChunkCoord, Chunk> readChunks(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
         WorldFormat worldFormat = new MinecraftAnvilWorldFormat(worldFilepath);

@@ -1,8 +1,8 @@
 
 package atomicedit.backend;
 
+import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkCoord;
-import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
@@ -64,8 +64,8 @@ public class BackendController {
         world.saveChanges();
     }
     
-    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords) throws Exception{
-        return this.world.getLoadedChunkStage().getReadOnlyChunks(chunkCoords);
+    public Map<ChunkCoord, Chunk> getChunks(Collection<ChunkCoord> chunkCoords) throws Exception{
+        return this.world.getLoadedChunkStage().getChunks(chunkCoords);
     }
     
     public Schematic createSchematic(WorldVolume volume) throws Exception{

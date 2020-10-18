@@ -60,4 +60,8 @@ public class ChunkSection {
         return this.skyLight;
     }
     
+    public void setBlocks(short[] blocks) {
+        this.blocks = blocks;
+    }
+    
 }

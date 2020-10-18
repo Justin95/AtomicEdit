@@ -1,7 +1,7 @@
 
 package atomicedit.backend.lighting;
 
-import atomicedit.backend.chunk.ChunkController;
+import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkCoord;
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class LightingUtil {
     
-    public static void doLightingCalculation(Map<ChunkCoord, ChunkController> chunkMap) {
+    public static void doLightingCalculation(Map<ChunkCoord, Chunk> chunkMap) {
         
     }
     
