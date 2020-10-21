@@ -67,7 +67,9 @@ public class Logger {
             printException(logWriter, e);
         }
         System.out.println(message);
-        e.printStackTrace(System.out);
+        if (e != null) {
+            e.printStackTrace(System.out);
+        }
     }
     
     public static void debug(String message) {

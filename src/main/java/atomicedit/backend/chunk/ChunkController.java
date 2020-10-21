@@ -55,7 +55,7 @@ public abstract class ChunkController implements ChunkReader {
      * The number of chunk sections high this chunk data version calls for.
      * @return 
      */
-    protected abstract int chunkHeightInSections();
+    public abstract int chunkHeightInSections();
     
     protected void declareNbtChanged(){
         this.chunk.setNeedsSaving(true);

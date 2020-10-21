@@ -24,7 +24,7 @@ public abstract class Operation {
             }catch(Exception e){
                 String message = "Exception while doing operation.";
                 Logger.warning(message, e);
-                return new OperationResult(false, message);
+                return new OperationResult(false, message, e);
             }
         }
     }
@@ -38,7 +38,7 @@ public abstract class Operation {
             }catch(Exception e){
                 String message = "Exception while undoing operation.";
                 Logger.warning(message, e);
-                return new OperationResult(false, message);
+                return new OperationResult(false, message, e);
             }
         }
     }

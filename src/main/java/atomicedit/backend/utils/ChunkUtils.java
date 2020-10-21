@@ -38,37 +38,50 @@ public class ChunkUtils {
     public static void writeBlocksIntoChunks(Collection<ChunkController> chunkControllers, BlockProvider blockProvider, BlockCoord smallestPoint) throws MalformedNbtTagException{
         Volume volume = blockProvider.getVolume();
         Box enclosingBox = volume.getEnclosingBox();
-        BlockCoord largestPoint = new BlockCoord(smallestPoint.x + enclosingBox.getXLength(), smallestPoint.y + enclosingBox.getYLength(), smallestPoint.z + enclosingBox.getZLength());
+        BlockCoord largestPoint = new BlockCoord(
+                smallestPoint.x + enclosingBox.getXLength(),
+                smallestPoint.y + enclosingBox.getYLength(),
+                smallestPoint.z + enclosingBox.getZLength()
+        );
         ChunkSectionCoord largestChunk = largestPoint.getChunkSectionCoord();
         ChunkSectionCoord smallestChunk = smallestPoint.getChunkSectionCoord();
         
         int xLengthInChunks = largestChunk.x - smallestChunk.x + 1; //inclusive
-        int yLengthInChunks = largestPoint.getSubChunkIndex() - smallestPoint.getSubChunkIndex() + 1;
+        int yLengthInChunks = largestChunk.y - smallestChunk.y + 1;
         int zLengthInChunks = largestChunk.z - smallestChunk.z + 1; //inclusive
         ChunkSectionBlocks[] chunkSectionBlocks = getChunkSectionBlocks(chunkControllers, smallestChunk, largestChunk, xLengthInChunks, yLengthInChunks, zLengthInChunks);
         int xOffset = smallestPoint.getChunkLocalX();
         int yOffset = smallestPoint.getSubChunkLocalY();
         int zOffset = smallestPoint.getChunkLocalZ();
         blockProvider.doForBlock((x, y, z, block) -> {
-            int chunkSectionIndex = GeneralUtils.getIndexYZX((x + xOffset) / ChunkSection.SIDE_LENGTH,
-                                                             (y + yOffset) / ChunkSection.SIDE_LENGTH,
-                                                             (z + zOffset) / ChunkSection.SIDE_LENGTH,
-                                                             xLengthInChunks,
-                                                             zLengthInChunks);
-            int indexInSection = GeneralUtils.getIndexYZX((x + xOffset) % ChunkSection.SIDE_LENGTH,
-                                                          (y + yOffset) % ChunkSection.SIDE_LENGTH,
-                                                          (z + zOffset) % ChunkSection.SIDE_LENGTH,
-                                                          ChunkSection.SIDE_LENGTH);
-            chunkSectionBlocks[chunkSectionIndex].blocks[indexInSection] = block;
+            int chunkSectionIndex = GeneralUtils.getIndexYZX(
+                    (x + xOffset) / ChunkSection.SIDE_LENGTH,
+                    (y + yOffset) / ChunkSection.SIDE_LENGTH,
+                    (z + zOffset) / ChunkSection.SIDE_LENGTH,
+                    xLengthInChunks,
+                    zLengthInChunks
+            );
+            int indexInSection = GeneralUtils.getIndexYZX(
+                    (x + xOffset) % ChunkSection.SIDE_LENGTH,
+                    (y + yOffset) % ChunkSection.SIDE_LENGTH,
+                    (z + zOffset) % ChunkSection.SIDE_LENGTH,
+                    ChunkSection.SIDE_LENGTH
+            );
+            if (chunkSectionBlocks[chunkSectionIndex] != null) {
+                chunkSectionBlocks[chunkSectionIndex].blocks[indexInSection] = block;
+            }
         });
         for(ChunkSectionBlocks section : chunkSectionBlocks){ //update chunk controllers
+            if (section == null) { //null chunk sections were out of bounds
+                continue;
+            }
             section.controller.setBlocks(section.sectionIndex, section.blocks);
         }
     }
     
     /**
      * Creates an array of ChunkSectionBlocks objects ordered in Y, Z, X order. Where Y, Z, and X are the chunk sections offset from the
-     * smallest chunk section.
+     * smallest chunk section. Any out of bounds chunk sections are null.
      * @param controllers
      * @param smallestChunk
      * @param largestChunk
@@ -78,18 +91,22 @@ public class ChunkUtils {
      * @return
      * @throws MalformedNbtTagException 
      */
-    private static ChunkSectionBlocks[] getChunkSectionBlocks(Collection<ChunkController> controllers,
-                                                             ChunkSectionCoord smallestChunk,
-                                                             ChunkSectionCoord largestChunk,
-                                                             int xChunkLen,
-                                                             int yChunkLen,
-                                                             int zChunkLen)throws MalformedNbtTagException{
+    private static ChunkSectionBlocks[] getChunkSectionBlocks(
+            Collection<ChunkController> controllers,
+            ChunkSectionCoord smallestChunk,
+            ChunkSectionCoord largestChunk,
+            int xChunkLen,
+            int yChunkLen,
+            int zChunkLen
+    ) throws MalformedNbtTagException {
         ChunkSectionBlocks[] chunkSectionBlocks = new ChunkSectionBlocks[xChunkLen * yChunkLen * zChunkLen];//y, z, x order
         for(ChunkController chunkController : controllers){
             ChunkCoord chunkCoord = chunkController.getChunkCoord();
             int chunkX = chunkCoord.x - smallestChunk.x;
             int chunkZ = chunkCoord.z - smallestChunk.z;
-            for(int sectionIndex = smallestChunk.y; sectionIndex <= largestChunk.y; sectionIndex++){
+            int sectionStart = Math.max(Math.min(smallestChunk.y, chunkController.chunkHeightInSections() - 1), 0); //inclusive
+            int sectionEnd = Math.max(Math.min(largestChunk.y + 1, chunkController.chunkHeightInSections()), 0); //exclusive
+            for(int sectionIndex = sectionStart; sectionIndex < sectionEnd ; sectionIndex++){
                 int chunkY = sectionIndex - smallestChunk.y;
                 chunkSectionBlocks[GeneralUtils.getIndexYZX(chunkX, chunkY, chunkZ, xChunkLen, zChunkLen)] = 
                     new ChunkSectionBlocks(chunkController, chunkController.getBlocks(sectionIndex), sectionIndex);
@@ -151,12 +168,15 @@ public class ChunkUtils {
     public static short[] readBlocksFromChunks(Collection<ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
         BlockCoord smallestPoint = readVolume.getSmallestPoint();
         Box enclosingBox = readVolume.getEnclosingBox();
-        BlockCoord largestPoint = new BlockCoord(smallestPoint.x + enclosingBox.getXLength(), smallestPoint.y + enclosingBox.getYLength(), smallestPoint.z + enclosingBox.getZLength());
+        BlockCoord largestPoint = new BlockCoord(
+                smallestPoint.x + enclosingBox.getXLength(),
+                smallestPoint.y + enclosingBox.getYLength(),
+                smallestPoint.z + enclosingBox.getZLength()
+        );
         ChunkSectionCoord largestChunk = largestPoint.getChunkSectionCoord();
         ChunkSectionCoord smallestChunk = smallestPoint.getChunkSectionCoord();
-        
         int xLengthInChunks = largestChunk.x - smallestChunk.x + 1; //inclusive
-        int yLengthInChunks = largestPoint.getSubChunkIndex() - smallestPoint.getSubChunkIndex() + 1;
+        int yLengthInChunks = largestChunk.y - smallestChunk.y + 1;
         int zLengthInChunks = largestChunk.z - smallestChunk.z + 1; //inclusive
         ChunkSectionBlocks[] chunkSectionBlocks = getChunkSectionBlocks(controllers, smallestChunk, largestChunk, xLengthInChunks, yLengthInChunks, zLengthInChunks);
         int xOffset = smallestPoint.getChunkLocalX();
@@ -174,7 +194,9 @@ public class ChunkUtils {
                                                           (z + zOffset) % ChunkSection.SIDE_LENGTH,
                                                           ChunkSection.SIDE_LENGTH);
             int blocksIndex = GeneralUtils.getIndexYZX(x, y, z, enclosingBox.getXLength(), enclosingBox.getZLength());
-            blocks[blocksIndex] = chunkSectionBlocks[chunkSectionIndex].blocks[indexInSection];
+            if (chunkSectionBlocks[chunkSectionIndex] != null) {
+                blocks[blocksIndex] = chunkSectionBlocks[chunkSectionIndex].blocks[indexInSection];
+            }
         });
         return blocks;
     }

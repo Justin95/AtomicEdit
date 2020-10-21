@@ -22,7 +22,7 @@ public class ChunkController1_16 extends BaseChunkControllerV1 {
     }
 
     @Override
-    protected int chunkHeightInSections() {
+    public int chunkHeightInSections() {
         return 16;
     }
     
