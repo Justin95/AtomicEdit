@@ -15,13 +15,11 @@ public class SchematicBlockProvider implements BlockProvider{
     
     private short[] blocks;
     private Volume volume;
-    private short[] uncompressedBlocks;
     
     
     public SchematicBlockProvider(Schematic schematic){
         this.volume = schematic.volume;
         this.blocks = schematic.getBlocks();
-        this.uncompressedBlocks = null;
     }
 
     @Override
