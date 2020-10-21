@@ -23,6 +23,9 @@ public class BlockCoord {
     }
     
     public int getSubChunkIndex(){
+        if (y < 0) {
+            return -(-y / ChunkSection.SIDE_LENGTH);
+        }
         return y / ChunkSection.SIDE_LENGTH;
     }
     
@@ -48,6 +51,11 @@ public class BlockCoord {
     
     public ChunkSectionCoord getChunkSectionCoord(){
         return new ChunkSectionCoord(Math.floorDiv(x, ChunkSection.SIDE_LENGTH), Math.floorDiv(y, ChunkSection.SIDE_LENGTH), Math.floorDiv(z, ChunkSection.SIDE_LENGTH));
+    }
+    
+    @Override
+    public String toString() {
+        return "(x:" + x + ", y:" + y + ", z:" + z + ")";
     }
     
     public Iterator<BlockCoord> getNeighbors(){

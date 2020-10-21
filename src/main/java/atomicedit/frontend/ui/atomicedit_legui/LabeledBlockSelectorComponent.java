@@ -110,7 +110,7 @@ public class LabeledBlockSelectorComponent extends OperationParameterComponent {
             this.selectedBlock = initValue;
             this.blockOptions = new ArrayList<>();
             this.blockOptionsPanel = new ScrollablePanel(40, 80, WIDTH - 80, HEIGHT - 160);
-            this.blockOptionsPanel.getStyle().setDisplay(Style.DisplayType.MANUAL);
+            this.blockOptionsPanel.getContainer().getStyle().setDisplay(Style.DisplayType.MANUAL);
             this.blockOptionsPanel.setHorizontalScrollBarVisible(false);
             this.textBox = new TextInput(40, 40, WIDTH - 80, 25);
             this.textBox.getTextState().setText(searchText);
@@ -139,7 +139,7 @@ public class LabeledBlockSelectorComponent extends OperationParameterComponent {
         }
         
         private void updatePanelOptions(String filter) {
-            this.blockOptionsPanel.removeAll(blockOptions);
+            this.blockOptionsPanel.getContainer().removeAll(blockOptions);
             this.blockOptions.clear();
             List<BlockState> blockStates = GlobalBlockStateMap.getBlockTypes();
             blockStates.sort((a, b) -> a.toString().length() - b.toString().length());
@@ -156,7 +156,7 @@ public class LabeledBlockSelectorComponent extends OperationParameterComponent {
                 this.blockOptions.add(option);
                 index++;
             }
-            this.blockOptionsPanel.addAll(blockOptions);
+            this.blockOptionsPanel.getContainer().addAll(blockOptions);
         }
         
     }

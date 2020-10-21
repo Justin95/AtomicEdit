@@ -95,8 +95,9 @@ public class WorldFileSelector extends Widget {
         
         FilePanel(String filePath, WorldFileSelector fileSelector) {
             super(0, 40, WIDTH, HEIGHT - 140);
-            this.getStyle().setDisplay(Style.DisplayType.MANUAL);
-            this.getStyle().getBackground().setColor(.4f, .4f, .9f, 1);
+            this.getContainer().getStyle().setDisplay(Style.DisplayType.MANUAL);
+            this.getContainer().getStyle().getBackground().setColor(.4f, .4f, .9f, 1);
+            this.setHorizontalScrollBarVisible(false);
             this.currDir = new File(filePath);
             if (!currDir.exists()) {
                 throw new IllegalArgumentException("Directory `" + filePath + "` does not exist.");
@@ -110,7 +111,7 @@ public class WorldFileSelector extends Widget {
                 FileOption fileOpt = new FileOption(file, fileSelector);
                 fileOpt.setPosition(5, index * 30 + 5);
                 listedFiles.add(fileOpt);
-                this.add(fileOpt);
+                this.getContainer().add(fileOpt);
                 index++;
             }
         }
