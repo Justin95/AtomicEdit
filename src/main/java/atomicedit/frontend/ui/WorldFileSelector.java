@@ -1,5 +1,5 @@
 
-package atomicedit.frontend.gui;
+package atomicedit.frontend.ui;
 
 import atomicedit.logging.Logger;
 import java.io.File;

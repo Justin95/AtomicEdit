@@ -45,7 +45,7 @@ public class ReplaceBlockProvider implements BlockProvider {
     
     @Override
     public void doForBlock(ActionForBlock action){
-        volume.getEnclosingBox().doForXyz((x, y, z) -> {
+        volume.doForXyz((x, y, z) -> {
             action.doAction(x, y, z, getBlockAt(x, y, z));
         });
     }

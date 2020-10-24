@@ -1,6 +1,8 @@
 
 package atomicedit.backend.utils;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Justin Bonner
@@ -9,13 +11,11 @@ public class BitArray {
     
     private final long[] bitArray;
     private final int sizeInBits;
-    private int numTrue;
     
     public BitArray(int size){
         this.sizeInBits = size;
         int backingArraySize = size % 64 == 0 ? size / 64 : (size / 64) + 1;
         this.bitArray = new long[backingArraySize];
-        this.numTrue = 0;
     }
     
     public BitArray(int size, boolean initialValue){
@@ -24,7 +24,6 @@ public class BitArray {
         for(int i = 0; i < bitArray.length; i++){
             bitArray[i] = backedValue; //all ones
         }
-        this.numTrue = initialValue ? size : 0;
     }
     
     private int getBackingArrayIndex(int index){
@@ -54,11 +53,9 @@ public class BitArray {
         int internalIndex = getElementInternalIndex(index);
         long toSet = bitArray[backingArrayIndex];
         if(value){
-            toSet |= 1 << internalIndex;
-            numTrue++;
+            toSet |= 1L << internalIndex;
         }else{
-            toSet &= ~(1 << internalIndex);
-            numTrue--;
+            toSet &= ~(1L << internalIndex);
         }
         bitArray[backingArrayIndex] = toSet;
     }
@@ -69,6 +66,11 @@ public class BitArray {
      */
     public int size(){
         return this.sizeInBits;
+    }
+    
+    @Override
+    public String toString() {
+        return Arrays.toString(bitArray); //for debugging
     }
     
 }

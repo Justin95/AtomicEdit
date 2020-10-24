@@ -37,6 +37,9 @@ public class BitArrayTest {
             //pass
         }
         
+        BitArray testArray3 = new BitArray(1000, false);
+        testArray3.set(51, true);
+        assertTrue(testArray3.get(51));
     }
     
 }

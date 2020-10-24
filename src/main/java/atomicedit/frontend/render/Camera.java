@@ -34,6 +34,10 @@ public class Camera {
         this.rotation = rot;
     }
     
+    public void setAspectRatio(float aspectRatio) {
+        this.aspectRatio = aspectRatio;
+    }
+    
     public Vector3f getPosition(){
         return this.position;
     }

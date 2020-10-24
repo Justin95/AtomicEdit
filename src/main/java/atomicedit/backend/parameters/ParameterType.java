@@ -1,11 +1,11 @@
 
-package atomicedit.operations.utils;
+package atomicedit.backend.parameters;
 
 /**
  *
  * @author Justin Bonner
  */
-public enum OperationParameterType {
+public enum ParameterType {
     //make sure there is a getter in Operation Parameters for the needed type
     STRING(),
     INT(),

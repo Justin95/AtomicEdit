@@ -10,9 +10,9 @@ import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
-import atomicedit.operations.utils.OperationParameterDescriptor;
-import atomicedit.operations.utils.OperationParameterType;
-import atomicedit.operations.utils.OperationParameters;
+import atomicedit.backend.parameters.ParameterDescriptor;
+import atomicedit.backend.parameters.ParameterType;
+import atomicedit.backend.parameters.Parameters;
 import atomicedit.volumes.WorldVolume;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,9 +25,8 @@ import java.util.List;
  */
 public class SetBlocksOperation extends Operation {
     
-    private static final OperationParameterDescriptor TO_SET_BLOCKTYPE_DESC = new OperationParameterDescriptor("Block Type", OperationParameterType.BLOCK_SELECTOR);
-    public static final List<OperationParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(
-        new OperationParameterDescriptor[]{
+    private static final ParameterDescriptor TO_SET_BLOCKTYPE_DESC = new ParameterDescriptor("Block Type", ParameterType.BLOCK_SELECTOR, BlockState.AIR);
+    public static final List<ParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(new ParameterDescriptor[]{
             TO_SET_BLOCKTYPE_DESC
         }
     ));
@@ -36,7 +35,7 @@ public class SetBlocksOperation extends Operation {
     private Schematic schematicBackup; //backup for undos
     private final BlockState blockState; //block type to fill
     
-    public SetBlocksOperation(WorldVolume volume, OperationParameters parameters){
+    public SetBlocksOperation(WorldVolume volume, Parameters parameters){
         this.operationVolume = volume;
         this.blockState = parameters.getParamAsBlockState(TO_SET_BLOCKTYPE_DESC);
         if (this.blockState == null) {
@@ -44,7 +43,7 @@ public class SetBlocksOperation extends Operation {
         }
     }
     
-    public static SetBlocksOperation getInstance(WorldVolume volume, OperationParameters parameters) {
+    public static SetBlocksOperation getInstance(WorldVolume volume, Parameters parameters) {
         return new SetBlocksOperation(volume, parameters);
     }
     

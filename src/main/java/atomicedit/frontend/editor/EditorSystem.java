@@ -2,9 +2,6 @@
 package atomicedit.frontend.editor;
 
 import atomicedit.frontend.AtomicEditRenderer;
-import atomicedit.operations.OperationResult;
-import atomicedit.operations.OperationType;
-import atomicedit.operations.utils.OperationParameters;
 
 /**
  *
@@ -24,8 +21,15 @@ public class EditorSystem {
         editorPointer.updatePosition(renderer.getCamera().getPosition(), renderer.getCamera().getRotation(), 0);
     }
     
-    public static void renderTick(){
+    public static void cleanUp() {
+        if (editor != null) {
+            editor.cleanUp();
+        }
+    }
+    
+    public static void renderTick() {
         synchronized(EDITOR_LOCK){
+            editorPointer.updatePosition(renderer.getCamera().getPosition(), renderer.getCamera().getRotation(), 0);
             editor.renderTick();
         }
     }
@@ -36,9 +40,12 @@ public class EditorSystem {
         }
     }
     
-    public static OperationResult doOperation(OperationType opType, OperationParameters params){
+    public static void handleScrollInput(boolean isUiFocused, double yScroll) {
         synchronized(EDITOR_LOCK){
-            return editor.doOperation(opType, params);
+            if (isUiFocused) {
+                return;
+            }
+            editorPointer.updatePosition(null, null, (float)yScroll);
         }
     }
     
@@ -48,7 +55,7 @@ public class EditorSystem {
                 return;
             }
             if(editor != null){
-                editor.destory();
+                editor.cleanUp();
             }
             editor = newEditorType.createEditor(renderer, editorPointer);
             editorType = newEditorType;

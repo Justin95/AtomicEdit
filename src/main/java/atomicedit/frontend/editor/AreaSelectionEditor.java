@@ -13,11 +13,10 @@ import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
-import atomicedit.operations.utils.OperationParameters;
+import atomicedit.backend.parameters.Parameters;
+import atomicedit.frontend.render.RenderObjectCollection;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
-import java.util.Arrays;
-import java.util.List;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
@@ -26,7 +25,7 @@ import org.lwjgl.glfw.GLFW;
  *
  * @author Justin Bonner
  */
-public class AreaSelectionEditor implements Editor{
+public class AreaSelectionEditor implements Editor {
     
     private Vector3i pointA;
     private Vector3i pointB;
@@ -54,8 +53,7 @@ public class AreaSelectionEditor implements Editor{
     }
     
     @Override
-    public void renderTick(){
-        editorPointer.updatePosition(renderer.getCamera().getPosition(), renderer.getCamera().getRotation(), 0);
+    public void renderTick() {
         pointerRenderObject.updatePosition(new Vector3f(editorPointer.getSelectorPoint()));
         if(selectionBoxRenderable != null){
             renderer.getRenderableStage().removeRenderable(selectionBoxRenderable);
@@ -93,8 +91,7 @@ public class AreaSelectionEditor implements Editor{
         }
     }
     
-    @Override
-    public OperationResult doOperation(OperationType opType, OperationParameters params){
+    public OperationResult doOperation(OperationType opType, Parameters params){
         if(pointA == null || pointB == null){
             return new OperationResult(false, "Cannot do operation with no volume.");
         }
@@ -165,7 +162,14 @@ public class AreaSelectionEditor implements Editor{
             0,2,6,  0,6,4, //z = 0 face
             4,6,7,  4,7,5, //x = 1 face
             2,3,7,  2,7,6, //y = 1 face
-            1,5,7,  1,7,3  //z = 1 face
+            1,5,7,  1,7,3, //z = 1 face
+            //render both sides of the triangles
+            3,1,0,  2,3,0,
+            5,4,0,  1,5,0,
+            6,2,0,  4,6,0,
+            7,6,4,  5,7,4,
+            7,3,2,  6,7,2,
+            7,5,1,  3,7,1
         };
         int[] lineIndicies = new int[]{
             0,1,  0,2,  0,4,
@@ -176,30 +180,19 @@ public class AreaSelectionEditor implements Editor{
             5,7,
             6,7
         };
-        return new SelectionRenderable(
+        return new RenderObjectCollection(
             new NoTextureRenderObject(position, rotation, true, vertexData, faceIndicies),
             new LinesRenderObject(position, rotation, false, vertexData, lineIndicies)
         );
     }
     
     @Override
-    public void destory(){
+    public void cleanUp(){
+        renderer.getRenderableStage().removeRenderable(this.selectionBoxRenderable);
+        renderer.getRenderableStage().removeRenderObject(this.pointerRenderObject);
         renderer.getFrame().getContainer().remove(gui);
         this.gui = null;
     }
     
-    private static class SelectionRenderable implements Renderable{
-        
-        List<RenderObject> renderObjects;
-        
-        SelectionRenderable(RenderObject... renObjects){
-            this.renderObjects = Arrays.asList(renObjects);
-        }
-        
-        @Override
-        public List<RenderObject> getRenderObjects(){
-            return renderObjects;
-        }        
-    }
     
 }

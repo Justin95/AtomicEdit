@@ -12,14 +12,18 @@ import org.joml.Vector3i;
  */
 public class EditorPointer {
     
-    public static final float MAX_POINTER_DISTANCE = 250;
-    public static final float MIN_POINTER_DISTANCE = 1;
+    public static final float MAX_POINTER_DISTANCE = 200;
+    public static final float MIN_POINTER_DISTANCE = 3;
     
     private Vector3i selectorPoint;
+    private Vector3f prevCameraPos;
+    private Vector3f prevCameraRot;
     private float selectorDistanceFromCamera;
     
     public EditorPointer(){
         this.selectorDistanceFromCamera = 10;
+        this.prevCameraPos = new Vector3f(0, 0, 0);
+        this.prevCameraRot = new Vector3f(0, 0, 0);
     }
     
     /**
@@ -32,6 +36,16 @@ public class EditorPointer {
      * @param changeInDistance 
      */
     public void updatePosition(Vector3f cameraPos, Vector3f cameraRot, float changeInDistance){
+        if (cameraPos != null) {
+            this.prevCameraPos = cameraPos;
+        } else {
+            cameraPos = this.prevCameraPos;
+        }
+        if (cameraRot != null) {
+            this.prevCameraRot = cameraRot;
+        } else {
+            cameraRot = prevCameraRot;
+        }
         Vector3f facingDir = MathUtils.rotationVectorToDirectionVector(cameraRot);
         float distance = this.selectorDistanceFromCamera + changeInDistance;
         if(distance < MIN_POINTER_DISTANCE){
