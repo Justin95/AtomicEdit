@@ -9,10 +9,10 @@ import atomicedit.backend.nbt.MalformedNbtTagException;
  * Block Ids are packed into a long array differently.
  * @author Justin Bonner
  */
-public class ChunkController1_16 extends BaseChunkControllerV1 {
+public class ChunkController1_15 extends BaseChunkControllerV1 {
     
     
-    public ChunkController1_16(Chunk chunk) throws MalformedNbtTagException{
+    public ChunkController1_15(Chunk chunk) throws MalformedNbtTagException{
         super(chunk);
     }
 

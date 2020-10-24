@@ -40,9 +40,9 @@ public class ChunkControllerFactory {
             chunk -> between(chunk.getChunkTag().getIntTag("DataVersion").getPayload(), 1952, 2566), //1952 is full release minecraft 1.14
             chunk -> new ChunkController1_14(chunk)
         ),
-        VERSION_1_16(
-            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 2566, //2566 is full release minecraft 1.16
-            chunk -> new ChunkController1_16(chunk)
+        VERSION_1_15(
+            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 2225, //2225 is full release minecraft 1.15
+            chunk -> new ChunkController1_15(chunk)
         ),
         ;
         
