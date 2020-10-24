@@ -14,7 +14,7 @@ import org.liquidengine.legui.image.StbBackedLoadableImage;
  *
  * @author Justin Bonner
  */
-public class EditorTypeSelectorButton extends RadioButton{
+public class EditorTypeSelectorButton extends RadioButton {
     
     protected static final int BUTTON_WIDTH = 50;
     private EditorType editorType;
@@ -36,7 +36,7 @@ public class EditorTypeSelectorButton extends RadioButton{
                 onSelection();
             }
         });
-        this.setFocusable(false);
+        this.setFocusable(true);
     }
     
     public void onSelection(){

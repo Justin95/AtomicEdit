@@ -5,7 +5,6 @@ import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.frontend.AtomicEditRenderer;
-import atomicedit.frontend.gui.WorldFileSelector;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
 import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.logging.Logger;
@@ -48,6 +47,7 @@ public class AtomicEditGui {
         root.getStyle().getFlexStyle().setAlignItems(AlignItems.FLEX_START);
         root.getStyle().setPadding(0f);
         root.getStyle().getFlexStyle().setFlexShrink(1);
+        root.getStyle().getFlexStyle().setFlexGrow(1);
         
         Vector2f winSize = frame.getContainer().getSize();
         //context.setWindowSize(new Vector2i((int) winSize.x, (int) winSize.y));

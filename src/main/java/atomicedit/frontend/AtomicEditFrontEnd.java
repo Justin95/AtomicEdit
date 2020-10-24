@@ -65,6 +65,9 @@ public class AtomicEditFrontEnd {
         keeper.getChainKeyCallback().add((long window, int key, int scancode, int action, int mods) -> {
             masterController.handleInput(isUiFocused(renderer), key, action, mods);
         });
+        keeper.getChainScrollCallback().add((long window, double xScroll, double yScroll) -> {
+            masterController.handleScrollInput(isUiFocused(renderer), yScroll);
+        });
         SystemEventProcessor.addDefaultCallbacks(keeper, systemEventProcessor);
         Logger.info(
             "OpenGL INFO:"
@@ -96,6 +99,7 @@ public class AtomicEditFrontEnd {
     }
     
     private void cleanUp(){
+        EditorSystem.cleanUp();
         chunkLoadingThread.shutdown();
         try {
             chunkLoadingThread.join();

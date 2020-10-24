@@ -3,7 +3,6 @@ package atomicedit.frontend.ui.atomicedit_legui;
 
 import atomicedit.backend.BlockState;
 import atomicedit.backend.GlobalBlockStateMap;
-import atomicedit.frontend.ui.UserSuppliedParameterComponent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,49 +17,39 @@ import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.border.SimpleLineBorder;
-import org.liquidengine.legui.style.font.FontRegistry;
 
 /**
  *
- * @author Justin Bonner
+ * @author justin
  */
-public class LabeledBlockSelectorComponent extends UserSuppliedParameterComponent {
+public class BlockSelectorComponent extends Label {
     
-    private static String searchText = "";
-    private final Label nameLabel;
-    private final Label valueLabel;
     private BlockState value;
-    private Boolean isWidgetOpen;
+    private boolean isWidgetOpen;
+    private static String searchText = "";
+    private Consumer<BlockState> parentCallback;
     
-    //Change this to be one selector for block type name, and choose properties another way?
-    public LabeledBlockSelectorComponent(String labelName, BlockState initialValue){
-        super();
-        this.value = BlockState.AIR; //default to air
+    public BlockSelectorComponent(BlockState initialValue) {
+        this.value = initialValue;
         this.isWidgetOpen = false;
-        this.nameLabel = new Label();
-        this.nameLabel.getTextState().setText(labelName);
-        this.nameLabel.setPosition(0, 0);
-        this.nameLabel.setSize(80, 30);
-        this.nameLabel.getStyle().setFontSize(20f);
-        this.nameLabel.getStyle().setFont(FontRegistry.ROBOTO_BOLD);
-        this.nameLabel.getStyle().setTextColor(1, 1, 1, 1);
-        this.add(nameLabel);
-        this.valueLabel = new Label(80, 0, 200, 30);
-        this.valueLabel.setPosition(90, 0);
-        this.valueLabel.setSize(200, 30);
-        this.valueLabel.getTextState().setText(value.toString());
-        this.valueLabel.getStyle().getBackground().setColor(1, 1, 1, 1);
-        this.valueLabel.getStyle().setFontSize(20f);
-        this.valueLabel.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
+        initialize();
+    }
+    
+    private void initialize() {
+        this.getTextState().setText(value.toString());
+        this.getStyle().getBackground().setColor(1, 1, 1, 1);
+        this.getStyle().setFontSize(20f);
+        this.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if (event.getAction() == MouseClickEvent.MouseClickAction.CLICK) {
                 if (!isWidgetOpen) {
                     isWidgetOpen = true;
                     SelectBlockWidget selectWidget = new SelectBlockWidget(value);
                     selectWidget.setCallback((blockState) -> {
                         value = blockState;
-                        this.valueLabel.getTextState().setText(value.toString());
+                        this.getTextState().setText(value.toString());
                         this.getFrame().getContainer().remove(selectWidget);
                         this.isWidgetOpen = false;
+                        this.parentCallback.accept(value);
                     });
                     selectWidget.addWidgetCloseEventListener((closeEvent) -> {
                         this.isWidgetOpen = false;
@@ -69,19 +58,10 @@ public class LabeledBlockSelectorComponent extends UserSuppliedParameterComponen
                 }
             }
         });
-        this.add(valueLabel);
-        this.setSize(280, 30);
-        this.getStyle().setHeight(30f);
-        this.getStyle().setWidth(290f);
-        this.getStyle().setLeft(10f);
-        this.getStyle().setRight(10f);
-        this.setFocusable(false);
-        this.getStyle().getBackground().setColor(0, 0, 0, 1);
     }
     
-    @Override
-    public Object getInputValue(){
-        return value;
+    public void setCallback(Consumer<BlockState> callback) {
+        this.parentCallback = callback;
     }
     
     private static class SelectBlockWidget extends Widget {

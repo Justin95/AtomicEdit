@@ -9,9 +9,9 @@ import org.joml.Vector3i;
  */
 public class Box {
     
-    private int xLength;
-    private int yLength;
-    private int zLength;
+    private final int xLength;
+    private final int yLength;
+    private final int zLength;
     /**
      * Define a Box with two block coordinates as corners.
      * Any opposite corners can be used to define this Box.
@@ -27,6 +27,11 @@ public class Box {
         //this.largestPoint = new BlockCoord(Math.max(pointOne.x, pointTwo.x), Math.max(pointOne.y, pointTwo.y), Math.max(pointOne.z, pointTwo.z));
     }
     
+    public Box(int xLength, int yLength, int zLength) {
+        this.xLength = xLength;
+        this.yLength = yLength;
+        this.zLength = zLength;
+    }
     
     public int getXLength(){
         return xLength;

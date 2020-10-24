@@ -1,7 +1,7 @@
 
 package atomicedit.frontend.ui.atomicedit_legui;
 
-import atomicedit.frontend.ui.OperationParameterComponent;
+import atomicedit.frontend.ui.UserSuppliedParameterComponent;
 import org.liquidengine.legui.component.Label;
 import org.liquidengine.legui.component.TextInput;
 
@@ -9,7 +9,7 @@ import org.liquidengine.legui.component.TextInput;
  *
  * @author Justin Bonner
  */
-public class StringOperationParameterComponent extends OperationParameterComponent {
+public class StringOperationParameterComponent extends UserSuppliedParameterComponent {
     
     private static final float INPUT_FONT_SIZE = 20;
     private static final float LABEL_FONT_SIZE = 20;

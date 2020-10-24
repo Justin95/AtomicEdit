@@ -10,9 +10,9 @@ import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
-import atomicedit.operations.utils.OperationParameterDescriptor;
-import atomicedit.operations.utils.OperationParameterType;
-import atomicedit.operations.utils.OperationParameters;
+import atomicedit.backend.parameters.ParameterDescriptor;
+import atomicedit.backend.parameters.ParameterType;
+import atomicedit.backend.parameters.Parameters;
 import atomicedit.volumes.WorldVolume;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,10 +26,9 @@ import java.util.List;
 public class ReplaceBlocksOperation extends Operation {
     
     
-    private static final OperationParameterDescriptor TO_FIND_BLOCKTYPE_DESC = new OperationParameterDescriptor("Replace From", OperationParameterType.BLOCK_SELECTOR);
-    private static final OperationParameterDescriptor TO_SET_BLOCKTYPE_DESC = new OperationParameterDescriptor("Replace To", OperationParameterType.BLOCK_SELECTOR);
-    public static final List<OperationParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(
-        new OperationParameterDescriptor[]{
+    private static final ParameterDescriptor TO_FIND_BLOCKTYPE_DESC = new ParameterDescriptor("Replace From", ParameterType.BLOCK_SELECTOR, BlockState.AIR);
+    private static final ParameterDescriptor TO_SET_BLOCKTYPE_DESC = new ParameterDescriptor("Replace To", ParameterType.BLOCK_SELECTOR, BlockState.AIR);
+    public static final List<ParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(new ParameterDescriptor[]{
             TO_FIND_BLOCKTYPE_DESC,
             TO_SET_BLOCKTYPE_DESC
         }
@@ -40,7 +39,7 @@ public class ReplaceBlocksOperation extends Operation {
     private final BlockState fromBlockState;
     private final BlockState toBlockState;
 
-    public ReplaceBlocksOperation(WorldVolume volume, OperationParameters parameters){
+    public ReplaceBlocksOperation(WorldVolume volume, Parameters parameters){
         this.operationVolume = volume;
         this.fromBlockState = parameters.getParamAsBlockState(TO_FIND_BLOCKTYPE_DESC);
         this.toBlockState = parameters.getParamAsBlockState(TO_SET_BLOCKTYPE_DESC);
@@ -49,7 +48,7 @@ public class ReplaceBlocksOperation extends Operation {
         }
     }
     
-    public static ReplaceBlocksOperation getInstance(WorldVolume volume, OperationParameters parameters) {
+    public static ReplaceBlocksOperation getInstance(WorldVolume volume, Parameters parameters) {
         return new ReplaceBlocksOperation(volume, parameters);
     }
     

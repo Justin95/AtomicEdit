@@ -3,8 +3,8 @@ package atomicedit.operations;
 
 import atomicedit.operations.implementations.ReplaceBlocksOperation;
 import atomicedit.operations.implementations.SetBlocksOperation;
-import atomicedit.operations.utils.OperationParameterDescriptor;
-import atomicedit.operations.utils.OperationParameters;
+import atomicedit.backend.parameters.ParameterDescriptor;
+import atomicedit.backend.parameters.Parameters;
 import atomicedit.volumes.WorldVolume;
 import java.util.List;
 
@@ -28,10 +28,10 @@ public enum OperationType {
     ;
     
     private final String displayName;
-    private final List<OperationParameterDescriptor> parameterDescription;
+    private final List<ParameterDescriptor> parameterDescription;
     private final OperationInstanceCreator opCreator;
     
-    OperationType(String displayName, List<OperationParameterDescriptor> opParamDescriptors, OperationInstanceCreator opCreator) {
+    OperationType(String displayName, List<ParameterDescriptor> opParamDescriptors, OperationInstanceCreator opCreator) {
         this.displayName = displayName;
         this.parameterDescription = opParamDescriptors;
         this.opCreator = opCreator;
@@ -41,7 +41,7 @@ public enum OperationType {
      * Get the description of the parameters that an operation of this operation type will need to run.
      * @return 
      */
-    public List<OperationParameterDescriptor> getOperationParameterDescription() {
+    public List<ParameterDescriptor> getOperationParameterDescription() {
         return parameterDescription;
     }
     
@@ -51,7 +51,7 @@ public enum OperationType {
      * @param parameters the operation parameters for the operation, should match what this OperationType describes.
      * @return a ready to run operation
      */
-    public Operation getOperationInstance(WorldVolume volume, OperationParameters parameters) {
+    public Operation getOperationInstance(WorldVolume volume, Parameters parameters) {
         return opCreator.createInstance(volume, parameters);
     }
     
@@ -64,7 +64,7 @@ public enum OperationType {
     }
     
     private interface OperationInstanceCreator {
-        Operation createInstance(WorldVolume volume, OperationParameters parameters);
+        Operation createInstance(WorldVolume volume, Parameters parameters);
     }
     
     //toString is used in the GUI for the display name

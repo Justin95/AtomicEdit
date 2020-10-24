@@ -1,11 +1,11 @@
 
-package atomicedit.operations.utils;
+package atomicedit.backend.parameters;
 
 /**
  *
  * @author Justin Bonner
  */
-public interface OperationParameterSupplier {
+public interface ParameterSupplier {
     
     public Object getInputValue();
     

@@ -12,7 +12,7 @@ public enum EditorType {
         (renderer, editorPointer) -> new AreaSelectionEditor(renderer, editorPointer)
     ),
     BRUSH_ACTION(
-        (renderer, editorPointer) -> new AreaSelectionEditor(renderer, editorPointer) //TODO write brush action editor
+        (renderer, editorPointer) -> new BrushEditor(renderer, editorPointer)
     ),
     //SCHEMATIC_TOOL,
     ;

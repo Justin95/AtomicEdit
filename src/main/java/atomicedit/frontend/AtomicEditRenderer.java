@@ -64,15 +64,15 @@ public class AtomicEditRenderer {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, GL_MAJOR_VERSION);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, GL_MINOR_VERSION);
         GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        this.width = videoMode.width() - 2;
-        this.height = videoMode.height() - 75;
+        this.width = videoMode.width();
+        this.height = videoMode.height() - 70;
         this.camera = new Camera(new Vector3f(0, 80, 0), new Vector3f(0, 0, 0), 90, width / (float)height);
         //glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, GLFW.glfwGetPrimaryMonitor(), NULL); //boarderless window
         glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, NULL, NULL);
         GLFW.glfwShowWindow(glfwWindow);
         GLFW.glfwMakeContextCurrent(glfwWindow);
         GLFW.glfwFocusWindow(glfwWindow);
-        GLFW.glfwSetWindowPos(glfwWindow, 0, 30);
+        GLFW.glfwSetWindowPos(glfwWindow, 0, 0);
         GL.createCapabilities();
         GLFW.glfwSwapInterval(0);
         frame = new Frame(width, height);
@@ -99,6 +99,7 @@ public class AtomicEditRenderer {
         
         context.updateGlfwWindow();
         Vector2i windowSize = context.getFramebufferSize();
+        camera.setAspectRatio(windowSize.x / (float)windowSize.y);
         GL11.glClearColor(0f, 0f, 0f, 1);
         GL11.glViewport(0, 0, windowSize.x, windowSize.y);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);

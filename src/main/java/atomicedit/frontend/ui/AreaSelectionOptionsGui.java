@@ -1,6 +1,7 @@
 
 package atomicedit.frontend.ui;
 
+import atomicedit.backend.BlockState;
 import atomicedit.frontend.ui.atomicedit_legui.StringOperationParameterComponent;
 import atomicedit.frontend.editor.AreaSelectionEditor;
 import atomicedit.frontend.ui.atomicedit_legui.ComponentListPanel;
@@ -8,14 +9,13 @@ import atomicedit.frontend.ui.atomicedit_legui.LabeledBlockSelectorComponent;
 import atomicedit.logging.Logger;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
-import atomicedit.operations.utils.OperationParameterDescriptor;
-import atomicedit.operations.utils.OperationParameters;
+import atomicedit.backend.parameters.ParameterDescriptor;
+import atomicedit.backend.parameters.Parameters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.liquidengine.legui.component.Button;
 import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Label;
 import org.liquidengine.legui.component.Panel;
 import org.liquidengine.legui.component.SelectBox;
 import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent;
@@ -23,7 +23,7 @@ import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.listener.EventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.flex.FlexStyle;
-import atomicedit.operations.utils.OperationParameterSupplier;
+import atomicedit.backend.parameters.ParameterSupplier;
 
 /**
  *
@@ -39,9 +39,7 @@ public class AreaSelectionOptionsGui extends Panel{
     private static final String DO_OP_TEXT = "Do Operation";
     
     private final AreaSelectionEditor editor;
-    private Map<OperationParameterDescriptor, OperationParameterSupplier> opParameterComponents;
-    private Label firstPointLabel;
-    private Label secondPointLabel;
+    private Map<ParameterDescriptor, ParameterSupplier> opParameterComponents;
     private SelectBox<OperationType> operationsSelectBox;
     //create custom operation panel from operation parameter descriptiors
     private ComponentListPanel operationPanel;
@@ -86,14 +84,14 @@ public class AreaSelectionOptionsGui extends Panel{
     }
     
     private ComponentListPanel createOpPanel(){
-        List<OperationParameterDescriptor> descriptors = operationsSelectBox.getSelection().getOperationParameterDescription();
+        List<ParameterDescriptor> descriptors = operationsSelectBox.getSelection().getOperationParameterDescription();
         this.opParameterComponents = new HashMap<>();
         ComponentListPanel opPanel = new ComponentListPanel();
-        for(OperationParameterDescriptor descriptor : descriptors){
-            OperationParameterComponent paramComp;
+        for(ParameterDescriptor descriptor : descriptors){
+            UserSuppliedParameterComponent paramComp;
             switch(descriptor.parameterType){
                 case BLOCK_SELECTOR:
-                    paramComp = new LabeledBlockSelectorComponent(descriptor.name);
+                    paramComp = new LabeledBlockSelectorComponent(descriptor.name, (BlockState)descriptor.defaultValue);
                     break;
                 case STRING:
                     paramComp = new StringOperationParameterComponent(descriptor.name);
@@ -147,9 +145,9 @@ public class AreaSelectionOptionsGui extends Panel{
     }
     
     private void doOperation(OperationType opType){
-        OperationParameters params = new OperationParameters();
-        for(OperationParameterDescriptor descriptor : this.opParameterComponents.keySet()){
-            OperationParameterSupplier paramComp = this.opParameterComponents.get(descriptor);
+        Parameters params = new Parameters();
+        for(ParameterDescriptor descriptor : this.opParameterComponents.keySet()){
+            ParameterSupplier paramComp = this.opParameterComponents.get(descriptor);
             params.setParam(descriptor, paramComp.getInputValue());
         }
         OperationResult result = editor.doOperation(opType, params);
