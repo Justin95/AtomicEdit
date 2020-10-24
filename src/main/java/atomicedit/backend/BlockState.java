@@ -58,7 +58,7 @@ public class BlockState {
         if(blockStateProperties != null && blockStateProperties.length == 0){
             blockStateProperties = null;
         }
-        BlockState newType = new BlockState(name, blockStateProperties, LightingBehavior.DEFAULT);
+        BlockState newType = new BlockState(name, blockStateProperties, LightingBehavior.DEFAULT_FULL_BLOCK);
         if(blockLibrary.containsKey(name)){
             ArrayList<BlockState> potentialTypes = blockLibrary.get(name);
             for(BlockState type : potentialTypes){
@@ -304,11 +304,11 @@ public class BlockState {
             }
             
             if (allowedProperties == null) {
-                LightingBehavior lightingBehavior = propsToLighting.isEmpty() ? LightingBehavior.DEFAULT : propsToLighting.get(0).right;
+                LightingBehavior lightingBehavior = propsToLighting.isEmpty() ? LightingBehavior.DEFAULT_FULL_BLOCK : propsToLighting.get(0).right;
                 BlockState.createBlockState(name, null, lightingBehavior);
             } else {
                 for (int i = 0; i < allowedProperties.length; i++) {
-                    LightingBehavior lightingBehavior = LightingBehavior.DEFAULT;
+                    LightingBehavior lightingBehavior = LightingBehavior.DEFAULT_FULL_BLOCK;
                     if (!propsToLighting.isEmpty()) {
                         FindLightingLoop:
                         for (Tuple<List<BlockStateProperty>, LightingBehavior> possLight : propsToLighting) {

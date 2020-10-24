@@ -11,7 +11,8 @@ import java.util.List;
 public class LightingBehavior {
     
     private static final List<LightingBehavior> BEHAVIOR_CACHE = new ArrayList<>(16 * 2 * 2);//one behavior per possible permuation
-    public static final LightingBehavior DEFAULT;
+    public static final LightingBehavior DEFAULT_FULL_BLOCK;
+    public static final LightingBehavior DEFAULT_NON_FULL_BLOCK;
     
     public final int emitLevel;
     public final boolean allowBlockLight;
@@ -30,7 +31,8 @@ public class LightingBehavior {
             BEHAVIOR_CACHE.add(new LightingBehavior(i, true, false));
             BEHAVIOR_CACHE.add(new LightingBehavior(i, true, true));
         }
-        DEFAULT = getInstance(0, false, false); //OPAQUE
+        DEFAULT_FULL_BLOCK = getInstance(0, false, false); //OPAQUE
+        DEFAULT_NON_FULL_BLOCK = getInstance(0, true, true);
     }
     
     public static LightingBehavior getInstance(int emitLevel, boolean allowBlockLight, boolean allowSkyLight) {
