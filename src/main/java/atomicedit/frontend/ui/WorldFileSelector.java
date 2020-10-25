@@ -17,6 +17,8 @@ import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.border.SimpleLineBorder;
 import org.liquidengine.legui.style.flex.FlexStyle;
+import org.liquidengine.legui.style.length.Length;
+import org.liquidengine.legui.style.length.LengthType;
 
 /**
  * A file selector using LEGUI components.
@@ -40,34 +42,40 @@ public class WorldFileSelector extends Widget {
     public WorldFileSelector(String startingDir) {
         super("Select World File", 500, 800, 0, 0);
         Component panel = super.getContainer();
-        this.getStyle().setDisplay(Style.DisplayType.FLEX);
-        this.getStyle().getFlexStyle().setAlignContent(FlexStyle.AlignContent.STRETCH);
-        this.getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.FLEX_START);
         this.getStyle().setHeight(HEIGHT);
         this.getStyle().setWidth(WIDTH);
         this.setCloseable(true);
+        this.setDraggable(true);
         this.setMinimizable(false);
         this.setResizable(false);
-        this.setSize(WIDTH, HEIGHT);
         
-        this.pathLabel = new Label(startingDir, 0, 0, WIDTH, 30);
+        panel.getStyle().setDisplay(Style.DisplayType.FLEX);
+        panel.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.COLUMN);
+        panel.getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.FLEX_START);
+        panel.getStyle().getFlexStyle().setAlignItems(FlexStyle.AlignItems.CENTER);
+        panel.getStyle().setPadding(5);
+        panel.setFocusable(false);
+        
+        this.pathLabel = new Label(startingDir);
+        this.pathLabel.getStyle().getBackground().setColor(.9f, .9f, .9f, 1f);
+        this.pathLabel.getStyle().setPosition(Style.PositionType.RELATIVE);
         this.pathLabel.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
+        this.pathLabel.getStyle().setMinHeight(20);
+        this.pathLabel.getStyle().setMinWidth(new Length(99f, LengthType.PERCENT));
+        this.pathLabel.getStyle().setMargin(5);
         panel.add(pathLabel);
         
         this.filePanel = new FilePanel(startingDir, this);
         panel.add(filePanel);
         
-        this.selectButton = new Button(WIDTH - 90, HEIGHT - 60, 70, 30);
-        //this.selectButton.getStyle().getFlexStyle().setAlignContent(FlexStyle.AlignContent.CENTER);
-        //this.selectButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_END);
-        //this.selectButton.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.COLUMN);
-        //this.selectButton.getStyle().getBackground().setColor(.3f, .3f, .8f, 1);
-        //this.selectButton.getTextState().setFontSize(12);
-        //this.selectButton.getStyle().setPosition(Style.PositionType.RELATIVE);
-        //this.selectButton.setEnabled(true);
+        this.selectButton = new Button();
+        this.selectButton.getStyle().setPosition(Style.PositionType.RELATIVE);
         this.selectButton.getTextState().setText("Select World");
+        this.selectButton.getStyle().setMinWidth(100);
+        this.selectButton.getStyle().setMinHeight(30);
+        this.selectButton.getStyle().setMargin(20);
         this.selectButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
-            try{
+            try {
                 if (event.getAction() == MouseClickEvent.MouseClickAction.CLICK) {
                     if (getSelectedFile() != null && getSelectedFile().exists() && getSelectedFile().isDirectory()) {
                         consumer.accept(selectedFile);
@@ -92,12 +100,10 @@ public class WorldFileSelector extends Widget {
         
         private File currDir;
         private List<FileOption> listedFiles;
+        private WorldFileSelector fileSelector;
         
         FilePanel(String filePath, WorldFileSelector fileSelector) {
-            super(0, 40, WIDTH, HEIGHT - 140);
-            this.getContainer().getStyle().setDisplay(Style.DisplayType.MANUAL);
-            this.getContainer().getStyle().getBackground().setColor(.4f, .4f, .9f, 1);
-            this.setHorizontalScrollBarVisible(false);
+            super();
             this.currDir = new File(filePath);
             if (!currDir.exists()) {
                 throw new IllegalArgumentException("Directory `" + filePath + "` does not exist.");
@@ -105,29 +111,66 @@ public class WorldFileSelector extends Widget {
             if (!currDir.isDirectory()) {
                 throw new IllegalArgumentException("File is not a directory.");
             }
+            this.fileSelector = fileSelector;
             this.listedFiles = new ArrayList<>();
-            int index = 0;
+            initialize();
+        }
+        
+        private void initialize() {
+            this.setAutoResize(true);
+            this.setFocusable(false);
+            this.setHorizontalScrollBarVisible(false);
+            
+            this.getStyle().getFlexStyle().setFlexGrow(1);
+            this.getStyle().getFlexStyle().setFlexShrink(1);
+            this.getStyle().setMinWidth(WIDTH - 10);
+            this.getStyle().setMinHeight(200);
+            this.getStyle().setPosition(Style.PositionType.RELATIVE);
+            
+            this.getViewport().setFocusable(false);
+            this.getViewport().getStyle().setDisplay(Style.DisplayType.FLEX);
+            
+            this.getContainer().setFocusable(false);
+            this.getContainer().getStyle().setPosition(Style.PositionType.ABSOLUTE);
+            this.getContainer().getStyle().setTop(0);
+            this.getContainer().getStyle().setLeft(0);
+            this.getContainer().getStyle().setBottom(0);
+            this.getContainer().getStyle().setRight(0);
+            this.getContainer().getStyle().setDisplay(Style.DisplayType.FLEX);
+            this.getContainer().getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.COLUMN);
+            this.getContainer().getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.FLEX_START);
+            this.getContainer().getStyle().getFlexStyle().setAlignItems(FlexStyle.AlignItems.FLEX_START);
+            this.getContainer().getStyle().setPadding(2);
+            this.getContainer().getStyle().getBackground().setColor(.4f, .4f, .4f, 1);
+            
             for (File file : currDir.listFiles(File::isDirectory)) {
                 FileOption fileOpt = new FileOption(file, fileSelector);
-                fileOpt.setPosition(5, index * 30 + 5);
                 listedFiles.add(fileOpt);
                 this.getContainer().add(fileOpt);
-                index++;
             }
         }
+        
         
     }
     
     private class FileOption extends Label {
         
         private final File file;
+        private final WorldFileSelector fileSelector;
         
         FileOption(File file, WorldFileSelector fileSelector) {
             super(file.getName());
             this.file = file;
-            this.getStyle().setWidth(WIDTH - 10);
-            this.getStyle().setHeight(25);
-            this.setSize(WIDTH - 10, 25);
+            this.fileSelector = fileSelector;
+            initialize();
+        }
+        
+        private void initialize() {
+            this.getStyle().setPosition(Style.PositionType.RELATIVE);
+            this.getStyle().setWidth(new Length(99f, LengthType.PERCENT));
+            this.getStyle().setMinHeight(25);
+            this.getStyle().setMaxHeight(25);
+            this.getStyle().setMargin(2);
             this.getStyle().getBackground().setColor(.8f, .8f, .8f, 1);
             this.getStyle().setBorder(new SimpleLineBorder(new Vector4f(1, 0, 0, 1), 3));
             this.getStyle().getBorder().setEnabled(false);

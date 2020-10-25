@@ -97,6 +97,7 @@ public class BrushEditor implements Editor {
         if(!result.getSuccess()){
             Logger.notice(result.getMessage(), result.getException());
         }
+        Logger.info("Operation Result: " + result);
         return result;
     }
     

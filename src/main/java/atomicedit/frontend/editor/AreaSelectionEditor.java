@@ -48,7 +48,7 @@ public class AreaSelectionEditor implements Editor {
     public void initialize(){
         this.gui = new AreaSelectionOptionsGui(this);
         this.pointerRenderObject = createEditorPointerRenderObject(editorPointer.getSelectorPoint());
-        renderer.getFrame().getContainer().add(gui);
+        renderer.getFrame().getContainer().add(gui.getOpPanel());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
     }
     
@@ -108,6 +108,7 @@ public class AreaSelectionEditor implements Editor {
         if(!result.getSuccess()){
             Logger.notice(result.getMessage(), result.getException());
         }
+        Logger.info("Operation Result: " + result);
         return result;
     }
     
@@ -190,7 +191,7 @@ public class AreaSelectionEditor implements Editor {
     public void cleanUp(){
         renderer.getRenderableStage().removeRenderable(this.selectionBoxRenderable);
         renderer.getRenderableStage().removeRenderObject(this.pointerRenderObject);
-        renderer.getFrame().getContainer().remove(gui);
+        renderer.getFrame().getContainer().remove(gui.getOpPanel());
         this.gui = null;
     }
     
