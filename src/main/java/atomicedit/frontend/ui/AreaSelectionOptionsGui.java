@@ -2,18 +2,11 @@
 package atomicedit.frontend.ui;
 
 import atomicedit.backend.BlockState;
-import atomicedit.frontend.ui.atomicedit_legui.StringOperationParameterComponent;
 import atomicedit.frontend.editor.AreaSelectionEditor;
-import atomicedit.frontend.ui.atomicedit_legui.ComponentListPanel;
-import atomicedit.frontend.ui.atomicedit_legui.LabeledBlockSelectorComponent;
-import atomicedit.logging.Logger;
-import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
 import atomicedit.backend.parameters.ParameterDescriptor;
 import atomicedit.backend.parameters.Parameters;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.liquidengine.legui.component.Button;
 import org.liquidengine.legui.component.Component;
 import org.liquidengine.legui.component.Panel;
@@ -23,13 +16,21 @@ import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.listener.EventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.flex.FlexStyle;
-import atomicedit.backend.parameters.ParameterSupplier;
+import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
+import java.util.ArrayList;
+import org.joml.Vector4f;
+import org.liquidengine.legui.component.Label;
+import org.liquidengine.legui.component.Slider;
+import org.liquidengine.legui.component.optional.Orientation;
+import org.liquidengine.legui.style.color.ColorConstants;
+import org.liquidengine.legui.style.length.Length;
+import org.liquidengine.legui.style.length.LengthType;
 
 /**
  *
  * @author Justin Bonner
  */
-public class AreaSelectionOptionsGui extends Panel{
+public class AreaSelectionOptionsGui {
     
     
     private static final float GUI_WIDTH = 350;
@@ -39,119 +40,181 @@ public class AreaSelectionOptionsGui extends Panel{
     private static final String DO_OP_TEXT = "Do Operation";
     
     private final AreaSelectionEditor editor;
-    private Map<ParameterDescriptor, ParameterSupplier> opParameterComponents;
-    private SelectBox<OperationType> operationsSelectBox;
-    //create custom operation panel from operation parameter descriptiors
-    private ComponentListPanel operationPanel;
+    private Panel opPanel;
+    private final List<Component> opParamComponents;
+    private static OperationType opType = OperationType.SET_BLOCKS_OPERATION;
+    private Parameters opParameters;
     private Button doOpButton;
     
     public AreaSelectionOptionsGui(AreaSelectionEditor editor){
         this.editor = editor;
-        this.operationsSelectBox = createOpSelectBox();
-        this.add(operationsSelectBox);
-        this.doOpButton = createDoOpButton();
-        this.add(doOpButton);
-        this.setFocusable(false);
-        this.setSize(GUI_WIDTH, GUI_HEIGHT);
-        this.getStyle().setLeft(0f);
-        this.getStyle().getBackground().setColor(AtomicEditGui.PANEL_COLOR);
-        this.setPosition(GUI_X, GUI_Y);
-        this.getStyle().setPosition(Style.PositionType.ABSOLUTE);
-        this.getStyle().setMaxWidth(GUI_WIDTH);
-        this.getStyle().setTop(GUI_Y);
-        this.getStyle().setBottom(GUI_Y);
-        this.getStyle().setHeight(GUI_HEIGHT);
-        this.getStyle().setWidth(GUI_WIDTH);
-        this.getStyle().getFlexStyle().setAlignItems(FlexStyle.AlignItems.CENTER);
-        this.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.COLUMN);
-        this.getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.CENTER);
-        this.getStyle().setDisplay(Style.DisplayType.FLEX);
-        updateOperationPanel();
+        this.opParamComponents = new ArrayList<>();
+        initialize();
     }
     
-    
-    public final void updateOperationPanel(){ //TODO make thread safe with do operation button
-        if(this.operationPanel != null){
-            this.remove(operationPanel);
+    private void initialize() {
+        this.opPanel = new Panel();
+        this.opPanel.setFocusable(false);
+        this.opPanel.getStyle().getBackground().setColor(AtomicEditGui.PANEL_COLOR);
+        //absolute pos in root
+        this.opPanel.getStyle().setPosition(Style.PositionType.ABSOLUTE);
+        this.opPanel.getStyle().setLeft(0);
+        this.opPanel.getStyle().setTop(50);
+        
+        //self size
+        this.opPanel.getStyle().setMinWidth(GUI_WIDTH);
+        this.opPanel.getStyle().setMinHeight(GUI_HEIGHT);
+        //Flex layout
+        this.opPanel.getStyle().setDisplay(Style.DisplayType.FLEX);
+        this.opPanel.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.COLUMN);
+        this.opPanel.getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.FLEX_START);
+        this.opPanel.getStyle().getFlexStyle().setAlignItems(FlexStyle.AlignItems.CENTER);
+        
+        this.opPanel.getStyle().setPadding(30, 10, 30, 10); //top, right, bottom, left
+        
+        //Operation Select Box
+        SelectBox<OperationType> opSelectBox = new SelectBox<>();
+        for (OperationType opType : OperationType.values()) {
+            opSelectBox.addElement(opType);
         }
-        this.operationPanel = createOpPanel();
-        this.operationPanel.getStyle().setWidth(GUI_WIDTH);
-        this.operationPanel.getStyle().setLeft(0f);
-        this.operationPanel.getStyle().setTop(70f);
-        this.operationPanel.getStyle().setBottom(0f);
-        this.operationPanel.setFocusable(false);
-        this.add(operationPanel);
-    }
-    
-    private ComponentListPanel createOpPanel(){
-        List<ParameterDescriptor> descriptors = operationsSelectBox.getSelection().getOperationParameterDescription();
-        this.opParameterComponents = new HashMap<>();
-        ComponentListPanel opPanel = new ComponentListPanel();
-        for(ParameterDescriptor descriptor : descriptors){
-            UserSuppliedParameterComponent paramComp;
-            switch(descriptor.parameterType){
-                case BLOCK_SELECTOR:
-                    paramComp = new LabeledBlockSelectorComponent(descriptor.name, (BlockState)descriptor.defaultValue);
-                    break;
-                case STRING:
-                    paramComp = new StringOperationParameterComponent(descriptor.name);
-                    break;
-                //case INT:
-                //    break;
-                //case FLOAT:
-                //    break;
-                default:
-                    continue;
-            }
-            this.opParameterComponents.put(descriptor, paramComp);
-            opPanel.addComponent((Component)paramComp);
-        }
-        return opPanel;
-    }
-    
-    private SelectBox<OperationType> createOpSelectBox(){
-        SelectBox<OperationType> opBox = new SelectBox<>();
-        for(OperationType opType : OperationType.values()){
-            opBox.addElement(opType);
-        }
-        opBox.setSelected(0, true);
-        opBox.getSelectBoxChangeSelectionEvents().add((EventListener<SelectBoxChangeSelectionEvent<OperationType>>)(event) -> {
-            updateOperationPanel();
+        opSelectBox.setSelected(0, true);
+        opSelectBox.getSelectBoxChangeSelectionEvents().add((EventListener<SelectBoxChangeSelectionEvent<OperationType>>)(event) -> {
+            updateOpType(event.getNewValue());
         });
-        opBox.setSize(100, 30);
-        opBox.getStyle().setTop(15f);
-        opBox.getStyle().setLeft(15f);
-        opBox.getStyle().setHeight(30f);
-        opBox.getStyle().setWidth(100f);
-        opBox.getStyle().setMargin(20f, 20f);
-        return opBox;
-    }
-    
-    private Button createDoOpButton(){
-        Button button = new Button();
-        button.getListenerMap().addListener(MouseClickEvent.class, (event) -> {
+        opSelectBox.setTabFocusable(false);
+        opSelectBox.getStyle().setPosition(Style.PositionType.RELATIVE);
+        opSelectBox.getStyle().setMaxWidth(200);
+        opSelectBox.getStyle().setMaxHeight(30);
+        opSelectBox.getStyle().setHeight(30);
+        opSelectBox.getStyle().setMinWidth(100);
+        opSelectBox.getStyle().setMinHeight(30);
+        opSelectBox.getStyle().setWidth(200);
+        opSelectBox.getStyle().setMarginRight(20f);
+        opSelectBox.getStyle().getFlexStyle().setFlexGrow(1);
+        opSelectBox.getStyle().getFlexStyle().setFlexShrink(1);
+        
+        //Do Operation Button
+        this.doOpButton = new Button();
+        this.doOpButton.getListenerMap().addListener(MouseClickEvent.class, (event) -> {
             if(event.getAction() == MouseClickEvent.MouseClickAction.CLICK){
-                doOperation(operationsSelectBox.getSelection());
+                doOperation(opType);
             }
         });
-        button.getTextState().setText(DO_OP_TEXT);
-        button.setSize(100, 30);
-        button.getStyle().setTop(15f);
-        button.getStyle().setLeft(15f + 100f + 15f);
-        button.getStyle().setHeight(30f);
-        button.getStyle().setWidth(100f);
-        button.getStyle().setMargin(20f, 20f);
-        return button;
+        this.doOpButton.getTextState().setText(DO_OP_TEXT);
+        this.doOpButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        this.doOpButton.getStyle().setMinHeight(30f);
+        this.doOpButton.getStyle().setMinWidth(100f);
+        
+        Component opComp = new Panel();
+        opComp.setFocusable(false);
+        opComp.getStyle().setBorder(null);
+        opComp.getStyle().getBackground().setColor(ColorConstants.transparent());
+        opComp.getStyle().setPosition(Style.PositionType.RELATIVE);
+        opComp.getStyle().setDisplay(Style.DisplayType.FLEX);
+        opComp.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.ROW);
+        opComp.getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.CENTER);
+        opComp.getStyle().getFlexStyle().setAlignItems(FlexStyle.AlignItems.CENTER);
+        opComp.getStyle().setWidth(new Length(98f, LengthType.PERCENT));
+        opComp.getStyle().setMinHeight(30);
+        opComp.getStyle().setMaxHeight(30);
+        opComp.getStyle().setMargin(20);
+        opComp.add(opSelectBox);
+        opComp.add(doOpButton);
+        
+        this.opPanel.add(opComp);
+        
+        updateOpType(opType);
+    }
+    
+    private void updateOpType(OperationType newOpType) {
+        this.opType = newOpType;
+        this.opParameters = new Parameters();
+        this.opPanel.removeAll(opParamComponents);
+        opParamComponents.clear();
+        for (ParameterDescriptor paramDesc : newOpType.getOperationParameterDescription()) {
+            this.opParameters.setParam(paramDesc, paramDesc.defaultValue);
+            
+            final int paramPanelHeight = 50;
+            Panel paramPanel = new Panel();
+            paramPanel.setFocusable(false);
+            paramPanel.getStyle().setBorder(null);
+            paramPanel.getStyle().setShadow(null);
+            paramPanel.getStyle().getBackground().setColor(ColorConstants.transparent());
+            paramPanel.getStyle().setPosition(Style.PositionType.RELATIVE);
+            paramPanel.getStyle().setMargin(10);
+            paramPanel.getStyle().setMaxWidth(Float.MAX_VALUE);
+            paramPanel.getStyle().setMinWidth(GUI_WIDTH - 20);
+            paramPanel.getStyle().setMaxHeight(paramPanelHeight);
+            paramPanel.getStyle().setMinHeight(paramPanelHeight);
+            paramPanel.getStyle().setHeight(paramPanelHeight);
+            paramPanel.getStyle().getFlexStyle().setFlexGrow(1);
+            paramPanel.getStyle().getFlexStyle().setFlexShrink(1);
+            paramPanel.getStyle().setDisplay(Style.DisplayType.FLEX);
+            paramPanel.getStyle().getFlexStyle().setAlignItems(FlexStyle.AlignItems.CENTER);
+            paramPanel.getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.FLEX_START);
+            paramPanel.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.ROW);
+            
+            Label paramLabel = new Label(paramDesc.name);
+            paramLabel.getStyle().setFontSize(20f);
+            paramLabel.getStyle().setPosition(Style.PositionType.RELATIVE);
+            paramLabel.getStyle().setMaxWidth(Float.MAX_VALUE);
+            paramLabel.getStyle().setMaxHeight(50);
+            paramLabel.getStyle().setHeight(30);
+            paramLabel.getStyle().setMinWidth(100);
+            paramLabel.getStyle().setMinHeight(30);
+            paramLabel.getStyle().getBackground().setColor(new Vector4f(.5f, .5f, .5f, .5f));
+            paramLabel.getStyle().setBorder(null);
+            paramLabel.getStyle().getFlexStyle().setFlexGrow(1);
+            paramLabel.getStyle().getFlexStyle().setFlexShrink(1);
+            paramLabel.setTabFocusable(false);
+            paramLabel.setFocusable(false);
+            paramPanel.add(paramLabel);
+            
+            switch(paramDesc.parameterType) {
+                case INT:
+                    Slider slider = new Slider();
+                    slider.addSliderChangeValueEventListener((event) -> {
+                        this.opParameters.setParam(paramDesc, (int)event.getNewValue());
+                    });
+                    slider.setValue((int)paramDesc.defaultValue);
+                    slider.getStyle().setWidth(200);
+                    slider.getStyle().setMinWidth(200);
+                    slider.getStyle().setMaxWidth(Float.MAX_VALUE);
+                    slider.getStyle().setMinHeight(30);
+                    slider.setOrientation(Orientation.HORIZONTAL);
+                    slider.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    slider.setStepSize(1);
+                    slider.getStyle().getFlexStyle().setFlexGrow(5);
+                    slider.getStyle().getFlexStyle().setFlexShrink(5);
+                    paramPanel.add(slider);
+                    break;
+                case BLOCK_SELECTOR:
+                    BlockSelectorComponent blockSelector = new BlockSelectorComponent((BlockState)paramDesc.defaultValue);
+                    blockSelector.setCallback((blockState) -> {
+                        this.opParameters.setParam(paramDesc, blockState);
+                    });
+                    blockSelector.getStyle().setMinWidth(200);
+                    blockSelector.getStyle().setMaxWidth(Float.MAX_VALUE);
+                    blockSelector.getStyle().setMinHeight(30);
+                    blockSelector.getStyle().setMaxHeight(30);
+                    blockSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    blockSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    blockSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(blockSelector);
+                    break;
+            }
+            
+            this.opParamComponents.add(paramPanel);
+            this.opPanel.add(paramPanel);
+        }
     }
     
     private void doOperation(OperationType opType){
-        Parameters params = new Parameters();
-        for(ParameterDescriptor descriptor : this.opParameterComponents.keySet()){
-            ParameterSupplier paramComp = this.opParameterComponents.get(descriptor);
-            params.setParam(descriptor, paramComp.getInputValue());
-        }
-        OperationResult result = editor.doOperation(opType, params);
-        Logger.info("Operation Result: " + result);
+        editor.doOperation(opType, this.opParameters);
+    }
+    
+    public Panel getOpPanel() {
+        return this.opPanel;
     }
     
 }
