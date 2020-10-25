@@ -3,10 +3,10 @@ package atomicedit.frontend.ui;
 
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
+import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
-import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import java.io.File;
@@ -55,19 +55,16 @@ public class AtomicEditGui {
         EditorTypesMenu editorMenu = new EditorTypesMenu();
         frame.getContainer().add(editorMenu);
         
-        Panel testPanel = new Panel();
-        testPanel.getStyle().getBackground().setColor(PANEL_COLOR);
-        testPanel.setPosition(0, 0);
-        testPanel.getStyle().setPosition(Style.PositionType.ABSOLUTE);
-        testPanel.getStyle().setHeight(30f);
-        testPanel.getStyle().setMinWidth(100f);
-        testPanel.getStyle().setMaxWidth(10000f);
-        testPanel.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.ROW);
-        testPanel.getStyle().getFlexStyle().setAlignItems(AlignItems.FLEX_START);
-        testPanel.getStyle().getFlexStyle().setFlex(1, 1, 1);
-        testPanel.getStyle().setLeft(0f);
-        testPanel.getStyle().setRight(0f);
-        testPanel.setFocusable(false);
+        Panel topBar = new Panel();
+        topBar.getStyle().getBackground().setColor(PANEL_COLOR);
+        topBar.getStyle().setPosition(Style.PositionType.ABSOLUTE);
+        topBar.getStyle().setHeight(30f);
+        topBar.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.ROW);
+        topBar.getStyle().getFlexStyle().setAlignItems(AlignItems.FLEX_START);
+        topBar.getStyle().setLeft(0f);
+        topBar.getStyle().setRight(0f);
+        topBar.getStyle().setTop(0);
+        topBar.setFocusable(false);
         Button selectWorldButton = new Button(10, 5, 80, 20);
         selectWorldButton.getTextState().setText("Select World");
         selectWorldButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
@@ -104,19 +101,18 @@ public class AtomicEditGui {
                 
             }
         });
-        testPanel.add(selectWorldButton);
+        topBar.add(selectWorldButton);
         
         //blah
         Button tempButton = new Button(190, 5, 80, 20);
         tempButton.getTextState().setText("Debug Button");
-        tempButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
         tempButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
-                //BlockState.debugPrintAllBlockStates();
-                BlockStateModelLookup.debugPrintFootprint();
+                BlockState.debugPrintAllBlockStates();
+                //BlockStateModelLookup.debugPrintFootprint();
             }
         });
-        testPanel.add(tempButton);
+        topBar.add(tempButton);
         //blah
         
         Button saveWorldButton = new Button(100, 5, 80, 20);
@@ -131,14 +127,14 @@ public class AtomicEditGui {
                 }
             }
         });
-        testPanel.add(saveWorldButton);
+        topBar.add(saveWorldButton);
         
         coordsLabel = new Label(280, 5, 200, 30);
         coordsLabel.getStyle().setFontSize(17f);
         coordsLabel.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
         coordsLabel.getStyle().setTextColor(1f, 1f, 1f, 1f);
-        testPanel.add(coordsLabel);
-        frame.getContainer().add(testPanel);
+        topBar.add(coordsLabel);
+        frame.getContainer().add(topBar);
     }
     
     public static void updateGui(AtomicEditRenderer renderer){

@@ -46,6 +46,7 @@ public class AtomicEdit {
         TextureLoader.getMinecraftDefaultTexture(); //force load textures
         BlockModelLookup.initialize();
         BlockStateModelLookup.initialize();
+        BlockState.postModelLoadingInitialization();
         gcThread.start();
     }
     

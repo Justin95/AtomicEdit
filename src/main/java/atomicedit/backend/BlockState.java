@@ -2,6 +2,8 @@
 package atomicedit.backend;
 
 import atomicedit.backend.lighting.LightingBehavior;
+import atomicedit.jarreading.blockstates.BlockStateModel;
+import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.logging.Logger;
 import atomicedit.utils.ArrayUtils;
 import atomicedit.utils.OneFromEachIterator;
@@ -33,13 +35,13 @@ public class BlockState {
     
     public final String name;
     public final BlockStateProperty[] blockStateProperties;
-    public final LightingBehavior lightingBehavior;
+    private LightingBehavior lightingBehavior;
     private final String stringDesc;
     /**
      * Only have one immutable BlockState object per block state
      */
-    private static HashMap<String, ArrayList<BlockState>> blockLibrary = new HashMap<>();
-    public static final BlockState AIR = getBlockState("minecraft:air", null); //need a block to fill empty chunk sections with
+    private static final HashMap<String, ArrayList<BlockState>> blockLibrary = new HashMap<>();
+    public static final BlockState AIR = createBlockState("minecraft:air", null, LightingBehavior.getInstance(0, true, true)); //need a block to fill empty chunk sections with
     
     private BlockState(String name, BlockStateProperty[] blockStateProperties, LightingBehavior lightingBehavior){
         if(name == null){
@@ -58,12 +60,37 @@ public class BlockState {
         if(blockStateProperties != null && blockStateProperties.length == 0){
             blockStateProperties = null;
         }
-        BlockState newType = new BlockState(name, blockStateProperties, LightingBehavior.DEFAULT_FULL_BLOCK);
+        BlockState newType = new BlockState(name, blockStateProperties, null);
         if(blockLibrary.containsKey(name)){
             ArrayList<BlockState> potentialTypes = blockLibrary.get(name);
             for(BlockState type : potentialTypes){
                 if(newType.equals(type)){
                     return type; //allow newType to be garbage collected
+                }
+            }
+            potentialTypes.add(newType);
+            GlobalBlockStateMap.addBlockType(newType);
+            newType.lightingBehavior = guessLightingBehavior(newType);
+            return newType;
+        }
+        ArrayList<BlockState> newList = new ArrayList<>();
+        newList.add(newType);
+        blockLibrary.put(name, newList);
+        GlobalBlockStateMap.addBlockType(newType);
+        newType.lightingBehavior = guessLightingBehavior(newType);
+        return newType;
+    }
+    
+    private static BlockState createBlockState(String name, BlockStateProperty[] blockStateProperties, LightingBehavior lightingBehavior) {
+        if(blockStateProperties != null && blockStateProperties.length == 0){
+            blockStateProperties = null;
+        }
+        BlockState newType = new BlockState(name, blockStateProperties, lightingBehavior);
+        if(blockLibrary.containsKey(name)){
+            ArrayList<BlockState> potentialTypes = blockLibrary.get(name);
+            for(BlockState type : potentialTypes){
+                if(newType.equals(type)){
+                    return type; //already exists
                 }
             }
             potentialTypes.add(newType);
@@ -75,28 +102,6 @@ public class BlockState {
         blockLibrary.put(name, newList);
         GlobalBlockStateMap.addBlockType(newType);
         return newType;
-    }
-    
-    private static void createBlockState(String name, BlockStateProperty[] blockStateProperties, LightingBehavior lightingBehavior) {
-        if(blockStateProperties != null && blockStateProperties.length == 0){
-            blockStateProperties = null;
-        }
-        BlockState newType = new BlockState(name, blockStateProperties, lightingBehavior);
-        if(blockLibrary.containsKey(name)){
-            ArrayList<BlockState> potentialTypes = blockLibrary.get(name);
-            for(BlockState type : potentialTypes){
-                if(newType.equals(type)){
-                    return; //already exists
-                }
-            }
-            potentialTypes.add(newType);
-            GlobalBlockStateMap.addBlockType(newType);
-            return;
-        }
-        ArrayList<BlockState> newList = new ArrayList<>();
-        newList.add(newType);
-        blockLibrary.put(name, newList);
-        GlobalBlockStateMap.addBlockType(newType);
     }
     
     public static String getLoadedBlockTypesDebugString(){
@@ -114,6 +119,9 @@ public class BlockState {
     }
     
     private boolean equals(BlockState other){
+        if (this == other) {
+            return true; //simple case
+        }
         //do not compare lighting behavior
         return other.name.equals(this.name) && (Arrays.deepEquals(this.blockStateProperties, other.blockStateProperties));
     }
@@ -178,10 +186,105 @@ public class BlockState {
                 }
                 stateJson.add("properties", propsJson);
             }
+            //Add lighting behavior
+            
+            Map<LightingBehavior, List<BlockStateProperty[]>> behaviorToPropertiesMap = new HashMap<>();
+            for (BlockState blockState : entry.getValue()) {
+                if (!behaviorToPropertiesMap.containsKey(blockState.lightingBehavior)) {
+                    behaviorToPropertiesMap.put(blockState.lightingBehavior, new ArrayList<>());
+                }
+                behaviorToPropertiesMap.get(blockState.lightingBehavior).add(blockState.blockStateProperties);
+            }
+            if (behaviorToPropertiesMap.size() == 1) {
+                LightingBehavior lightingBehavior = behaviorToPropertiesMap.keySet().iterator().next();
+                JsonObject lightingBehaviorJson = new JsonObject();
+                lightingBehaviorJson.addProperty("emit_light_level", lightingBehavior.emitLevel);
+                lightingBehaviorJson.addProperty("allow_block_light", lightingBehavior.allowBlockLight);
+                lightingBehaviorJson.addProperty("allow_sky_light", lightingBehavior.allowSkyLight);
+                stateJson.add("lighting_behavior", lightingBehaviorJson);
+            } else {
+                JsonArray lightingBehaviorsJson = new JsonArray();
+                for (LightingBehavior lightingBehavior : behaviorToPropertiesMap.keySet()) {
+                    List<BlockStateProperty[]> allProperties = behaviorToPropertiesMap.get(lightingBehavior);
+                    List<BlockStateProperty> commonProperties = new ArrayList<>();
+                    for (BlockStateProperty[] blockProperties : allProperties) {
+                        if (blockProperties == null) {
+                            continue;
+                        }
+                        for (BlockStateProperty blockProp : blockProperties) {
+                            boolean alwaysPresent = true;
+                            for (BlockStateProperty[] innerProps : allProperties) {
+                                if (innerProps == null) {
+                                    continue;
+                                }
+                                boolean foundProp = false;
+                                for (BlockStateProperty innerProp : innerProps) {
+                                    if (innerProp.equals(blockProp)) {
+                                        foundProp = true;
+                                        break;
+                                    }
+                                }
+                                if (!foundProp) {
+                                    alwaysPresent = false;
+                                    break;
+                                }
+                            }
+                            if (alwaysPresent) {
+                                commonProperties.add(blockProp);
+                            }
+                        }
+                    }
+                    JsonObject lightingBehaviorRoot = new JsonObject();
+                    JsonObject whenPredicate = new JsonObject();
+                    for (BlockStateProperty property : commonProperties) {
+                        switch(property.valueType) {
+                            case STRING:
+                                whenPredicate.addProperty(property.NAME, (String)property.VALUE);
+                                break;
+                            case INTEGER:
+                                whenPredicate.addProperty(property.NAME, (Integer)property.VALUE);
+                                break;
+                            case BOOLEAN:
+                                whenPredicate.addProperty(property.NAME, (Boolean)property.VALUE);
+                                break;
+                        }
+                    }
+                    lightingBehaviorRoot.add("when", whenPredicate);
+                    JsonObject lightingBehaviorJson = new JsonObject();
+                    lightingBehaviorJson.addProperty("emit_light_level", lightingBehavior.emitLevel);
+                    lightingBehaviorJson.addProperty("allow_block_light", lightingBehavior.allowBlockLight);
+                    lightingBehaviorJson.addProperty("allow_sky_light", lightingBehavior.allowSkyLight);
+                    lightingBehaviorRoot.add("lighting_behavior", lightingBehaviorJson);
+                    lightingBehaviorsJson.add(lightingBehaviorRoot);
+                }
+                stateJson.add("lighting_behavior", lightingBehaviorsJson);
+            }
+            
+            //add this block
             blockStatesJson.add(stateJson);
         });
         Logger.info("Num json elements: " + blockStatesJson.size());
         Logger.info(new GsonBuilder().setPrettyPrinting().create().toJson(blockStatesJson));
+    }
+    
+    private static LightingBehavior guessLightingBehavior(BlockState blockState) {
+        List<BlockStateModel> models = BlockStateModelLookup.getBlockStateModel(blockState);
+        for (BlockStateModel model : models) {
+            if (model.isFullBlock()) {
+                //guess that it is solid and opaque
+                return LightingBehavior.DEFAULT_FULL_BLOCK;
+            }
+        }
+        return LightingBehavior.DEFAULT_NON_FULL_BLOCK;
+    }
+    
+    public static void postModelLoadingInitialization() {
+        Logger.info("Post block model loading initialization of block states.");
+        for (BlockState blockState : GlobalBlockStateMap.getBlockTypes()) {
+            if (blockState.lightingBehavior == null) {
+                blockState.lightingBehavior = guessLightingBehavior(blockState);
+            }
+        }
     }
     
     /**
@@ -189,6 +292,7 @@ public class BlockState {
      * This allows them to be created with correct lighting properties.
      */
     public static void loadKnownBlockStates() {
+        Logger.info("Loading known block states.");
         final String KNOWN_BLOCK_STATES_FILE_PATH = "/data/known_block_states.json";
         JsonArray blockStatesJson = new JsonParser().parse(readFile(KNOWN_BLOCK_STATES_FILE_PATH)).getAsJsonArray();
         for (JsonElement blockStateJson : blockStatesJson) {
@@ -304,17 +408,20 @@ public class BlockState {
             }
             
             if (allowedProperties == null) {
-                LightingBehavior lightingBehavior = propsToLighting.isEmpty() ? LightingBehavior.DEFAULT_FULL_BLOCK : propsToLighting.get(0).right;
+                LightingBehavior lightingBehavior = propsToLighting.isEmpty() ? null : propsToLighting.get(0).right;
                 BlockState.createBlockState(name, null, lightingBehavior);
             } else {
                 for (int i = 0; i < allowedProperties.length; i++) {
-                    LightingBehavior lightingBehavior = LightingBehavior.DEFAULT_FULL_BLOCK;
+                    LightingBehavior lightingBehavior = null;
                     if (!propsToLighting.isEmpty()) {
-                        FindLightingLoop:
+                        //find the lighting behavior with the most matched block state properties
+                        int propertiesMatched = 0;
                         for (Tuple<List<BlockStateProperty>, LightingBehavior> possLight : propsToLighting) {
                             if (ArrayUtils.containsAll(allowedProperties[i], possLight.left)) {
-                                lightingBehavior = possLight.right;
-                                break FindLightingLoop;
+                                if (possLight.left.size() > propertiesMatched) {
+                                    lightingBehavior = possLight.right;
+                                    propertiesMatched = possLight.left.size();
+                                }
                             }
                         }
                     }
