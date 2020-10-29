@@ -119,7 +119,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public void setBlocks(int subChunkIndex, short[] blocks) throws MalformedNbtTagException{
-        if(subChunkIndex >= Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK){
+        if(subChunkIndex >= this.chunkHeightInSections()){
             throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
         }
         if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
@@ -130,6 +130,58 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         }
         if(blocks != chunkSectionCache[subChunkIndex].getBlockIds()){ //if the array we are trying to set not in the same location as the one we already have
             System.arraycopy(blocks, 0, chunkSectionCache[subChunkIndex].getBlockIds(), 0, ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION);
+        }
+        declareCacheIsDirty();
+        chunkSectionCache[subChunkIndex].setDirty(true);
+        declareNbtChanged();
+        declareVisiblyChanged();
+    }
+    
+    @Override
+    public byte[] getBlockLighting(int subChunkIndex) throws MalformedNbtTagException {
+        return getChunkSection(subChunkIndex).getBlockLightValues();
+    }
+    
+    @Override
+    public void setBlockLighting(int subChunkIndex, byte[] blockLight) throws MalformedNbtTagException {
+        if(subChunkIndex >= this.chunkHeightInSections()){
+            throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
+        }
+        if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
+            readChunkSectionIntoCache(subChunkIndex);
+        }
+        if(blockLight.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2){
+            throw new IllegalArgumentException("Wrong number of block lights tried to occupy chunk sub section");
+        }
+        //if the array we are trying to set not in the same location as the one we already have
+        if(blockLight != chunkSectionCache[subChunkIndex].getBlockLightValues()) {
+            System.arraycopy(blockLight, 0, chunkSectionCache[subChunkIndex].getBlockLightValues(), 0, ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2);
+        }
+        declareCacheIsDirty();
+        chunkSectionCache[subChunkIndex].setDirty(true);
+        declareNbtChanged();
+        declareVisiblyChanged();
+    }
+    
+    @Override
+    public byte[] getSkyLighting(int subChunkIndex) throws MalformedNbtTagException {
+        return getChunkSection(subChunkIndex).getSkyLightValues();
+    }
+    
+    @Override
+    public void setSkyLighting(int subChunkIndex, byte[] blockLight) throws MalformedNbtTagException {
+        if(subChunkIndex >= this.chunkHeightInSections()){
+            throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
+        }
+        if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
+            readChunkSectionIntoCache(subChunkIndex);
+        }
+        if(blockLight.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2){
+            throw new IllegalArgumentException("Wrong number of block lights tried to occupy chunk sub section");
+        }
+        //if the array we are trying to set not in the same location as the one we already have
+        if(blockLight != chunkSectionCache[subChunkIndex].getSkyLightValues()) {
+            System.arraycopy(blockLight, 0, chunkSectionCache[subChunkIndex].getSkyLightValues(), 0, ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2);
         }
         declareCacheIsDirty();
         chunkSectionCache[subChunkIndex].setDirty(true);

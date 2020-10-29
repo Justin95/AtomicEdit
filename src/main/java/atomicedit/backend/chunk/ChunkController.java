@@ -39,7 +39,11 @@ public abstract class ChunkController implements ChunkReader {
     
     public abstract void addBlockEntity(BlockEntity tileEntity) throws MalformedNbtTagException;
     
-    public abstract void removeBlockEntity(BlockEntity tileEntity) throws MalformedNbtTagException;;
+    public abstract void removeBlockEntity(BlockEntity tileEntity) throws MalformedNbtTagException;
+    
+    public abstract void setBlockLighting(int subChunkIndex, byte[] blockLighting) throws MalformedNbtTagException;
+    
+    public abstract void setSkyLighting(int subChunkIndex, byte[] skyLighting) throws MalformedNbtTagException;
     
     public abstract void setChunkNbtTag(NbtTag tag) throws MalformedNbtTagException; //call this after editing the NbtTag from getChunkAsNbtTag
     
