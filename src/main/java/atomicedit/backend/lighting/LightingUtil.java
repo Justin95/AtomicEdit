@@ -93,6 +93,9 @@ public class LightingUtil {
             } else if (skyLight > 0 && (!lightBehavior.allowSkyLight || skyLight < 15)) {
                 skyLight--;
             }
+            if (skyLight == 15) {
+                lightingArea.setEdited(x, y, z, true);
+            }
             lightingArea.setSkyLightAt(x, y, z, (byte)skyLight);
         });
         for (int i = 15; i > 0; i--) {
