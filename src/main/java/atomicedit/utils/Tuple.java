@@ -17,4 +17,9 @@ public class Tuple <T, U> {
         this.right = right;
     }
     
+    @Override
+    public String toString() {
+        return "{" + left.toString() + ", " + right.toString() + "}";
+    }
+    
 }

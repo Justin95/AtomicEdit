@@ -44,4 +44,9 @@ public class LightingBehavior {
         throw new RuntimeException("Could not find Block Lighting Behavior {" + emitLevel + ", " + allowBlockLight + ", " + allowSkyLight + "}");
     }
     
+    @Override
+    public String toString() {
+        return "{Emit Level: " + emitLevel + ", allowBlockLight: " + allowBlockLight + ", allowSkyLight: " + allowSkyLight + "}";
+    }
+    
 }

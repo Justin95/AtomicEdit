@@ -144,6 +144,10 @@ public class BlockState {
         return null;
     }
     
+    public LightingBehavior getLightingBehavior() {
+        return this.lightingBehavior;
+    }
+    
     public static void debugPrintAllBlockStates() {
         JsonArray blockStatesJson = new JsonArray();
         blockLibrary.entrySet().stream().sorted(
@@ -415,7 +419,7 @@ public class BlockState {
                     LightingBehavior lightingBehavior = null;
                     if (!propsToLighting.isEmpty()) {
                         //find the lighting behavior with the most matched block state properties
-                        int propertiesMatched = 0;
+                        int propertiesMatched = -1;
                         for (Tuple<List<BlockStateProperty>, LightingBehavior> possLight : propsToLighting) {
                             if (ArrayUtils.containsAll(allowedProperties[i], possLight.left)) {
                                 if (possLight.left.size() > propertiesMatched) {

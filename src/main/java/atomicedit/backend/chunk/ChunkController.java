@@ -43,7 +43,7 @@ public abstract class ChunkController implements ChunkReader {
     
     public abstract void setChunkNbtTag(NbtTag tag) throws MalformedNbtTagException; //call this after editing the NbtTag from getChunkAsNbtTag
     
-    protected abstract void flushCacheToChunkNbt();
+    public abstract void flushCacheToChunkNbt();
     
     /**
      * If this chunk data version supports cubic biomes.
@@ -63,6 +63,12 @@ public abstract class ChunkController implements ChunkReader {
     
     protected void declareVisiblyChanged(){
         this.chunk.setNeedsLightingCalc(true);
+        this.chunk.setNeedsRedraw(true);
+    }
+    
+    public abstract void declareChunkSectionCacheChanged();
+    
+    public void setNeedsRedraw() {
         this.chunk.setNeedsRedraw(true);
     }
     

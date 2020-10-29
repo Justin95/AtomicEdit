@@ -50,7 +50,7 @@ public class AtomicEdit {
         gcThread.start();
     }
     
-    public void cleanUp() {
+    private void cleanUp() {
         gcThread.shutdown();
         try {
             gcThread.join();
