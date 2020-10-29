@@ -211,6 +211,8 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         int indexSize = getIndexSize(blockStates.size());
         long[] packedBlockValues = packBlockIds(blockValues, indexSize);
         sectionTag.putTag(new NbtLongArrayTag("BlockStates", packedBlockValues));
+        sectionTag.putTag(new NbtByteArrayTag("BlockLight", chunkSection.getBlockLightValues()));
+        sectionTag.putTag(new NbtByteArrayTag("SkyLight", chunkSection.getSkyLightValues()));
     }
     
     private List<BlockState> getContainedBlockStates(ChunkSection chunkSection){
@@ -372,7 +374,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    protected void flushCacheToChunkNbt(){
+    public void flushCacheToChunkNbt(){
         if(!chunkSectionCacheIsDirty){
             return;
         }
@@ -391,6 +393,14 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
             chunkSectionCache[i].setDirty(false);
         }
         chunkSectionCacheIsDirty = false;
+    }
+    
+    @Override
+    public void declareChunkSectionCacheChanged() {
+        this.chunkSectionCacheIsDirty = true;
+        for (ChunkSection section : this.chunkSectionCache) {
+            section.setDirty(true);
+        }
     }
     
     protected int[] getBiomes() throws MalformedNbtTagException {

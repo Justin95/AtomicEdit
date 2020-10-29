@@ -46,6 +46,9 @@ public class World {
     public void saveChanges() throws IOException{
         //save chunks and remove from unsaved map
         doLightingCalculation();
+        for (ChunkController chunk : unsavedChunkMap.values()) {
+            chunk.flushCacheToChunkNbt();
+        }
         WorldFormat worldFormat = new MinecraftAnvilWorldFormat(filepath);
         try{
             worldFormat.writeChunks(unsavedChunkMap);
@@ -72,13 +75,15 @@ public class World {
         Map<ChunkCoord, ChunkController> toLight;
         try {
             toLight = this.loadedChunkStage.getMutableChunks(chunkCoordsToLight);
+            LightingUtil.doLightingCalculation(toLight);
         } catch(MalformedNbtTagException e) {
-            Logger.error("Exception while trying to do lighting calculation.", e);
+            Logger.error("Cannot finish lighting calculation.", e);
             return; //this will leave the chunks unlit
         }
-        LightingUtil.doLightingCalculation(toLight);
         for(ChunkController chunk : toLight.values()) {
             chunk.clearNeedsLightingCalc();
+            chunk.setNeedsRedraw();
+            chunk.declareChunkSectionCacheChanged();
         }
         Logger.info("Finished lighting calc.");
     }

@@ -6527,7 +6527,7 @@
   {
     "name": "minecraft:glowstone",
     "lighting_behavior": {
-      "emit_light_level": 0,
+      "emit_light_level": 15,
       "allow_block_light": false,
       "allow_sky_light": false
     }
@@ -8364,8 +8364,8 @@
       }
     ],
     "lighting_behavior": {
-      "emit_light_level": 0,
-      "allow_block_light": false,
+      "emit_light_level": 15,
+      "allow_block_light": true,
       "allow_sky_light": false
     }
   },
@@ -17553,7 +17553,7 @@
     ],
     "lighting_behavior": {
       "emit_light_level": 0,
-      "allow_block_light": false,
+      "allow_block_light": true,
       "allow_sky_light": false
     }
   },
