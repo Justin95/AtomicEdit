@@ -6,6 +6,7 @@ import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.utils.GeneralUtils;
 import atomicedit.volumes.Volume;
+import atomicedit.volumes.WorldVolume;
 
 /**
  *
@@ -15,7 +16,7 @@ public class ReplaceBlockProvider implements BlockProvider {
     
     private final short fromBlockId;
     private final short toBlockId;
-    private final Volume volume;
+    private final WorldVolume volume;
     /**
      * A copy of the world in the volume represented by this block provider.
      * This should only be read from and not modified.
@@ -23,7 +24,7 @@ public class ReplaceBlockProvider implements BlockProvider {
     private final Schematic worldInVolume;
     
     
-    public ReplaceBlockProvider(Volume volume, Schematic worldInVolume, BlockState fromBlockState, BlockState toBlockState){
+    public ReplaceBlockProvider(WorldVolume volume, Schematic worldInVolume, BlockState fromBlockState, BlockState toBlockState){
         this.fromBlockId = GlobalBlockStateMap.getBlockId(fromBlockState);
         this.toBlockId = GlobalBlockStateMap.getBlockId(toBlockState);
         this.volume = volume;

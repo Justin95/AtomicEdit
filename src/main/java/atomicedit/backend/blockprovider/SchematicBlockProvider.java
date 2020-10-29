@@ -13,8 +13,8 @@ import atomicedit.volumes.Volume;
  */
 public class SchematicBlockProvider implements BlockProvider{
     
-    private short[] blocks;
-    private Volume volume;
+    private final short[] blocks;
+    private final Volume volume;
     
     
     public SchematicBlockProvider(Schematic schematic){

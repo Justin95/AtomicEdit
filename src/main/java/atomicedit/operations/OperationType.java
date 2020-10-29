@@ -5,6 +5,7 @@ import atomicedit.operations.implementations.ReplaceBlocksOperation;
 import atomicedit.operations.implementations.SetBlocksOperation;
 import atomicedit.backend.parameters.ParameterDescriptor;
 import atomicedit.backend.parameters.Parameters;
+import atomicedit.operations.implementations.ErosionOperation;
 import atomicedit.volumes.WorldVolume;
 import java.util.List;
 
@@ -24,6 +25,11 @@ public enum OperationType {
         "Replace Blocks",
         ReplaceBlocksOperation.PARAM_DESCRIPTORS,
         ReplaceBlocksOperation::getInstance
+    ),
+    EROSION_OPERATION(
+        "Erode Blocks",
+        ErosionOperation.PARAM_DESCRIPTORS,
+        ErosionOperation::getInstance
     ),
     ;
     
