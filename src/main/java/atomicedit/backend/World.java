@@ -80,11 +80,6 @@ public class World {
             Logger.error("Cannot finish lighting calculation.", e);
             return; //this will leave the chunks unlit
         }
-        for(ChunkController chunk : toLight.values()) {
-            chunk.clearNeedsLightingCalc();
-            chunk.setNeedsRedraw();
-            chunk.declareChunkSectionCacheChanged();
-        }
         Logger.info("Finished lighting calc.");
     }
     

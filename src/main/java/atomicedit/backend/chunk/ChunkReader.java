@@ -32,6 +32,10 @@ public interface ChunkReader {
     
     public List<BlockEntity> getBlockEntities() throws MalformedNbtTagException; //read only list
     
+    public byte[] getBlockLighting(int subChunkIndex) throws MalformedNbtTagException;
+    
+    public byte[] getSkyLighting(int subChunkIndex) throws MalformedNbtTagException;
+    
     public NbtTag getChunkAsNbtTag();
     
     public boolean needsSaving();

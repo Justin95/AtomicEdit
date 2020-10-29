@@ -140,6 +140,7 @@ public class LightingUtil {
                 }
             });
         }
+        lightingArea.writeResult(chunkMap);
         Logger.info("Finished lighting calculation.");
     }
     
@@ -286,6 +287,15 @@ public class LightingUtil {
             }
             Logger.error("Tried to look up an index out of bounds in lighting calc " + sectionCoord + ". Valid Sections: " + sections);
             throw new RuntimeException("Tried to look out of bounds in lighting calc.");
+        }
+        
+        void writeResult(Map<ChunkCoord, ChunkController> chunkMap) throws MalformedNbtTagException {
+            for (Tuple<ChunkSectionCoord, LightingSection> tuple : sections) {
+                ChunkCoord chunkCoord = ChunkCoord.getInstance(tuple.left.x, tuple.left.z);
+                ChunkController chunk = chunkMap.get(chunkCoord);
+                chunk.setBlockLighting(tuple.left.y, tuple.right.blockLight);
+                chunk.setSkyLighting(tuple.left.y, tuple.right.skyLight);
+            }
         }
         
     }
