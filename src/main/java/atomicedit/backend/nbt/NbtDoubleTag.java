@@ -33,6 +33,11 @@ public class NbtDoubleTag extends NbtTag{
     }
     
     @Override
+    public NbtDoubleTag copy() {
+        return new NbtDoubleTag(name, data);
+    }
+    
+    @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
     }

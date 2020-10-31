@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class NbtStringTag extends NbtTag{
     
-    private String data;
-    private int dataSize;
+    private final String data;
+    private final int dataSize;
     
     public NbtStringTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_STRING, readName ? NbtTag.readUtfString(input) : "");
@@ -37,6 +37,11 @@ public class NbtStringTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.dataSize;
+    }
+    
+    @Override
+    public NbtStringTag copy() {
+        return new NbtStringTag(name, data);
     }
     
     @Override

@@ -12,8 +12,8 @@ import java.util.Arrays;
  */
 public class NbtLongArrayTag extends NbtTag{
     
-    private long[] data;
-    private int dataSize;
+    private final long[] data;
+    private final int dataSize;
     
     public NbtLongArrayTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_LONG_ARRAY, readName ? NbtTag.readUtfString(input) : "");
@@ -44,6 +44,11 @@ public class NbtLongArrayTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.dataSize;
+    }
+    
+    @Override
+    public NbtLongArrayTag copy() {
+        return new NbtLongArrayTag(name, data);
     }
     
     @Override

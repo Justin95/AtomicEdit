@@ -7,7 +7,7 @@ import atomicedit.backend.BlockState;
 import atomicedit.backend.biomes.BiomeMap;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
-import atomicedit.backend.nbt.NbtTag;
+import atomicedit.backend.nbt.NbtCompoundTag;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ public interface ChunkReader {
     
     public byte[] getSkyLighting(int subChunkIndex) throws MalformedNbtTagException;
     
-    public NbtTag getChunkAsNbtTag();
+    public NbtCompoundTag getChunkAsNbtTag();
     
     public boolean needsSaving();
     

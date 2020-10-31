@@ -166,7 +166,13 @@ public class ChunkRenderObjectCreator {
         }
         for (Entity entity : entities) {
             Vector3f entityPos;
-            EntityCoord coord = entity.getCoord();
+            EntityCoord coord;
+            try {
+                coord = entity.getCoord();
+            } catch (MalformedNbtTagException e) {
+                Logger.warning("Could not render Entity in chunk.", e);
+                continue;
+            }
             entityPos = coord.getChunkRelativePosition();
             addEntity(vertexData, faceIndicies, lineIndicies, entityPos);
         }

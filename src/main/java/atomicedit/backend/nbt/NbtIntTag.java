@@ -33,6 +33,11 @@ public class NbtIntTag extends NbtTag{
     }
     
     @Override
+    public NbtIntTag copy() {
+        return new NbtIntTag(name, data);
+    }
+    
+    @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
     }

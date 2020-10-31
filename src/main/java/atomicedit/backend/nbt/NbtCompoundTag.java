@@ -10,9 +10,9 @@ import java.util.ArrayList;
  *
  * @author Justin Bonner
  */
-public class NbtCompoundTag extends NbtTag{
+public class NbtCompoundTag extends NbtTag {
     
-    private ArrayList<NbtTag> data;
+    private final ArrayList<NbtTag> data;
     private int dataSize;
     
     public NbtCompoundTag(DataInputStream input, boolean readName) throws IOException{
@@ -97,6 +97,15 @@ public class NbtCompoundTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.dataSize;
+    }
+    
+    @Override
+    public NbtCompoundTag copy() {
+        ArrayList<NbtTag> dataCopy = new ArrayList<>(this.dataSize);
+        for (NbtTag tag : data) {
+            dataCopy.add(tag.copy());
+        }
+        return new NbtCompoundTag(name, dataCopy);
     }
     
     //time savers

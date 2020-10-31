@@ -7,7 +7,7 @@ import atomicedit.backend.biomes.BiomeMap;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
-import atomicedit.backend.nbt.NbtTag;
+import atomicedit.backend.nbt.NbtCompoundTag;
 
 /**
  *
@@ -45,7 +45,7 @@ public abstract class ChunkController implements ChunkReader {
     
     public abstract void setSkyLighting(int subChunkIndex, byte[] skyLighting) throws MalformedNbtTagException;
     
-    public abstract void setChunkNbtTag(NbtTag tag) throws MalformedNbtTagException; //call this after editing the NbtTag from getChunkAsNbtTag
+    public abstract void setChunkNbtTag(NbtCompoundTag tag) throws MalformedNbtTagException; //call this after editing the NbtTag from getChunkAsNbtTag
     
     public abstract void flushCacheToChunkNbt();
     

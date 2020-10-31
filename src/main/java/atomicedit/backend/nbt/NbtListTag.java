@@ -12,10 +12,10 @@ import java.util.List;
  *
  * @author Justin Bonner
  */
-public class NbtListTag extends NbtTag{
+public class NbtListTag extends NbtTag {
     
-    private List<NbtTag> data;
-    private byte tagId;
+    private final List<NbtTag> data;
+    private final byte tagId;
     
     public NbtListTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_LIST, readName ? NbtTag.readUtfString(input) : "");
@@ -65,6 +65,15 @@ public class NbtListTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.data.size();
+    }
+    
+    @Override
+    public NbtListTag copy() {
+        ArrayList<NbtTag> dataCopy = new ArrayList<>(this.data.size());
+        for (NbtTag tag : data) {
+            dataCopy.add(tag.copy());
+        }
+        return new NbtListTag(name, dataCopy);
     }
     
     //time savers

@@ -13,8 +13,8 @@ import java.util.Arrays;
  */
 public class NbtByteArrayTag extends NbtTag{
     
-    private byte[] data;
-    private int dataSize;
+    private final byte[] data;
+    private final int dataSize;
     
     public NbtByteArrayTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_BYTE_ARRAY, readName ? NbtTag.readUtfString(input) : "");
@@ -45,6 +45,11 @@ public class NbtByteArrayTag extends NbtTag{
     
     public int getPayloadSize(){
         return this.dataSize;
+    }
+    
+    @Override
+    public NbtByteArrayTag copy() {
+        return new NbtByteArrayTag(name, data);
     }
     
     @Override

@@ -140,6 +140,8 @@ public class ChunkUtils {
         for(BlockEntity blockEntity : blockEntities){
             BlockCoord coord = blockEntity.getBlockCoord();
             ChunkController controller = controllers.get(coord.getChunkCoord());
+            //incase an identical block entity is present it must be removed to avoid duplicating block entitites
+            controller.removeBlockEntity(blockEntity);
             controller.addBlockEntity(blockEntity);
         }
     }
@@ -153,7 +155,41 @@ public class ChunkUtils {
         for(Entity entity : entities){
             BlockCoord coord = entity.getCoord().getBlockCoord();
             ChunkController controller = controllers.get(coord.getChunkCoord());
+            //incase an identical entity is present it must be removed to avoid duplicating entities
+            controller.removeEntity(entity);
             controller.addEntity(entity);
+        }
+    }
+    
+    public static void removeBlockEntitiesFromChunks(Collection<ChunkController> controllers, Collection<BlockEntity> blockEntities) throws MalformedNbtTagException {
+        Map<ChunkCoord, ChunkController> controllerMap = new HashMap<>();
+        for(ChunkController controller : controllers){
+            controllerMap.put(controller.getChunkCoord(), controller);
+        }
+        removeBlockEntitiesFromChunks(controllerMap, blockEntities);
+    }
+    
+    public static void removeBlockEntitiesFromChunks(Map<ChunkCoord, ChunkController> controllers, Collection<BlockEntity> blockEntities) throws MalformedNbtTagException {
+        for(BlockEntity blockEntity : blockEntities){
+            BlockCoord coord = blockEntity.getBlockCoord();
+            ChunkController controller = controllers.get(coord.getChunkCoord());
+            controller.removeBlockEntity(blockEntity);
+        }
+    }
+    
+    public static void removeEntitiesFromChunks(Collection<ChunkController> controllers, Collection<Entity> entities) throws MalformedNbtTagException {
+        Map<ChunkCoord, ChunkController> controllerMap = new HashMap<>();
+        for(ChunkController controller : controllers){
+            controllerMap.put(controller.getChunkCoord(), controller);
+        }
+        removeEntitiesFromChunks(controllerMap, entities);
+    }
+    
+    public static void removeEntitiesFromChunks(Map<ChunkCoord, ChunkController> controllers, Collection<Entity> entities) throws MalformedNbtTagException {
+        for(Entity entity : entities){
+            BlockCoord coord = entity.getCoord().getBlockCoord();
+            ChunkController controller = controllers.get(coord.getChunkCoord());
+            controller.removeEntity(entity);
         }
     }
     
