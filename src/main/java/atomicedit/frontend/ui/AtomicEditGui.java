@@ -129,6 +129,34 @@ public class AtomicEditGui {
         });
         topBar.add(saveWorldButton);
         
+        Button undoButton = new Button(580, 5, 80, 20);
+        undoButton.getTextState().setText("Undo");
+        undoButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
+            if(event.getAction() == MouseClickAction.CLICK){
+                try{
+                    backendController.undoOperation();
+                    Logger.debug("Undid operation.");
+                }catch(Exception e){
+                    Logger.error("Error while undoing operation.", e);
+                }
+            }
+        });
+        topBar.add(undoButton);
+        
+        Button redoButton = new Button(670, 5, 80, 20);
+        redoButton.getTextState().setText("Redo");
+        redoButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
+            if(event.getAction() == MouseClickAction.CLICK){
+                try{
+                    backendController.redoOperation();
+                    Logger.debug("Redid operation.");
+                }catch(Exception e){
+                    Logger.error("Error while redoing operation.", e);
+                }
+            }
+        });
+        topBar.add(redoButton);
+        
         coordsLabel = new Label(280, 5, 200, 30);
         coordsLabel.getStyle().setFontSize(17f);
         coordsLabel.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
