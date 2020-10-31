@@ -3,7 +3,10 @@ A Minecraft level editor
 
 designed for Minecraft 1.13+
 
-currently in Alpha (Actual proper software alpha, non of this "a game being 'in alpha' for 5 years when its already done" nonsense)
+currently in Alpha (Actual proper software alpha, none of this "a game being 'in alpha' for 5 years when its already done" nonsense)
+
+![alt_text](https://i.imgur.com/hhjUDZ9.png)
+Oct 30, 2020
 
 ![alt_text](https://i.imgur.com/neMGrCN.png)
 Mar 25, 2019
