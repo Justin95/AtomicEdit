@@ -36,7 +36,7 @@ public class RenderableStage {
         synchronized(this){
             this.unchangedSinceLastSort = false;
             for(ChunkRenderable renderable : toRemove){
-                for(ChunkSectionRenderObject renderObj : renderable.getRenderObjects()){
+                for(ChunkSectionRenderObject renderObj : renderable.getChunkSectionRenderObjects()){
                     if(renderObj.containsTranslucent){
                         this.translucentChunkSectionRenderObjects.remove(renderObj);
                     }else{
@@ -44,6 +44,8 @@ public class RenderableStage {
                     }
                     toDestroy.add(renderObj);
                 }
+                this.otherRenderObjects.removeAll(renderable.getMiscRenderObjects());
+                this.toDestroy.addAll(renderable.getMiscRenderObjects());
             }
         }
     }
@@ -55,13 +57,14 @@ public class RenderableStage {
         synchronized(this){
             this.unchangedSinceLastSort = false;
             for(ChunkRenderable renderable : toAdd){
-                for(ChunkSectionRenderObject renderObj : renderable.getRenderObjects()){
+                for(ChunkSectionRenderObject renderObj : renderable.getChunkSectionRenderObjects()){
                     if(renderObj.containsTranslucent){
                         this.translucentChunkSectionRenderObjects.add(renderObj);
                     }else{
                         this.opaqueChunkSectionRenderObjects.add(renderObj);
                     }
                 }
+                this.otherRenderObjects.addAll(renderable.getMiscRenderObjects());
             }
         }
     }
@@ -72,13 +75,14 @@ public class RenderableStage {
         }
         synchronized(this){
             this.unchangedSinceLastSort = false;
-            for(ChunkSectionRenderObject renderObj : toAdd.getRenderObjects()){
+            for(ChunkSectionRenderObject renderObj : toAdd.getChunkSectionRenderObjects()){
                 if(renderObj.containsTranslucent){
                     this.translucentChunkSectionRenderObjects.add(renderObj);
                 }else{
                     this.opaqueChunkSectionRenderObjects.add(renderObj);
                 }
             }
+            this.otherRenderObjects.addAll(toAdd.getMiscRenderObjects());
         }
     }
     

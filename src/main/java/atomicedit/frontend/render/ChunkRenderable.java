@@ -12,13 +12,15 @@ import java.util.Collection;
  *
  * @author Justin Bonner
  */
-public class ChunkRenderable{
+public class ChunkRenderable {
     
-    private Collection<ChunkSectionRenderObject> renderObjects;
+    private Collection<ChunkSectionRenderObject> chunkSectionRenderObjects;
+    private Collection<RenderObject> miscRenderObjects;
     private ChunkCoord chunkCoord;
     
     public ChunkRenderable(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
-        this.renderObjects = ChunkRenderObjectCreator.createRenderObjects(chunk, xMinus, xPlus, zMinus, zPlus);
+        this.chunkSectionRenderObjects = ChunkRenderObjectCreator.createRenderObjects(chunk, xMinus, xPlus, zMinus, zPlus);
+        this.miscRenderObjects = ChunkRenderObjectCreator.createMiscRenderObjects(chunk);
         this.chunkCoord = null;
         try{
             this.chunkCoord = chunk.getChunkCoord();
@@ -29,8 +31,12 @@ public class ChunkRenderable{
     }
     
     
-    public Collection<ChunkSectionRenderObject> getRenderObjects(){
-        return this.renderObjects;
+    public Collection<ChunkSectionRenderObject> getChunkSectionRenderObjects(){
+        return this.chunkSectionRenderObjects;
+    }
+    
+    public Collection<RenderObject> getMiscRenderObjects() {
+        return this.miscRenderObjects;
     }
     
     public ChunkCoord getChunkCoord(){
