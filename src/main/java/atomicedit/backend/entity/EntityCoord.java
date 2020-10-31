@@ -2,6 +2,8 @@
 package atomicedit.backend.entity;
 
 import atomicedit.backend.BlockCoord;
+import atomicedit.backend.chunk.ChunkSection;
+import org.joml.Vector3f;
 
 /**
  *
@@ -25,6 +27,14 @@ public class EntityCoord {
     
     private static int roundDown(double d){
         return (int)Math.floor(d);
+    }
+    
+    public Vector3f getChunkRelativePosition() {
+        return new Vector3f(
+            (float) x % ChunkSection.SIDE_LENGTH,
+            (float) y,
+            (float) z % ChunkSection.SIDE_LENGTH
+        );
     }
     
 }

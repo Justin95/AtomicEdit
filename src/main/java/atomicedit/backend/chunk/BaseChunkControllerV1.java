@@ -366,25 +366,31 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public void addEntity(Entity entity) throws MalformedNbtTagException{
+    public void addEntity(Entity entity) throws MalformedNbtTagException {
+        if(!getLevel().contains("Entities")){
+            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>()));
+        }
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
         entityNbts.add(entity.getNbtData());
         declareNbtChanged();
     }
     
     @Override
-    public void removeEntity(Entity entity) throws MalformedNbtTagException{
+    public void removeEntity(Entity entity) throws MalformedNbtTagException {
+        if(!getLevel().contains("Entities")){
+            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>()));
+        }
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
         entityNbts.remove(entity.getNbtData());
         declareNbtChanged();
     }
     
     @Override
-    public List<BlockEntity> getBlockEntities() throws MalformedNbtTagException{
-        if(!getLevel().contains("BlockEntities")){
+    public List<BlockEntity> getBlockEntities() throws MalformedNbtTagException {
+        if(!getLevel().contains("TileEntities")){
             return new ArrayList<>();
         }
-        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("BlockEntities").getCompoundTags();
+        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         ArrayList<BlockEntity> blockEntities = new ArrayList<>();
         for(NbtCompoundTag tag : blockEntityNbts){
             blockEntities.add(new BlockEntity(tag));
@@ -393,15 +399,21 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public void addBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException{
-        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("BlockEntities").getCompoundTags();
+    public void addBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException {
+        if(!getLevel().contains("TileEntities")){
+            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>()));
+        }
+        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         blockEntityNbts.add(blockEntity.getNbtData());
         declareNbtChanged();
     }
     
     @Override
-    public void removeBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException{
-        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("BlockEntities").getCompoundTags();
+    public void removeBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException {
+        if(!getLevel().contains("TileEntities")){
+            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>()));
+        }
+        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         blockEntityNbts.remove(blockEntity.getNbtData());
         declareNbtChanged();
     }

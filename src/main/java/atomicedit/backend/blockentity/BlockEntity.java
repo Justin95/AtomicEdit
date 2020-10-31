@@ -11,7 +11,7 @@ import atomicedit.backend.nbt.NbtCompoundTag;
  */
 public class BlockEntity {
     
-    private NbtCompoundTag blockEntityNbt;
+    private final NbtCompoundTag blockEntityNbt;
     
     public BlockEntity(NbtCompoundTag tag){
         this.blockEntityNbt = tag;
@@ -27,6 +27,11 @@ public class BlockEntity {
     
     public NbtCompoundTag getNbtData(){
         return this.blockEntityNbt;
+    }
+    
+    @Override
+    public String toString() {
+        return this.blockEntityNbt.toString(2);
     }
     
 }
