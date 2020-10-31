@@ -32,6 +32,7 @@ public class World {
     private final Map<ChunkCoord, ChunkController> unsavedChunkMap;
     private final LoadedChunkStage loadedChunkStage;
     private final Stack<Operation> operationHistory;
+    private final Stack<Operation> undoHistory;
     private static final int MAX_UNDO_OPS = 20;
     private final String filepath;
     
@@ -39,6 +40,7 @@ public class World {
     public World(String filepath){
         this.unsavedChunkMap = new HashMap<>();
         this.operationHistory = new Stack<>();
+        this.undoHistory = new Stack<>();
         this.filepath = filepath;
         this.loadedChunkStage = new LoadedChunkStage(filepath);
     }
@@ -100,6 +102,7 @@ public class World {
             operationHistory.remove(0); //hopefully 0 is bottom of the stack?
         }
         operationHistory.push(op);
+        undoHistory.clear();
         return result;
     }
     
@@ -108,12 +111,46 @@ public class World {
             return new OperationResult(false, "No operations to undo");
         }
         Operation lastOp = operationHistory.pop();
-        OperationResult result;
+        OperationResult result = lastOp.undoSynchronizedOperation(this);
+        Map<ChunkCoord, ChunkController> operationChunks;
         try{
-            result = lastOp.undoSynchronizedOperation(this);
-        }catch(Exception e){
+            operationChunks = loadedChunkStage.getMutableChunks(lastOp.getChunkCoordsInOperation());
+        }catch(MalformedNbtTagException e){
             return new OperationResult(false, e);
         }
+        operationChunks.forEach((ChunkCoord coord, ChunkController chunkController) -> {
+            if(chunkController.getChunk().needsSaving()){
+                this.unsavedChunkMap.put(coord, chunkController);
+            }
+        });
+        if(undoHistory.size() >= MAX_UNDO_OPS){
+            undoHistory.remove(0); //hopefully 0 is bottom of the stack?
+        }
+        undoHistory.push(lastOp);
+        return result;
+    }
+    
+    public OperationResult redoLastUndo() {
+        if(undoHistory.empty()){
+            return new OperationResult(false, "No operations to redo");
+        }
+        Operation lastOp = undoHistory.pop();
+        OperationResult result = lastOp.doSynchronizedOperation(this);
+        Map<ChunkCoord, ChunkController> operationChunks;
+        try{
+            operationChunks = loadedChunkStage.getMutableChunks(lastOp.getChunkCoordsInOperation());
+        }catch(MalformedNbtTagException e){
+            return new OperationResult(false, e);
+        }
+        operationChunks.forEach((ChunkCoord coord, ChunkController chunkController) -> {
+            if(chunkController.getChunk().needsSaving()){
+                this.unsavedChunkMap.put(coord, chunkController);
+            }
+        });
+        if(operationHistory.size() >= MAX_UNDO_OPS){
+            operationHistory.remove(0); //hopefully 0 is bottom of the stack?
+        }
+        operationHistory.push(lastOp);
         return result;
     }
     

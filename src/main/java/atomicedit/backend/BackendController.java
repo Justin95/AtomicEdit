@@ -57,6 +57,13 @@ public class BackendController {
         this.world.undoLastOperation();
     }
     
+    public void redoOperation() {
+        if (world == null) {
+            throw new IllegalStateException("Cannot undo operation because no world is loaded.");
+        }
+        this.world.redoLastUndo();
+    }
+    
     public void saveChanges() throws IOException {
         if (world == null) {
             throw new IllegalStateException("Cannot save world because no world is loaded.");
