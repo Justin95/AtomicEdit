@@ -14,18 +14,16 @@ import java.util.List;
  */
 public class Entity {
     
-    private NbtCompoundTag entityNbt;
-    private EntityCoord coord;
+    private final NbtCompoundTag entityNbt;
     
     public Entity(NbtTag entityNbt) throws MalformedNbtTagException{
         this.entityNbt = NbtTypes.getAsCompoundTag(entityNbt);
-        List<NbtDoubleTag> pos = this.entityNbt.getListTag("Pos").getDoubleTags();
-        this.coord = new EntityCoord(pos.get(0).getPayload(), pos.get(1).getPayload(), pos.get(2).getPayload());
     }
     
     
-    public EntityCoord getCoord(){
-        return this.coord;
+    public EntityCoord getCoord() throws MalformedNbtTagException {
+        List<NbtDoubleTag> pos = this.entityNbt.getListTag("Pos").getDoubleTags();
+        return new EntityCoord(pos.get(0).getPayload(), pos.get(1).getPayload(), pos.get(2).getPayload());
     }
     
     public NbtCompoundTag getNbtData(){

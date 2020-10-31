@@ -360,7 +360,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
         ArrayList<Entity> entities = new ArrayList<>();
         for(NbtCompoundTag tag : entityNbts){
-            entities.add(new Entity(tag));
+            entities.add(new Entity(tag.copy()));
         }
         return entities;
     }
@@ -371,7 +371,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
             getLevel().putTag(new NbtListTag("Entities", new ArrayList<>()));
         }
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
-        entityNbts.add(entity.getNbtData());
+        entityNbts.add(entity.getNbtData().copy());
         declareNbtChanged();
     }
     
@@ -393,7 +393,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         ArrayList<BlockEntity> blockEntities = new ArrayList<>();
         for(NbtCompoundTag tag : blockEntityNbts){
-            blockEntities.add(new BlockEntity(tag));
+            blockEntities.add(new BlockEntity(tag.copy()));
         }
         return blockEntities;
     }
@@ -404,7 +404,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
             getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>()));
         }
         List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
-        blockEntityNbts.add(blockEntity.getNbtData());
+        blockEntityNbts.add(blockEntity.getNbtData().copy());
         declareNbtChanged();
     }
     
@@ -419,13 +419,13 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public NbtTag getChunkAsNbtTag() {
+    public NbtCompoundTag getChunkAsNbtTag() {
         flushCacheToChunkNbt();
-        return this.chunkNbt;
+        return this.chunkNbt.copy();
     }
     
     @Override
-    public void setChunkNbtTag(NbtTag tag) throws MalformedNbtTagException{
+    public void setChunkNbtTag(NbtCompoundTag tag) throws MalformedNbtTagException{
         NbtCompoundTag chunkTag = NbtTypes.getAsCompoundTag(tag);
         this.chunkSectionCacheIsDirty = true; //it might have been changed, could go through and check if it actually was
         this.chunk.setChunkTag(chunkTag);

@@ -1,7 +1,6 @@
 
 package atomicedit.backend.nbt;
 
-import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,8 +11,8 @@ import java.io.IOException;
  */
 public abstract class NbtTag {
     //https://minecraft.gamepedia.com/NBT_format
-    private NbtTypes type;
-    private String name;
+    private final NbtTypes type;
+    protected final String name;
     
     public NbtTag(NbtTypes type, String name){
         this.type = type;
@@ -26,10 +25,6 @@ public abstract class NbtTag {
     
     public String getName(){
         return this.name;
-    }
-    
-    public void setName(String name){
-        this.name = name;
     }
     
     protected abstract void write(DataOutputStream writer) throws IOException;
@@ -51,5 +46,7 @@ public abstract class NbtTag {
     }
     
     protected abstract String toString(int indent);
+    
+    public abstract NbtTag copy();
     
 }

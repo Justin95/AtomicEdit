@@ -33,6 +33,11 @@ public class NbtShortTag extends NbtTag{
     }
     
     @Override
+    public NbtShortTag copy() {
+        return new NbtShortTag(name, data);
+    }
+    
+    @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
     }
