@@ -36,7 +36,11 @@ public class BackendController {
             Logger.notice("Tried to set null or empty file path as the world file");
             return;
         }
-        this.world = new World(worldDirectoryFilepath);
+        try {
+            this.world = new World(worldDirectoryFilepath);
+        } catch (SessionLockException e) {
+            Logger.error("Cannot set world.", e);
+        }
     }
     
     public String getWorldPath(){
@@ -68,7 +72,11 @@ public class BackendController {
         if (world == null) {
             throw new IllegalStateException("Cannot save world because no world is loaded.");
         }
-        world.saveChanges();
+        try {
+            world.saveChanges();
+        } catch (SessionLockException e) {
+            Logger.error("Cannot save world.", e);
+        }
     }
     
     public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords) throws Exception{

@@ -12,7 +12,14 @@ import atomicedit.backend.worldformats.WorldFormat;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,21 +42,30 @@ public class World {
     private final Stack<Operation> undoHistory;
     private static final int MAX_UNDO_OPS = 20;
     private final String filepath;
+    private long sessionStartTime;
     
     
-    public World(String filepath){
+    public World(String filepath) throws SessionLockException {
         this.unsavedChunkMap = new HashMap<>();
         this.operationHistory = new Stack<>();
         this.undoHistory = new Stack<>();
         this.filepath = filepath;
+        this.sessionStartTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        writeSessionLock(sessionStartTime, filepath);
         this.loadedChunkStage = new LoadedChunkStage(filepath);
     }
     
-    public void saveChanges() throws IOException{
+    public void saveChanges() throws IOException, SessionLockException {
         //save chunks and remove from unsaved map
         doLightingCalculation();
         for (ChunkController chunk : unsavedChunkMap.values()) {
             chunk.flushCacheToChunkNbt();
+        }
+        if (!isSessionValid()) {
+            Logger.warning("Session lock is invalid. The world will not be saved, and the session lock will be reaquired.");
+            this.sessionStartTime = ZonedDateTime.now().toInstant().toEpochMilli();
+            writeSessionLock(sessionStartTime, filepath);
+            return;
         }
         WorldFormat worldFormat = new MinecraftAnvilWorldFormat(filepath);
         try{
@@ -152,6 +168,30 @@ public class World {
         }
         operationHistory.push(lastOp);
         return result;
+    }
+    
+    private static void writeSessionLock(long time, String filepath) throws SessionLockException {
+        String sessionPath = filepath + (filepath.endsWith(File.pathSeparator) ? "" : "/") + "session.lock";
+        File file = new File(sessionPath);
+        try (DataOutputStream output = new DataOutputStream(new FileOutputStream(file, false))) {
+            output.writeLong(time);
+        } catch (IOException e) {
+            Logger.error("Exception writing session.lock file.", e);
+            throw new SessionLockException("Could not write session lock.", e);
+        }
+        Logger.info("Wrote session lock: " + time);
+    }
+    
+    private boolean isSessionValid() {
+        String sessionPath = filepath + (filepath.endsWith(File.pathSeparator) ? "" : "/") + "session.lock";
+        File file = new File(sessionPath);
+        try (DataInputStream input = new DataInputStream(new FileInputStream(file))) {
+            long readTime = input.readLong();
+            return readTime == this.sessionStartTime;
+        } catch (IOException e) {
+            Logger.error("Could not read session.lock file.", e);
+            return false;
+        }
     }
     
     public LoadedChunkStage getLoadedChunkStage(){
