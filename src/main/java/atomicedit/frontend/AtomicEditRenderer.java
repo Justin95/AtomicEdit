@@ -108,6 +108,7 @@ public class AtomicEditRenderer {
         UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.VIEW_MATRIX, camera.getViewMatrix());
         UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.PROJECTION_MATRIX, camera.getProjectionMatrix());
         
+        renderableStage.housekeeping();
         renderableStage.renderRenderables(camera);
         
         // render frame / GUI
