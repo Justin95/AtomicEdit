@@ -3,6 +3,7 @@ package atomicedit.backend;
 
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
+import atomicedit.backend.dimension.Dimension;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
@@ -79,12 +80,12 @@ public class BackendController {
         }
     }
     
-    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords) throws Exception{
-        return this.world.getLoadedChunkStage().getReadOnlyChunks(chunkCoords);
+    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords, Dimension dimension) throws Exception{
+        return this.world.getLoadedChunkStage(dimension).getReadOnlyChunks(chunkCoords);
     }
     
-    public Schematic createSchematic(WorldVolume volume) throws Exception{
-        return Schematic.createSchematicFromWorld(world, volume);
+    public Schematic createSchematic(WorldVolume volume, Dimension dimension) throws Exception{
+        return Schematic.createSchematicFromWorld(world, dimension, volume);
     }
     
     public BlockState getBlockType(short blockRuntimeId){
@@ -95,12 +96,19 @@ public class BackendController {
         return GlobalBlockStateMap.getBlockId(blockType);
     }
     
-    public boolean doesChunkNeedRedraw(ChunkCoord chunkCoord){
-        return this.world.doesChunkNeedRedraw(chunkCoord);
+    public void setActiveDimension(Dimension dimension) {
+        if (world == null) {
+            throw new IllegalStateException("Cannot change dimension because no world is loaded.");
+        }
+        this.world.setActiveDimension(dimension);
     }
     
-    public boolean doesChunkNeedSaving(ChunkCoord chunkCoord){
-        return this.world.doesChunkNeedSaving(chunkCoord);
+    public Dimension getActiveDimension() {
+        return world.getActiveDimension();
+    }
+    
+    public boolean doesChunkNeedRedraw(ChunkCoord chunkCoord, Dimension dimension){
+        return this.world.doesChunkNeedRedraw(chunkCoord, dimension);
     }
     
 }

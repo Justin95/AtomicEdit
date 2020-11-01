@@ -5,6 +5,8 @@ import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
+import atomicedit.backend.brushes.BrushType;
+import atomicedit.backend.dimension.Dimension;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
 import atomicedit.logging.Logger;
@@ -19,8 +21,11 @@ import org.liquidengine.legui.component.Component;
 import org.liquidengine.legui.component.Frame;
 import org.liquidengine.legui.component.Label;
 import org.liquidengine.legui.component.Panel;
+import org.liquidengine.legui.component.SelectBox;
+import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent;
 import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.event.MouseClickEvent.MouseClickAction;
+import org.liquidengine.legui.listener.EventListener;
 import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.Style.DisplayType;
@@ -156,6 +161,17 @@ public class AtomicEditGui {
             }
         });
         topBar.add(redoButton);
+        
+        SelectBox<Dimension> dimensionSelectBox = new SelectBox<>(760, 5, 80, 20);
+        for (Dimension dim : Dimension.getDimensions()) {
+            dimensionSelectBox.addElement(dim);
+        }
+        dimensionSelectBox.setSelected(0, true);
+        dimensionSelectBox.getSelectBoxChangeSelectionEvents().add((EventListener<SelectBoxChangeSelectionEvent<Dimension>>)(event) -> {
+            backendController.setActiveDimension(event.getNewValue());
+        });
+        dimensionSelectBox.setTabFocusable(false);
+        topBar.add(dimensionSelectBox);
         
         coordsLabel = new Label(280, 5, 200, 30);
         coordsLabel.getStyle().setFontSize(17f);

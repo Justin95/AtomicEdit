@@ -38,16 +38,16 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     
     //https://minecraft.gamepedia.com/Region_file_format
     
-    private String worldFilepath;
+    private String dimensionFilepath;
     
-    public MinecraftAnvilWorldFormat(String worldFilepath){
-        this.worldFilepath = worldFilepath;
+    public MinecraftAnvilWorldFormat(String dimensionFilepath){
+        this.dimensionFilepath = dimensionFilepath;
     }
     
     
     @Override
     public void setWorld(String filepath){
-        this.worldFilepath = filepath;
+        this.dimensionFilepath = filepath;
     }
     
     @Override
@@ -129,7 +129,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     private DataInputStream getRegionAsDataInputStream(ChunkCoord chunkCoord){
-        String filepath = worldFilepath + "/region/" + getRegionFileName(chunkCoord);
+        String filepath = dimensionFilepath + "/region/" + getRegionFileName(chunkCoord);
         DataInputStream regionInput = null;
         try{
             regionInput = new DataInputStream(new FileInputStream(filepath));
@@ -140,7 +140,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     private DataInputStream getRegionAsDataInputStream(String regionFileName) throws IOException {
-        String filepath = worldFilepath + "/region/" + regionFileName;
+        String filepath = dimensionFilepath + "/region/" + regionFileName;
         DataInputStream regionInput = null;
         try{
             byte[] rawRegionFile = Files.readAllBytes(Paths.get(filepath));
@@ -216,7 +216,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     private void writeRegionFile(String regionFileName, byte[] timestampsHeader, byte[][] prevChunkDatas, byte[][] newChunkDatas) throws IOException{
-        String filepath = worldFilepath + "/region/" + regionFileName;
+        String filepath = dimensionFilepath + "/region/" + regionFileName;
         byte[] chunkLocHeader = calcLocHeader(prevChunkDatas, newChunkDatas);
         DataOutputStream regionFile;
         try{

@@ -54,15 +54,15 @@ public class ReplaceBlocksOperation extends Operation {
     
     @Override
     protected OperationResult doOperation(World world) throws Exception{
-        Collection<ChunkController> chunkControllers = world.getLoadedChunkStage().getMutableChunks(getChunkCoordsInOperation()).values();
-        this.initialSchematic = Schematic.createSchematicFromWorld(world, operationVolume);
+        Collection<ChunkController> chunkControllers = world.getLoadedChunkStage(operationDimension).getMutableChunks(getChunkCoordsInOperation()).values();
+        this.initialSchematic = Schematic.createSchematicFromWorld(world, operationDimension, operationVolume);
         setBlocks(chunkControllers);
         return new OperationResult(true);
     }
     
     @Override
     protected OperationResult undoOperation(World world) throws Exception{
-        Schematic.putSchematicIntoWorld(world, initialSchematic, operationVolume.getSmallestPoint());
+        Schematic.putSchematicIntoWorld(world, operationDimension, initialSchematic, operationVolume.getSmallestPoint());
         return new OperationResult(true);
     }
     

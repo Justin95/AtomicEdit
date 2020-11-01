@@ -2,8 +2,10 @@
 package atomicedit.frontend.worldmaintinance;
 
 import atomicedit.AtomicEdit;
+import atomicedit.backend.BackendController;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
+import atomicedit.backend.dimension.Dimension;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.Camera;
 import atomicedit.frontend.render.ChunkRenderable;
@@ -27,9 +29,10 @@ public class ChunkLoadingThread extends Thread {
     
     private static final long CHUNK_LOAD_THREAD_REST_TIME_MS = 50;
     private static final String CHUNK_LOAD_THREAD_NAME = "Chunk Loading Thread";
-    private AtomicEditRenderer renderer;
+    private final AtomicEditRenderer renderer;
     private String worldPath;
     private final Map<ChunkCoord, ChunkRenderable> loadedChunks;
+    private Dimension drawnDimension;
     private volatile boolean keepRunning;
     private int renderDistInChunks;
     
@@ -40,40 +43,50 @@ public class ChunkLoadingThread extends Thread {
         this.renderDistInChunks = AtomicEdit.getSettings().getSettingValueAsInt(AtomicEditSettings.CHUNK_RENDER_DISTANCE);
         this.setName(CHUNK_LOAD_THREAD_NAME);
         this.worldPath = AtomicEdit.getBackendController().getWorldPath();
+        this.drawnDimension = Dimension.DEFAULT_DIMENSION;
     }
     
     @Override
     public void run(){
+        BackendController backendController = AtomicEdit.getBackendController();
         while(keepRunning){
             restThread();
             Camera camera = renderer.getCamera();
-            if(!AtomicEdit.getBackendController().hasWorld()) continue;
+            if(!backendController.hasWorld()) continue;
             if(camera == null) continue;
             ChunkCoord cameraCoord = ChunkCoord.getInstanceFromWorldPos(camera.getPosition().x, camera.getPosition().z);
             ChunkCoord maxCoord = ChunkCoord.getInstance(cameraCoord.x + renderDistInChunks, cameraCoord.z + renderDistInChunks);
             ChunkCoord minCoord = ChunkCoord.getInstance(cameraCoord.x - renderDistInChunks, cameraCoord.z - renderDistInChunks);
             ArrayList<ChunkRenderable> toRemove = new ArrayList<>();
             Set<ChunkCoord> neededChunks = new HashSet<>();
-            String currWorldPath = AtomicEdit.getBackendController().getWorldPath();
+            String currWorldPath = backendController.getWorldPath();
             if(currWorldPath != null && !currWorldPath.equals(worldPath)){
                 toRemove.addAll(loadedChunks.values());
                 this.loadedChunks.clear();
                 this.worldPath = currWorldPath;
             }
             ArrayList<ChunkCoord> removeFromLoadedChunks = new ArrayList<>();
-            for(ChunkCoord coord : loadedChunks.keySet()){ 
-                if(coord.x > maxCoord.x || coord.x < minCoord.x || coord.z > maxCoord.z || coord.z < minCoord.z){
-                    removeFromLoadedChunks.add(coord);
-                    toRemove.add(loadedChunks.get(coord));
+            Dimension currentDim = backendController.getActiveDimension();
+            if (!currentDim.equals(this.drawnDimension)) {
+                removeFromLoadedChunks.addAll(loadedChunks.keySet());
+                toRemove.addAll(loadedChunks.values());
+                this.drawnDimension = currentDim;
+            } else {
+                for(ChunkCoord coord : loadedChunks.keySet()){ 
+                    if(isNotInBounds(coord, minCoord, maxCoord)){
+                        removeFromLoadedChunks.add(coord);
+                        toRemove.add(loadedChunks.get(coord));
+                    }
                 }
             }
+            
             removeFromLoadedChunks.forEach((ChunkCoord coord) -> loadedChunks.remove(coord));
             for(int x = minCoord.x; x <= maxCoord.x; x++){
                 for(int z = minCoord.z; z <= maxCoord.z; z++){
                     ChunkCoord coord = ChunkCoord.getInstance(x, z);
                     if(!loadedChunks.containsKey(coord)){
                         neededChunks.add(coord);
-                    }else if(AtomicEdit.getBackendController().doesChunkNeedRedraw(coord)){
+                    }else if(backendController.doesChunkNeedRedraw(coord, this.drawnDimension)){
                         toRemove.add(loadedChunks.get(coord));
                         neededChunks.add(coord);
                     }
@@ -82,7 +95,7 @@ public class ChunkLoadingThread extends Thread {
             Set<ChunkCoord> neededAndAdjacentChunks = expandToAdjacentChunks(neededChunks);
             Map<ChunkCoord, ChunkReader> neededChunkReaders = null;
             try{
-                neededChunkReaders = AtomicEdit.getBackendController().getReadOnlyChunks(neededAndAdjacentChunks);
+                neededChunkReaders = backendController.getReadOnlyChunks(neededAndAdjacentChunks, this.drawnDimension);
             }catch(Exception e){
                 Logger.error("Exception while trying to load chunks for drawing", e);
             }
@@ -111,6 +124,17 @@ public class ChunkLoadingThread extends Thread {
                 }
             }
         }
+    }
+    
+    /**
+     * Test if coord in in the bounds between (inclusive) min and max coord.
+     * @param coord
+     * @param minCoord
+     * @param maxCoord
+     * @return 
+     */
+    private static boolean isNotInBounds(ChunkCoord coord, ChunkCoord minCoord, ChunkCoord maxCoord) {
+        return coord.x > maxCoord.x || coord.x < minCoord.x || coord.z > maxCoord.z || coord.z < minCoord.z;
     }
     
     private static Set<ChunkCoord> expandToAdjacentChunks(Set<ChunkCoord> originals){
