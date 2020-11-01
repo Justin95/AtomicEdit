@@ -5,8 +5,11 @@ designed for Minecraft 1.13+
 
 currently in Alpha (Actual proper software alpha, none of this "a game being 'in alpha' for 5 years when its already done" nonsense)
 
+![alt_text](https://i.imgur.com/U3mJV0I.png)
+Nov 1, 2020 - Added mutli-dimension support
+
 ![alt_text](https://i.imgur.com/hhjUDZ9.png)
-Oct 30, 2020
+Oct 30, 2020 - Added lighting, viewable entities, and tile entities
 
 ![alt_text](https://i.imgur.com/neMGrCN.png)
 Mar 25, 2019
