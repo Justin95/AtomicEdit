@@ -7,12 +7,12 @@ import atomicedit.backend.blockprovider.BlockProvider;
 import atomicedit.backend.blockprovider.SchematicBlockProvider;
 import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
+import atomicedit.backend.dimension.Dimension;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.entity.EntityCoord;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtCompoundTag;
 import atomicedit.backend.nbt.NbtDoubleTag;
-import atomicedit.backend.nbt.NbtFloatTag;
 import atomicedit.backend.nbt.NbtIntTag;
 import atomicedit.backend.nbt.NbtListTag;
 import atomicedit.backend.nbt.NbtTag;
@@ -56,12 +56,18 @@ public class Schematic {
         throw new UnsupportedOperationException(); //TODO
     }
 
-    public static Schematic createSchematicFromWorld(World world, WorldVolume volume) throws Exception {
-        return createSchematicFromWorld(world, volume, true, true);
+    public static Schematic createSchematicFromWorld(World world, Dimension dim, WorldVolume volume) throws Exception {
+        return createSchematicFromWorld(world, dim, volume, true, true);
     }
 
-    public static Schematic createSchematicFromWorld(World world, WorldVolume volume, boolean includeEntities, boolean includeBlockEntities) throws Exception {
-        Map<ChunkCoord, ChunkController> controllers = world.getLoadedChunkStage().getMutableChunks(volume.getContainedChunkCoords());
+    public static Schematic createSchematicFromWorld(
+        World world,
+        Dimension dim,
+        WorldVolume volume,
+        boolean includeEntities,
+        boolean includeBlockEntities
+    ) throws Exception {
+        Map<ChunkCoord, ChunkController> controllers = world.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
         short[] blocks = ChunkUtils.readBlocksFromChunks(controllers, volume);
         Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunks(controllers, volume) : null;
         entities = translateEntityCoordsToSchematic(entities, volume);
@@ -74,16 +80,17 @@ public class Schematic {
      * Put a schematic into the world at a given location.
      *
      * @param world
+     * @param dim
      * @param schematic
      * @param smallestCoord the smallest block coordinate in the volume, where we want it put into
      * the world.
      * @return
      * @throws Exception
      */
-    public static OperationResult putSchematicIntoWorld(World world, Schematic schematic, BlockCoord smallestCoord) throws Exception {
+    public static OperationResult putSchematicIntoWorld(World world, Dimension dim, Schematic schematic, BlockCoord smallestCoord) throws Exception {
         BlockProvider provider = new SchematicBlockProvider(schematic);
         WorldVolume volume = new WorldVolume(schematic.volume, smallestCoord);
-        Map<ChunkCoord, ChunkController> chunkControllers = world.getLoadedChunkStage().getMutableChunks(volume.getContainedChunkCoords());
+        Map<ChunkCoord, ChunkController> chunkControllers = world.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
         ChunkUtils.writeBlocksIntoChunks(chunkControllers.values(), provider, smallestCoord);
         Collection<BlockEntity> blockEntitiesToRemove = ChunkUtils.readBlockEntitiesFromChunks(chunkControllers, volume);
         ChunkUtils.removeBlockEntitiesFromChunks(chunkControllers, blockEntitiesToRemove);

@@ -23,15 +23,15 @@ import java.util.Map;
  */
 public class LoadedChunkStage {
     
-    private final String worldFilepath;
+    private final String dimensionFilepath;
     /**
      * A list of chunk controllers. This should be sorted later for look up speed. TODO
      */
     private final ArrayList<WeakReference<ChunkController>> controllerList;
     private final Object STAGE_LOCK = new Object();
     
-    public LoadedChunkStage(String worldFilepath){
-        this.worldFilepath = worldFilepath;
+    public LoadedChunkStage(String dimensionFilepath){
+        this.dimensionFilepath = dimensionFilepath;
         this.controllerList = new ArrayList<>();
     }
     
@@ -109,7 +109,7 @@ public class LoadedChunkStage {
     }
     
     private Map<ChunkCoord, Chunk> readChunks(Collection<ChunkCoord> chunkCoords) throws MalformedNbtTagException{
-        WorldFormat worldFormat = new MinecraftAnvilWorldFormat(worldFilepath);
+        WorldFormat worldFormat = new MinecraftAnvilWorldFormat(dimensionFilepath);
         Map<ChunkCoord, Chunk> coordToChunk = worldFormat.readChunks(chunkCoords);
         return coordToChunk;
     }

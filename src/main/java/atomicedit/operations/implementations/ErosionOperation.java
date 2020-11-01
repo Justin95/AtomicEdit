@@ -74,15 +74,15 @@ public class ErosionOperation extends Operation {
     
     @Override
     protected OperationResult doOperation(World world) throws Exception {
-        Collection<ChunkController> chunkControllers = world.getLoadedChunkStage().getMutableChunks(getChunkCoordsInOperation()).values();
-        this.schematicBackup = Schematic.createSchematicFromWorld(world, operationVolume);
+        Collection<ChunkController> chunkControllers = world.getLoadedChunkStage(operationDimension).getMutableChunks(getChunkCoordsInOperation()).values();
+        this.schematicBackup = Schematic.createSchematicFromWorld(world, operationDimension, operationVolume);
         setBlocks(chunkControllers);
         return new OperationResult(true);
     }
     
     @Override
     protected OperationResult undoOperation(World world) throws Exception {
-        Schematic.putSchematicIntoWorld(world, schematicBackup, operationVolume.getSmallestPoint());
+        Schematic.putSchematicIntoWorld(world, operationDimension, schematicBackup, operationVolume.getSmallestPoint());
         return new OperationResult(true);
     }
     
