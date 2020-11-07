@@ -3,26 +3,20 @@ package atomicedit.backend.schematic;
 import atomicedit.backend.BlockCoord;
 import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.World;
+import atomicedit.backend.blockentity.BlockEntityUtils;
 import atomicedit.backend.blockprovider.BlockProvider;
 import atomicedit.backend.blockprovider.SchematicBlockProvider;
 import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.dimension.Dimension;
 import atomicedit.backend.entity.Entity;
-import atomicedit.backend.entity.EntityCoord;
-import atomicedit.backend.nbt.MalformedNbtTagException;
+import atomicedit.backend.entity.EntityUtils;
 import atomicedit.backend.nbt.NbtCompoundTag;
-import atomicedit.backend.nbt.NbtDoubleTag;
-import atomicedit.backend.nbt.NbtIntTag;
-import atomicedit.backend.nbt.NbtListTag;
-import atomicedit.backend.nbt.NbtTag;
 import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.OperationResult;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,9 +64,9 @@ public class Schematic {
         Map<ChunkCoord, ChunkController> controllers = world.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
         short[] blocks = ChunkUtils.readBlocksFromChunks(controllers, volume);
         Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunks(controllers, volume) : null;
-        entities = translateEntityCoordsToSchematic(entities, volume);
-        Collection<BlockEntity> blockEntities = includeBlockEntities ? ChunkUtils.readBlockEntitiesFromChunks(controllers, volume) : null;
-        blockEntities = translateBlockEntityCoordsToSchematic(blockEntities, volume);
+        entities = EntityUtils.translateEntityCoordsToVolume(entities, volume);
+        Collection<BlockEntity> blockEntities = includeBlockEntities ? ChunkUtils.readBlockEntitiesFromChunkControllers(controllers.values(), volume) : null;
+        blockEntities = BlockEntityUtils.translateBlockEntityCoordsToVolume(blockEntities, volume);
         return new Schematic(volume, blocks, entities, blockEntities);
     }
 
@@ -92,89 +86,15 @@ public class Schematic {
         WorldVolume volume = new WorldVolume(schematic.volume, smallestCoord);
         Map<ChunkCoord, ChunkController> chunkControllers = world.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
         ChunkUtils.writeBlocksIntoChunks(chunkControllers.values(), provider, smallestCoord);
-        Collection<BlockEntity> blockEntitiesToRemove = ChunkUtils.readBlockEntitiesFromChunks(chunkControllers, volume);
+        Collection<BlockEntity> blockEntitiesToRemove = ChunkUtils.readBlockEntitiesFromChunkControllers(chunkControllers.values(), volume);
         ChunkUtils.removeBlockEntitiesFromChunks(chunkControllers, blockEntitiesToRemove);
         //Do not have to remove all entities from schematic destination
         //update entity and block entity positions
-        Collection<BlockEntity> blockEntities = translateBlockEntityCoordsToWorld(schematic.blockEntities, volume);
-        Collection<Entity> entities = translateEntityCoordsToWorld(schematic.entities, volume);
+        Collection<BlockEntity> blockEntities = BlockEntityUtils.translateBlockEntityCoordsToWorld(schematic.blockEntities, volume);
+        Collection<Entity> entities = EntityUtils.translateEntityCoordsToWorld(schematic.entities, volume);
         ChunkUtils.writeBlockEntitiesIntoChunks(chunkControllers, blockEntities);
         ChunkUtils.writeEntitiesIntoChunks(chunkControllers, entities);
         return new OperationResult(true);
-    }
-
-    private static Collection<BlockEntity> translateBlockEntityCoordsToSchematic(Collection<BlockEntity> toUpdate, WorldVolume volume) throws MalformedNbtTagException {
-        if (toUpdate == null) {
-            return null;
-        }
-        List<BlockEntity> updated = new ArrayList<>();
-        for (BlockEntity blockEntity : toUpdate) {
-            BlockCoord coord = blockEntity.getBlockCoord();
-            int x = coord.x - volume.getSmallestPoint().x;
-            int y = coord.y - volume.getSmallestPoint().y;
-            int z = coord.z - volume.getSmallestPoint().z;
-            blockEntity.getNbtData().putTag(new NbtIntTag("x", x));
-            blockEntity.getNbtData().putTag(new NbtIntTag("y", y));
-            blockEntity.getNbtData().putTag(new NbtIntTag("z", z));
-        }
-        return updated;
-    }
-
-    private static Collection<BlockEntity> translateBlockEntityCoordsToWorld(Collection<BlockEntity> toUpdate, WorldVolume volume) throws MalformedNbtTagException {
-        if (toUpdate == null) {
-            return null;
-        }
-        List<BlockEntity> updated = new ArrayList<>();
-        for (BlockEntity blockEntity : toUpdate) {
-            BlockCoord coord = blockEntity.getBlockCoord();
-            int x = coord.x + volume.getSmallestPoint().x;
-            int y = coord.y + volume.getSmallestPoint().y;
-            int z = coord.z + volume.getSmallestPoint().z;
-            blockEntity.getNbtData().putTag(new NbtIntTag("x", x));
-            blockEntity.getNbtData().putTag(new NbtIntTag("y", y));
-            blockEntity.getNbtData().putTag(new NbtIntTag("z", z));
-        }
-        return updated;
-    }
-    
-    private static Collection<Entity> translateEntityCoordsToSchematic(Collection<Entity> toUpdate, WorldVolume volume) throws MalformedNbtTagException {
-        if (toUpdate == null) {
-            return null;
-        }
-        List<Entity> updated = new ArrayList<>();
-        for (Entity entity : toUpdate) {
-            EntityCoord coord = entity.getCoord();
-            double x = coord.x - volume.getSmallestPoint().x;
-            double y = coord.y - volume.getSmallestPoint().y;
-            double z = coord.z - volume.getSmallestPoint().z;
-            List<NbtTag> coordList = new ArrayList<>();
-            coordList.add(new NbtDoubleTag("", x));
-            coordList.add(new NbtDoubleTag("", y));
-            coordList.add(new NbtDoubleTag("", z));
-            NbtListTag pos = new NbtListTag("Pos", coordList);
-            entity.getNbtData().putTag(pos);
-        }
-        return updated;
-    }
-
-    private static Collection<Entity> translateEntityCoordsToWorld(Collection<Entity> toUpdate, WorldVolume volume) throws MalformedNbtTagException {
-        if (toUpdate == null) {
-            return null;
-        }
-        List<Entity> updated = new ArrayList<>();
-        for (Entity entity : toUpdate) {
-            EntityCoord coord = entity.getCoord();
-            double x = coord.x + volume.getSmallestPoint().x;
-            double y = coord.y + volume.getSmallestPoint().y;
-            double z = coord.z + volume.getSmallestPoint().z;
-            List<NbtTag> coordList = new ArrayList<>();
-            coordList.add(new NbtDoubleTag("", x));
-            coordList.add(new NbtDoubleTag("", y));
-            coordList.add(new NbtDoubleTag("", z));
-            NbtListTag pos = new NbtListTag("Pos", coordList);
-            entity.getNbtData().putTag(pos);
-        }
-        return updated;
     }
     
     protected Volume getVolume() {

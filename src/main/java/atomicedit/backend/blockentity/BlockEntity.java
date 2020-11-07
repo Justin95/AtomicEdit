@@ -29,6 +29,10 @@ public class BlockEntity {
         return this.blockEntityNbt;
     }
     
+    public BlockEntity copy() {
+        return new BlockEntity(blockEntityNbt.copy());
+    }
+    
     @Override
     public String toString() {
         return this.blockEntityNbt.toString(2);

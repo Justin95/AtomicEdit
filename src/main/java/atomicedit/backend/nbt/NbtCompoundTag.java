@@ -202,4 +202,16 @@ public class NbtCompoundTag extends NbtTag {
         return strBuilder.toString();
     }
     
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtCompoundTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtCompoundTag otherTag = (NbtCompoundTag) other;
+        return this.dataSize == otherTag.dataSize && this.data.equals(otherTag.data) && this.name.equals(otherTag.name);
+    }
+    
 }

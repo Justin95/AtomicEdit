@@ -32,6 +32,10 @@ public class NbtDoubleTag extends NbtTag{
         return this.data;
     }
     
+    public void setPayload(double value) {
+        this.data = value;
+    }
+    
     @Override
     public NbtDoubleTag copy() {
         return new NbtDoubleTag(name, data);
@@ -40,6 +44,18 @@ public class NbtDoubleTag extends NbtTag{
     @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtDoubleTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtDoubleTag otherTag = (NbtDoubleTag) other;
+        return this.data == otherTag.data && this.name.equals(otherTag.name);
     }
     
 }

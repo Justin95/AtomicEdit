@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class NbtByteTag extends NbtTag{
     
-    private final byte data;
+    private byte data;
     
     public NbtByteTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_BYTE, readName ? NbtTag.readUtfString(input) : "");
@@ -32,6 +32,10 @@ public class NbtByteTag extends NbtTag{
         return this.data;
     }
     
+    public void setPayload(byte value) {
+        this.data = value;
+    }
+    
     @Override
     public NbtByteTag copy() {
         return new NbtByteTag(name, data);
@@ -40,6 +44,18 @@ public class NbtByteTag extends NbtTag{
     @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtByteTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtByteTag otherTag = (NbtByteTag) other;
+        return this.data == otherTag.data && this.name.equals(otherTag.name);
     }
     
 }

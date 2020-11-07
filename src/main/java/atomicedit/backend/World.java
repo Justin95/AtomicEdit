@@ -102,7 +102,7 @@ public class World {
                 (entry) -> entry.getKey()
             ).collect(Collectors.toList()));
             if(chunkCoordsToLight.isEmpty()) {
-                return;
+                continue;
             }
             Map<ChunkCoord, ChunkController> toLight;
             try {

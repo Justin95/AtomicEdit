@@ -14,6 +14,9 @@ public enum EditorType {
     BRUSH_ACTION(
         (renderer, editorPointer) -> new BrushEditor(renderer, editorPointer)
     ),
+    BLOCK_ENTITY_EDITOR(
+        (renderer, editorPointer) -> new BlockEntityEditor(renderer, editorPointer)
+    )
     //SCHEMATIC_TOOL,
     ;
     private final EditorCreator editorCreator;

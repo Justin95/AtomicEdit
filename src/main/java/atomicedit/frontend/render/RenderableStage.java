@@ -105,7 +105,7 @@ public class RenderableStage {
             return;
         }
         synchronized(QUEUE_LOCK) {
-            this.renderObjectsToRemove.removeAll(toRemove.getRenderObjects());
+            this.renderObjectsToRemove.addAll(toRemove.getRenderObjects());
         }
     }
     
@@ -123,7 +123,7 @@ public class RenderableStage {
             return;
         }
         synchronized (QUEUE_LOCK) {
-            this.renderObjectsToRemove.remove(toRemove);
+            this.renderObjectsToRemove.add(toRemove);
         }
     }
     
@@ -161,6 +161,22 @@ public class RenderableStage {
      */
     public void housekeeping() {
         synchronized(QUEUE_LOCK){
+            //add any new chunk renderables
+            if (!this.chunkRenderablesToAdd.isEmpty()) {
+                this.unchangedSinceLastSort = false;
+            }
+            for(ChunkRenderable renderable : this.chunkRenderablesToAdd){
+                for(ChunkSectionRenderObject renderObj : renderable.getChunkSectionRenderObjects()){
+                    if(renderObj.containsTranslucent){
+                        this.translucentChunkSectionRenderObjects.add(renderObj);
+                    }else{
+                        this.opaqueChunkSectionRenderObjects.add(renderObj);
+                    }
+                }
+                this.otherRenderObjects.addAll(renderable.getMiscRenderObjects());
+            }
+            this.chunkRenderablesToAdd.clear();
+            
             //remove any old chunk renderables
             if (!this.chunkRenderablesToRemove.isEmpty()) {
                 this.unchangedSinceLastSort = false;
@@ -179,60 +195,42 @@ public class RenderableStage {
             }
             this.chunkRenderablesToRemove.clear();
             
-            //add any new chunk renderables
-            if (!this.chunkRenderablesToAdd.isEmpty()) {
-                this.unchangedSinceLastSort = false;
-            }
-            for(ChunkRenderable renderable : this.chunkRenderablesToAdd){
-                for(ChunkSectionRenderObject renderObj : renderable.getChunkSectionRenderObjects()){
-                    if(renderObj.containsTranslucent){
-                        this.translucentChunkSectionRenderObjects.add(renderObj);
-                    }else{
-                        this.opaqueChunkSectionRenderObjects.add(renderObj);
-                    }
-                }
-                this.otherRenderObjects.addAll(renderable.getMiscRenderObjects());
-            }
-            this.chunkRenderablesToAdd.clear();
-            
-            //remove any other render objects
-            if (!this.renderObjectsToRemove.isEmpty()) {
-                this.unchangedSinceLastSort = false;
-            }
-            this.otherRenderObjects.removeAll(this.renderObjectsToRemove);
-            toDestroy.addAll(this.renderObjectsToRemove);
-            
-            
             //add any other render objects
             if (!this.renderObjectsToAdd.isEmpty()) {
                 this.unchangedSinceLastSort = false;
             }
             this.otherRenderObjects.addAll(this.renderObjectsToAdd);
+            this.renderObjectsToAdd.clear();
+            
+            //remove any other render objects, this must be done after additions incase the same object is added and removed
+            if (!this.renderObjectsToRemove.isEmpty()) {
+                this.unchangedSinceLastSort = false;
+            }
+            this.otherRenderObjects.removeAll(this.renderObjectsToRemove);
+            toDestroy.addAll(this.renderObjectsToRemove);
+            this.renderObjectsToRemove.clear();
         }
+        destroyOldRenderObjects();
     }
     
     public void renderRenderables(Camera camera){
-        synchronized(this){
-            for(ChunkSectionRenderObject renObj : this.opaqueChunkSectionRenderObjects){
-                renObj.render();
-            }
-            for(RenderObject renObj : this.otherRenderObjects){
-                renObj.render();
-            }
-            sortTranslucentChunkRenderables(camera);
-            for(ChunkSectionRenderObject renObj : this.translucentChunkSectionRenderObjects){
-                renObj.render();
-            }
+        for(ChunkSectionRenderObject renObj : this.opaqueChunkSectionRenderObjects){
+            renObj.render();
+        }
+        for(RenderObject renObj : this.otherRenderObjects){
+            renObj.render();
+        }
+        sortTranslucentChunkRenderables(camera);
+        for(ChunkSectionRenderObject renObj : this.translucentChunkSectionRenderObjects){
+            renObj.render();
         }
     }
     
-    public void destroyOldRenderObjects(){
-        synchronized(this){
-            for(RenderObject renderObj : toDestroy){
-                renderObj.destroy();
-            }
-            toDestroy.clear();
+    private void destroyOldRenderObjects(){
+        for(RenderObject renderObj : toDestroy){
+            renderObj.destroy();
         }
+        toDestroy.clear();
     }
     
 }

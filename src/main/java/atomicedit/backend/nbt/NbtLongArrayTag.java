@@ -48,12 +48,24 @@ public class NbtLongArrayTag extends NbtTag{
     
     @Override
     public NbtLongArrayTag copy() {
-        return new NbtLongArrayTag(name, data);
+        return new NbtLongArrayTag(name, Arrays.copyOf(data, data.length));
     }
     
     @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + Arrays.toString(data);
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtLongArrayTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtLongArrayTag otherTag = (NbtLongArrayTag) other;
+        return this.dataSize == otherTag.dataSize && Arrays.equals(this.data, otherTag.data) && this.name.equals(otherTag.name);
     }
     
 }

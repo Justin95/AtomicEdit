@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class NbtFloatTag extends NbtTag{
     
-    private final float data;
+    private float data;
     
     public NbtFloatTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_FLOAT, readName ? NbtTag.readUtfString(input) : "");
@@ -32,6 +32,10 @@ public class NbtFloatTag extends NbtTag{
         return this.data;
     }
     
+    public void setPayload(float value) {
+        this.data = value;
+    }
+    
     @Override
     public NbtFloatTag copy() {
         return new NbtFloatTag(name, data);
@@ -40,6 +44,18 @@ public class NbtFloatTag extends NbtTag{
     @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtFloatTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtFloatTag otherTag = (NbtFloatTag) other;
+        return this.data == otherTag.data && this.name.equals(otherTag.name);
     }
     
 }
