@@ -49,12 +49,24 @@ public class NbtByteArrayTag extends NbtTag{
     
     @Override
     public NbtByteArrayTag copy() {
-        return new NbtByteArrayTag(name, data);
+        return new NbtByteArrayTag(name, Arrays.copyOf(data, data.length));
     }
     
     @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + Arrays.toString(data);
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtByteArrayTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtByteArrayTag otherTag = (NbtByteArrayTag) other;
+        return this.dataSize == otherTag.dataSize && Arrays.equals(this.data, otherTag.data) && this.name.equals(otherTag.name);
     }
     
 }

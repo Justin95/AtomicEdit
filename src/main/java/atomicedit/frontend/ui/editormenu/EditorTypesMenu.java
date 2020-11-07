@@ -60,6 +60,11 @@ public class EditorTypesMenu extends Panel{
                 EditorType.BRUSH_ACTION,
                 "icons/brush_icon.png",
                 "icons/brush_icon.png"
+            ),
+            new EditorTypeSelectorButton(
+                EditorType.BLOCK_ENTITY_EDITOR,
+                "icons/NBT_icon.png",
+                "icons/NBT_icon.png"
             )
         };
     }

@@ -182,4 +182,16 @@ public class NbtListTag extends NbtTag {
         return strBuilder.toString();
     }
     
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtListTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtListTag otherTag = (NbtListTag) other;
+        return this.data.size() == otherTag.data.size() && this.data.equals(otherTag.data) && this.name.equals(otherTag.name);
+    }
+    
 }

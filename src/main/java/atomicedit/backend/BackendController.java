@@ -4,6 +4,7 @@ package atomicedit.backend;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.dimension.Dimension;
+import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
@@ -80,7 +81,7 @@ public class BackendController {
         }
     }
     
-    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords, Dimension dimension) throws Exception{
+    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords, Dimension dimension) throws MalformedNbtTagException {
         return this.world.getLoadedChunkStage(dimension).getReadOnlyChunks(chunkCoords);
     }
     
@@ -104,6 +105,9 @@ public class BackendController {
     }
     
     public Dimension getActiveDimension() {
+        if (world == null) {
+            throw new IllegalStateException("Cannot get dimension because no world is loaded.");
+        }
         return world.getActiveDimension();
     }
     

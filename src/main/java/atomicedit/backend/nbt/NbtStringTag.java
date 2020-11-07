@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class NbtStringTag extends NbtTag{
     
-    private final String data;
-    private final int dataSize;
+    private String data;
+    private int dataSize;
     
     public NbtStringTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_STRING, readName ? NbtTag.readUtfString(input) : "");
@@ -35,6 +35,11 @@ public class NbtStringTag extends NbtTag{
         return this.data;
     }
     
+    public void setPayload(String value) {
+        this.data = value;
+        this.dataSize = value.length();
+    }
+    
     public int getPayloadSize(){
         return this.dataSize;
     }
@@ -47,6 +52,18 @@ public class NbtStringTag extends NbtTag{
     @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":\"" + data + "\"";
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtStringTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtStringTag otherTag = (NbtStringTag) other;
+        return this.data.equals(otherTag.data) && this.name.equals(otherTag.name);
     }
     
 }

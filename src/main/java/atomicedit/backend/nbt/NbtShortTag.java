@@ -32,6 +32,10 @@ public class NbtShortTag extends NbtTag{
         return this.data;
     }
     
+    public void setPayload(short value) {
+        this.data = value;
+    }
+    
     @Override
     public NbtShortTag copy() {
         return new NbtShortTag(name, data);
@@ -40,6 +44,18 @@ public class NbtShortTag extends NbtTag{
     @Override
     public String toString(int indent){
         return String.format("%"+indent+"s", "") + this.getName() + ":" + data;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NbtShortTag)) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        NbtShortTag otherTag = (NbtShortTag) other;
+        return this.data == otherTag.data && this.name.equals(otherTag.name);
     }
     
 }

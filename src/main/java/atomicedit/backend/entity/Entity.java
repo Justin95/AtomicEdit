@@ -4,8 +4,6 @@ package atomicedit.backend.entity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtCompoundTag;
 import atomicedit.backend.nbt.NbtDoubleTag;
-import atomicedit.backend.nbt.NbtTag;
-import atomicedit.backend.nbt.NbtTypes;
 import java.util.List;
 
 /**
@@ -16,8 +14,8 @@ public class Entity {
     
     private final NbtCompoundTag entityNbt;
     
-    public Entity(NbtTag entityNbt) throws MalformedNbtTagException{
-        this.entityNbt = NbtTypes.getAsCompoundTag(entityNbt);
+    public Entity(NbtCompoundTag entityNbt) {
+        this.entityNbt = entityNbt;
     }
     
     
@@ -30,5 +28,8 @@ public class Entity {
         return this.entityNbt;
     }
     
+    public Entity copy() {
+        return new Entity(entityNbt.copy());
+    }
     
 }
