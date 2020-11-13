@@ -6,6 +6,7 @@ import atomicedit.frontend.render.Camera;
 import atomicedit.frontend.render.RenderableStage;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import atomicedit.logging.Logger;
+import atomicedit.utils.VersionUtils;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.liquidengine.legui.component.Frame;
@@ -33,7 +34,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 public class AtomicEditRenderer {
     
-    private static final String WINDOW_TITLE_STRING = "Atomic Edit";
+    private static final String WINDOW_TITLE_STRING = "Atomic Edit " + VersionUtils.getCurrentVersion();
     private static final int GL_MAJOR_VERSION = 3;
     private static final int GL_MINOR_VERSION = 3;
     

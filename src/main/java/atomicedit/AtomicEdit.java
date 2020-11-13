@@ -9,8 +9,10 @@ import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.jarreading.blockmodels.BlockModelLookup;
 import atomicedit.jarreading.blockstates.BlockStateModelLookup;
 import atomicedit.jarreading.texture.TextureLoader;
+import atomicedit.logging.Logger;
 import atomicedit.settings.AeSettingValues;
 import atomicedit.settings.AtomicEditSettingsCreator;
+import atomicedit.utils.VersionUtils;
 import org.liquidengine.legui.style.font.FontRegistry;
 
 
@@ -41,6 +43,7 @@ public class AtomicEdit {
     }
     
     private void initialize(){
+        Logger.info("AtomicEdit version: " + VersionUtils.getCurrentVersion());
         FontRegistry.setDefaultFont(FontRegistry.ROBOTO_REGULAR);
         BlockState.loadKnownBlockStates();
         TextureLoader.getMinecraftDefaultTexture(); //force load textures
