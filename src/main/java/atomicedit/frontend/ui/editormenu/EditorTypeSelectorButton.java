@@ -3,12 +3,11 @@ package atomicedit.frontend.ui.editormenu;
 
 import atomicedit.frontend.editor.EditorSystem;
 import atomicedit.frontend.editor.EditorType;
+import atomicedit.utils.FileUtils;
 import org.joml.Vector2f;
 import org.liquidengine.legui.component.RadioButton;
 import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.icon.ImageIcon;
-import org.liquidengine.legui.image.Image;
-import org.liquidengine.legui.image.StbBackedLoadableImage;
 
 /**
  *
@@ -44,9 +43,7 @@ public class EditorTypeSelectorButton extends RadioButton {
     }
     
     private static ImageIcon loadIcon(String path){
-        Image iconImage = new StbBackedLoadableImage(path);
-        ImageIcon icon = new ImageIcon(iconImage);
-        return icon;
+        return FileUtils.loadIcon(path);
     }
     
 }
