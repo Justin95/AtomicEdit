@@ -40,10 +40,43 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+def getVersion() {
+    if (project.hasProperty("tag")) {
+        return project.getProperties().get("tag")
+    }
+    return "Unknown"
+}
+
 jar {
-    baseName = 'AtomicEdit'
-    version =  '0.0.1'
+    //destinationDirectory = buildDir
+    version = getVersion()
+    baseName = "AtomicEdit_" + getVersion()
     manifest{
         attributes "Main-Class": "Main"
     }
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it) 
+        }
+    }
+}
+
+
+processResources {
+    def replace = { replaceMap ->
+        return { line ->
+            def newLine = line
+            replaceMap.each { matchRegex, replaceStr ->
+                if (line =~ matchRegex) {
+                    newLine =  replaceStr
+                }
+            }
+            return newLine
+        }
+    }
+    filesMatching('version.txt', { file ->
+        file.filter(replace([
+            "atomicedit_version" : getVersion()
+        ]))
+    })
 }

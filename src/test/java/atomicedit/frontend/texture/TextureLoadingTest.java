@@ -2,7 +2,7 @@
 package atomicedit.frontend.texture;
 
 import atomicedit.jarreading.texture.TextureLoader;
-import atomicedit.AtomicEdit;
+import atomicedit.logging.Logger;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -17,8 +17,8 @@ import org.junit.Test;
 public class TextureLoadingTest {
     
     @Test
-    public void loadTextureTest() throws Exception{
-        AtomicEdit.initializeSettings();
+    public void loadTextureTest() throws Exception {
+        Logger.initialize();
         Map<String, BufferedImage> results = TextureLoader.testTextureLoading();
         BufferedImage superImage = MinecraftTexture.testCreateSuperImage(results, TextureLoader.testCreateUnknownTexture());
         JFrame jframe = new JFrame();

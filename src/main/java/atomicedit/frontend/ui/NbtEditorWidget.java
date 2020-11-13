@@ -155,7 +155,6 @@ public class NbtEditorWidget extends Widget {
     }
     
     private void updateGui() {
-        //System.out.println("Creating nbt gui for " + this.nbtTags.size() + " tags.");
         Component contentPanel = this.scrollPanel.getContainer();
         contentPanel.getStyle().getBackground().setColor(.7f, .7f, .7f, 1f);
         //Flex layout
