@@ -13,23 +13,19 @@ import java.util.ArrayList;
 public class NbtCompoundTag extends NbtTag {
     
     private final ArrayList<NbtTag> data;
-    private int dataSize;
     
     public NbtCompoundTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_COMPOUND, readName ? NbtTag.readUtfString(input) : "");
         this.data = new ArrayList<>();
-        dataSize = 0;
         byte tagId;
         while((tagId = input.readByte()) != 0){
             data.add(NbtTypes.getTypeFromId(tagId).instantiate(input, true));
-            dataSize++;
         }
     }
     
     public NbtCompoundTag(String name, ArrayList<NbtTag> data){
         super(NbtTypes.TAG_COMPOUND, name);
         this.data = data;
-        this.dataSize = data.size();
     }
     
     public NbtCompoundTag(String name, NbtTag... nbtTags){
@@ -39,7 +35,6 @@ public class NbtCompoundTag extends NbtTag {
             tagData.add(nbtTag);
         }
         this.data = tagData;
-        this.dataSize = tagData.size();
     }
     
     @Override
@@ -80,10 +75,8 @@ public class NbtCompoundTag extends NbtTag {
         }
         if(matchedTag != null){
             data.remove(matchedTag);
-            this.dataSize--;
         }
         data.add(tagToAdd);
-        this.dataSize++;
     }
     
     public boolean contains(String name){
@@ -96,12 +89,12 @@ public class NbtCompoundTag extends NbtTag {
     }
     
     public int getPayloadSize(){
-        return this.dataSize;
+        return this.data.size();
     }
     
     @Override
     public NbtCompoundTag copy() {
-        ArrayList<NbtTag> dataCopy = new ArrayList<>(this.dataSize);
+        ArrayList<NbtTag> dataCopy = new ArrayList<>(this.getPayloadSize());
         for (NbtTag tag : data) {
             dataCopy.add(tag.copy());
         }
@@ -211,7 +204,7 @@ public class NbtCompoundTag extends NbtTag {
             return true;
         }
         NbtCompoundTag otherTag = (NbtCompoundTag) other;
-        return this.dataSize == otherTag.dataSize && this.data.equals(otherTag.data) && this.name.equals(otherTag.name);
+        return this.data.equals(otherTag.data) && this.name.equals(otherTag.name);
     }
     
 }

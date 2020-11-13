@@ -4,6 +4,7 @@ package atomicedit.backend.nbt;
 import atomicedit.logging.Logger;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,50 +16,80 @@ public enum NbtTypes {
      * Nbt Types must have the index of their Tag Id, https://minecraft.gamepedia.com/NBT_format
      */
     TAG_END(
-        (DataInputStream input, boolean readName) -> {throw new UnsupportedOperationException();} //never instantiate end tags
+        "End Tag",
+        (DataInputStream input, boolean readName) -> {throw new UnsupportedOperationException();}, //never instantiate end tags
+        (String name) -> {throw new UnsupportedOperationException();} //never instantiate end tags
     ),
     TAG_BYTE(
-        (DataInputStream input, boolean readName) -> new NbtByteTag(input, readName)
+        "Byte Tag",
+        (DataInputStream input, boolean readName) -> new NbtByteTag(input, readName),
+        (String name) -> new NbtByteTag(name, (byte)0)
     ),
     TAG_SHORT(
-        (DataInputStream input, boolean readName) -> new NbtShortTag(input, readName)
+        "Short Tag",
+        (DataInputStream input, boolean readName) -> new NbtShortTag(input, readName),
+        (String name) -> new NbtShortTag(name, (short)0)
     ),
     TAG_INT(
-        (DataInputStream input, boolean readName) -> new NbtIntTag(input, readName)
+        "Integer Tag",
+        (DataInputStream input, boolean readName) -> new NbtIntTag(input, readName),
+        (String name) -> new NbtIntTag(name, 0)
     ),
     TAG_LONG(
-        (DataInputStream input, boolean readName) -> new NbtLongTag(input, readName)
+        "Long Tag",
+        (DataInputStream input, boolean readName) -> new NbtLongTag(input, readName),
+        (String name) -> new NbtLongTag(name, 0)
     ),
     TAG_FLOAT(
-        (DataInputStream input, boolean readName) -> new NbtFloatTag(input, readName)
+        "Float Tag",
+        (DataInputStream input, boolean readName) -> new NbtFloatTag(input, readName),
+        (String name) -> new NbtFloatTag(name, 0)
     ),
     TAG_DOUBLE(
-        (DataInputStream input, boolean readName) -> new NbtDoubleTag(input, readName)
+        "Double Tag",
+        (DataInputStream input, boolean readName) -> new NbtDoubleTag(input, readName),
+        (String name) -> new NbtDoubleTag(name, 0)
     ),
     TAG_BYTE_ARRAY(
-        (DataInputStream input, boolean readName) -> new NbtByteArrayTag(input, readName)
+        "Byte Array Tag",
+        (DataInputStream input, boolean readName) -> new NbtByteArrayTag(input, readName),
+        (String name) -> new NbtByteArrayTag(name, new byte[0])
     ),
     TAG_STRING(
-        (DataInputStream input, boolean readName) -> new NbtStringTag(input, readName)
+        "String Tag",
+        (DataInputStream input, boolean readName) -> new NbtStringTag(input, readName),
+        (String name) -> new NbtStringTag(name, "")
     ),
     TAG_LIST(
-        (DataInputStream input, boolean readName) -> new NbtListTag(input, readName)
+        "List Tag",
+        (DataInputStream input, boolean readName) -> new NbtListTag(input, readName),
+        (String name) -> new NbtListTag(name, new ArrayList<>())
     ),
     TAG_COMPOUND(
-        (DataInputStream input, boolean readName) -> new NbtCompoundTag(input, readName)
+        "Compound Tag",
+        (DataInputStream input, boolean readName) -> new NbtCompoundTag(input, readName),
+        (String name) -> new NbtCompoundTag(name, new ArrayList<>())
     ),
     TAG_INT_ARRAY(
-        (DataInputStream input, boolean readName) -> new NbtIntArrayTag(input, readName)
+        "Integer Array Tag",
+        (DataInputStream input, boolean readName) -> new NbtIntArrayTag(input, readName),
+        (String name) -> new NbtIntArrayTag(name, new int[0])
     ),
     TAG_LONG_ARRAY(
-        (DataInputStream input, boolean readName) -> new NbtLongArrayTag(input, readName)
+        "Long Array Tag",
+        (DataInputStream input, boolean readName) -> new NbtLongArrayTag(input, readName),
+        (String name) -> new NbtLongArrayTag(name, new long[0])
     )
     ;
     
-    private Instantiater instantiater;
+    public final String name;
+    private final Instantiater instantiater;
+    private final EmptyInstantiater emptyInstantiater;
     
-    NbtTypes(Instantiater instantiater){
+    NbtTypes(String name, Instantiater instantiater, EmptyInstantiater emptyInstantiater){
+        this.name = name;
         this.instantiater = instantiater;
+        this.emptyInstantiater = emptyInstantiater;
     }
     
     public static NbtTypes getTypeFromId(int id){
@@ -78,6 +109,10 @@ public enum NbtTypes {
         }
     }
     
+    public NbtTag instantiateEmpty(String name) {
+        return this.emptyInstantiater.createEmpty(name);
+    }
+    
     public static NbtTag typeCheck(NbtTag tag, NbtTypes type) throws MalformedNbtTagException{
         if(tag == null){
             Logger.warning("Tried to nbt type check null");
@@ -95,6 +130,10 @@ public enum NbtTypes {
         public NbtTag instantiate(DataInputStream inputStream, boolean readName) throws IOException;
     }
     
+    public interface EmptyInstantiater {
+        NbtTag createEmpty(String name);
+    }
+    
     public static NbtCompoundTag getAsCompoundTag(NbtTag tag) throws MalformedNbtTagException{
         if(tag.getType() == TAG_COMPOUND){
             return (NbtCompoundTag) tag;
@@ -109,6 +148,11 @@ public enum NbtTypes {
         }
         Logger.notice("Tried to cast tag: " + tag.getName() + " as List Tag but it was a " + tag.getType().name());
         throw new MalformedNbtTagException();
+    }
+    
+    @Override
+    public String toString() {
+        return this.name;
     }
     
     //quick payload getters
