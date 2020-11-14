@@ -14,6 +14,7 @@ import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.frontend.render.ChunkSectionRenderObject;
 import atomicedit.frontend.render.LinesRenderObject;
 import atomicedit.frontend.render.NoTextureRenderObject;
+import atomicedit.frontend.render.OnlyPositionRenderObject;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.blockmodelcreation.BlockModelCreator;
 import atomicedit.frontend.render.blockmodelcreation.ChunkSectionPlus;
@@ -148,10 +149,10 @@ public class ChunkRenderObjectCreator {
         }
         Vector3f pos = new Vector3f(chunkCoord.getMinBlockCoord().x, chunkCoord.getMinBlockCoord().y, chunkCoord.getMinBlockCoord().z);
         miscRenderObjects.add(
-            new NoTextureRenderObject(pos, new Vector3f(0,0,0), true, vertexData.asArray(), faceIndicies.asArray())
+            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), BLOCK_ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
         );
         miscRenderObjects.add(
-            new LinesRenderObject(pos, new Vector3f(0,0,0), false, vertexData.asArray(), lineIndicies.asArray())
+            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
         );
         //create entity render object
         vertexData.reset();
@@ -178,10 +179,10 @@ public class ChunkRenderObjectCreator {
         }
         
         miscRenderObjects.add(
-            new NoTextureRenderObject(pos, new Vector3f(0,0,0), true, vertexData.asArray(), faceIndicies.asArray())
+            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
         );
         miscRenderObjects.add(
-            new LinesRenderObject(pos, new Vector3f(0,0,0), false, vertexData.asArray(), lineIndicies.asArray())
+            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
         );
         return miscRenderObjects;
     }
@@ -194,8 +195,7 @@ public class ChunkRenderObjectCreator {
         final float xMax = coord.getChunkLocalX() + 1 + buffer;
         final float yMax = coord.y                + 1 + buffer;
         final float zMax = coord.getChunkLocalZ() + 1 + buffer;
-        Vector4f color = BLOCK_ENTITY_COLOR;
-        makeCube(xMin, yMin, zMin, xMax, yMax, zMax, color, vertexData, faceIndicies, lineIndicies);
+        makeCube(xMin, yMin, zMin, xMax, yMax, zMax, vertexData, faceIndicies, lineIndicies);
     }
     
     private static void addEntity(FloatList vertexData, IntList faceIndicies, IntList lineIndicies, Vector3f pos) {
@@ -207,28 +207,26 @@ public class ChunkRenderObjectCreator {
         final float xMax = pos.x + width + buffer;
         final float yMax = pos.y + (2 * width) + buffer; //bottom center of box is the entity coord
         final float zMax = pos.z + width + buffer;
-        Vector4f color = ENTITY_COLOR;
-        makeCube(xMin, yMin, zMin, xMax, yMax, zMax, color, vertexData, faceIndicies, lineIndicies);
+        makeCube(xMin, yMin, zMin, xMax, yMax, zMax, vertexData, faceIndicies, lineIndicies);
     }
     
     private static void makeCube(
         float xMin, float yMin, float zMin,
         float xMax, float yMax, float zMax,
-        Vector4f color,
         FloatList vertexData,
         IntList faceIndicies,
         IntList lineIndicies
     ) {
-        final int numVerticies = vertexData.size() / 7;
+        final int numVerticies = vertexData.size() / 3;
         vertexData.addAll(
-            xMin, yMin, zMin,    color.x, color.y, color.z,  color.w,
-            xMin, yMin, zMax,    color.x, color.y, color.z,  color.w,
-            xMin, yMax, zMin,    color.x, color.y, color.z,  color.w,
-            xMin, yMax, zMax,    color.x, color.y, color.z,  color.w,
-            xMax, yMin, zMin,    color.x, color.y, color.z,  color.w,
-            xMax, yMin, zMax,    color.x, color.y, color.z,  color.w,
-            xMax, yMax, zMin,    color.x, color.y, color.z,  color.w,
-            xMax, yMax, zMax,    color.x, color.y, color.z,  color.w
+            xMin, yMin, zMin,
+            xMin, yMin, zMax,
+            xMin, yMax, zMin,
+            xMin, yMax, zMax,
+            xMax, yMin, zMin,
+            xMax, yMin, zMax,
+            xMax, yMax, zMin,
+            xMax, yMax, zMax
         );
         
         //add num verticies, not vertex data size

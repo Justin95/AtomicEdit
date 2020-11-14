@@ -3,7 +3,9 @@ package atomicedit.frontend.render.shaders;
 
 import atomicedit.logging.Logger;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
+import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
 /**
@@ -20,6 +22,11 @@ public class UniformLayoutFormat {
         }
         glUseProgram(shaderProgram);
         glUniformMatrix4fv(uniform.LOCATION, false, matrix.get(new float[16])); //do not transpose because matrix.get fills the array in column major order
+    }
+    
+    public static void setUniform(int uniformLocation, int shaderProgram, Vector4f vec4) {
+        glUseProgram(shaderProgram);
+        glUniform4f(uniformLocation, vec4.x, vec4.y, vec4.z, vec4.w);
     }
     
     public static void setUniform(ProgramUniforms uniform, Matrix4f matrix){

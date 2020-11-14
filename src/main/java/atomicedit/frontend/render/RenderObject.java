@@ -92,6 +92,10 @@ public class RenderObject {
         this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation);
     }
     
+    protected void setUniforms() {
+        UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.MODEL_MATRIX, shaderProgram, modelMatrix);
+    }
+    
     public void render(){
         if(!this.openGlInitialized){
             initialize();
@@ -100,7 +104,7 @@ public class RenderObject {
             Logger.error("Tried to draw destroyed render object");
             return;
         }
-        UniformLayoutFormat.setUniform(UniformLayoutFormat.ProgramUniforms.MODEL_MATRIX, shaderProgram, modelMatrix);
+        setUniforms();
         if(texture != null){
             texture.bind(0); //bind to texture 0
         } 

@@ -22,7 +22,11 @@ public enum ShaderProgram {
     NO_TEXTURE_SHADER_PROGRAM(
         "NoTextureVertexShader",
         "NoTextureFragmentShader"
-    )
+    ),
+    ONLY_POSITION_SHADER_PROGRAM(
+        "OnlyPositionVertexShader",
+        "OnlyPositionFragmentShader"
+    ),
     ;
     
     private final String vertexShaderName;

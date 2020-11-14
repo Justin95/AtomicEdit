@@ -6,22 +6,19 @@ import atomicedit.frontend.render.shaders.ShaderProgram;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import static org.lwjgl.opengl.GL11.GL_LINES;
 
 /**
- * Draw a render object made only of lines. This render object will not use a texture.
- * As such remember to reference the NO_TEXTURE_DATA_BUFFER_LAYOUT when creating vertex data.
+ *
  * @author Justin Bonner
  */
-public class LinesRenderObject extends RenderObject {
+public class OnlyPositionRenderObject extends RenderObject {
     
     private final static int COLOR_UNIFORM_LOC = 3;
     private final Vector4f color;
     
-    public LinesRenderObject(Vector3f pos, Vector3f rot, Vector4f color, boolean containsTranslucent, float[] vertexData, int[] indicies){
+    public OnlyPositionRenderObject(Vector3f pos, Vector3f rot, Vector4f color, boolean containsTranslucent, float[] vertexData, int[] indicies){
         super(pos, rot, null, containsTranslucent, vertexData, indicies);
         this.color = color;
-        this.drawingShape = GL_LINES;
         this.bufferFormat = DataBufferLayoutFormat.ONLY_POSITION_DATA_BUFFER_LAYOUT;
         this.shaderProgram = ShaderProgram.getShaderProgram(ShaderProgram.ONLY_POSITION_SHADER_PROGRAM);
     }
