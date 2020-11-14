@@ -29,4 +29,6 @@ public class VersionUtils {
         return VERSION;
     }
     
+    //TODO check github for a newer version and alert user
+    
 }
