@@ -24,6 +24,10 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    //noise library for noise operation
+    maven {
+        url 'https://repo.spongepowered.org/maven/'
+    }
 }
 
 sourceCompatibility = 1.8
@@ -37,6 +41,8 @@ dependencies {
         compile "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
         compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
     }
+    //noise library for noise operation
+    implementation 'org.spongepowered:noise:2.0.0-SNAPSHOT'
     testCompile 'junit:junit:4.12'
 }
 

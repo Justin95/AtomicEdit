@@ -91,7 +91,11 @@ public class AtomicEditFrontEnd {
             renderer.render();
             systemEventProcessor.processEvents(renderer.getFrame(), this.renderer.getContext());
             masterController.renderUpdate();
-            EventProcessorProvider.getInstance().processEvents();
+            try {
+                EventProcessorProvider.getInstance().processEvents();
+            } catch (Exception e) {
+                Logger.error("Exception processing Event callbacks.", e);
+            }
             LayoutManager.getInstance().layout(renderer.getFrame());
             AnimatorProvider.getAnimator().runAnimations();
             AtomicEditGui.updateGui(renderer);

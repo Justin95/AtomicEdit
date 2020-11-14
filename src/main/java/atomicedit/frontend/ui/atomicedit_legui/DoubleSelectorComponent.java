@@ -13,12 +13,14 @@ public class DoubleSelectorComponent extends TextInput {
     
     private static final Pattern NUMBER_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
     
+    private ValueSetCallback valueSetCallback;
+    
     public DoubleSelectorComponent(double min, double max, double initialValue) {
         initialize(min, max, initialValue);
     }
     
     private void initialize(double min, double max, double initialValue) {
-        this.setTextState(new IntegerTextState(min, max, initialValue));
+        this.setTextState(new DoubleTextState(min, max, initialValue, this));
         //can use text state validators as well
     }
     
@@ -26,17 +28,29 @@ public class DoubleSelectorComponent extends TextInput {
         return Long.parseLong(this.textState.getText());
     }
     
-    private static class IntegerTextState extends TextState {
+    public void setValueChangeCallback(ValueSetCallback callback) {
+        this.valueSetCallback = callback;
+    }
+    
+    private static class DoubleTextState extends TextState {
         
-        private double min;
-        private double max;
+        private final double min;
+        private final double max;
+        private final DoubleSelectorComponent parent;
         
-        IntegerTextState(double min, double max, double initialValue) {
-            super(Double.toString(initialValue));
+        DoubleTextState(double min, double max, double initialValue, DoubleSelectorComponent parent) {
+            super();
+            this.parent = parent;
+            this.min = min;
+            this.max = max;
+            this.setText(Double.toString(initialValue));
         }
         
         @Override
         public void setText(String text) {
+            if (text.isEmpty()) {
+                text = "0";
+            }
             if (!NUMBER_PATTERN.matcher(text).matches()) {
                 return; //invalid input
             }
@@ -51,9 +65,16 @@ public class DoubleSelectorComponent extends TextInput {
             } else if (value < min) {
                 value = min;
             }
+            if (parent != null && parent.valueSetCallback != null) {
+                parent.valueSetCallback.valueSetCallback(value);
+            }
             super.setText(Double.toString(value));
         }
         
+    }
+    
+    public interface ValueSetCallback {
+        void valueSetCallback(double newValue);
     }
     
 }

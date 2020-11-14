@@ -7,11 +7,12 @@ import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.blockprovider.BlockProvider;
 import atomicedit.backend.blockprovider.ErosionBlockProvider;
 import atomicedit.backend.chunk.ChunkController;
+import atomicedit.backend.parameters.BlockStateParameterDescriptor;
+import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.backend.parameters.ParameterDescriptor;
-import atomicedit.backend.parameters.ParameterType;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.volumes.WorldVolume;
 import java.util.Arrays;
@@ -25,15 +26,15 @@ import java.util.List;
  */
 public class ErosionOperation extends Operation {
     
-    private static final ParameterDescriptor EROSION_BLOCKTYPE_DESC = new ParameterDescriptor("Erode Next To", ParameterType.BLOCK_SELECTOR, BlockState.AIR);
-    private static final ParameterDescriptor ERODE_TO_BLOCKTYPE_DESC = new ParameterDescriptor("Erode To", ParameterType.BLOCK_SELECTOR, BlockState.AIR);
-    private static final ParameterDescriptor ZERO_ADJ_CHANCE_DESC = new ParameterDescriptor("Zero Faces Chance", ParameterType.INT, 0);
-    private static final ParameterDescriptor ONE_ADJ_CHANCE_DESC = new ParameterDescriptor("One Face Chance", ParameterType.INT, 2);
-    private static final ParameterDescriptor TWO_ADJ_CHANCE_DESC = new ParameterDescriptor("Two Faces Chance", ParameterType.INT, 4);
-    private static final ParameterDescriptor THREE_ADJ_CHANCE_DESC = new ParameterDescriptor("Three Faces Chance", ParameterType.INT, 8);
-    private static final ParameterDescriptor FOUR_ADJ_CHANCE_DESC = new ParameterDescriptor("Four Faces Chance", ParameterType.INT, 16);
-    private static final ParameterDescriptor FIVE_ADJ_CHANCE_DESC = new ParameterDescriptor("Five Faces Chance", ParameterType.INT, 32);
-    private static final ParameterDescriptor SIX_ADJ_CHANCE_DESC = new ParameterDescriptor("Six Faces Chance", ParameterType.INT, 64);
+    private static final BlockStateParameterDescriptor EROSION_BLOCKTYPE_DESC = new BlockStateParameterDescriptor("Erode Next To", BlockState.AIR);
+    private static final BlockStateParameterDescriptor ERODE_TO_BLOCKTYPE_DESC = new BlockStateParameterDescriptor("Erode To", BlockState.AIR);
+    private static final IntegerParameterDescriptor ZERO_ADJ_CHANCE_DESC = new IntegerParameterDescriptor("Zero Faces Chance", 0, 0, 100);
+    private static final IntegerParameterDescriptor ONE_ADJ_CHANCE_DESC = new IntegerParameterDescriptor("One Face Chance", 2, 0, 100);
+    private static final IntegerParameterDescriptor TWO_ADJ_CHANCE_DESC = new IntegerParameterDescriptor("Two Faces Chance", 4, 0, 100);
+    private static final IntegerParameterDescriptor THREE_ADJ_CHANCE_DESC = new IntegerParameterDescriptor("Three Faces Chance", 8, 0, 100);
+    private static final IntegerParameterDescriptor FOUR_ADJ_CHANCE_DESC = new IntegerParameterDescriptor("Four Faces Chance", 16, 0, 100);
+    private static final IntegerParameterDescriptor FIVE_ADJ_CHANCE_DESC = new IntegerParameterDescriptor("Five Faces Chance", 32, 0, 100);
+    private static final IntegerParameterDescriptor SIX_ADJ_CHANCE_DESC = new IntegerParameterDescriptor("Six Faces Chance", 64, 0, 100);
     public static final List<ParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(new ParameterDescriptor[]{
             EROSION_BLOCKTYPE_DESC,
             ERODE_TO_BLOCKTYPE_DESC,
