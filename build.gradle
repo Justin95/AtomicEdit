@@ -50,10 +50,12 @@ def getVersion() {
     return gitTagStdOut.toString().split("\n")[0].trim()
 }
 
+def version = getVersion()
+
 jar {
     //destinationDirectory = buildDir
     version = getVersion()
-    baseName = "AtomicEdit_" + getVersion()
+    baseName = "AtomicEdit_" + "$version"
     manifest{
         attributes "Main-Class": "Main"
     }
@@ -79,7 +81,7 @@ processResources {
     }
     filesMatching('version.txt', { file ->
         file.filter(replace([
-            "atomicedit_version" : getVersion()
+            "atomicedit_version" : version
         ]))
     })
 }
