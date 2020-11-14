@@ -3,11 +3,13 @@ package atomicedit.frontend.editor;
 
 import atomicedit.frontend.render.LinesRenderObject;
 import atomicedit.frontend.render.NoTextureRenderObject;
+import atomicedit.frontend.render.OnlyPositionRenderObject;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.RenderObjectCollection;
 import atomicedit.frontend.render.Renderable;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.joml.Vector4f;
 
 /**
  *
@@ -46,19 +48,20 @@ public class EditorUtils {
     static Renderable createSelectionBoxRenderable(Vector3i pointA, Vector3i pointB){
         Vector3f position = new Vector3f(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
         Vector3f rotation = new Vector3f(0,0,0);
+        Vector4f color = new Vector4f(.66f, .66f, .66f, .6f);
         float min = -0.02f;
         float xLen = Math.abs(pointA.x - pointB.x) + 1 + .02f;
         float yLen = Math.abs(pointA.y - pointB.y) + 1 + .02f;
         float zLen = Math.abs(pointA.z - pointB.z) + 1 + .02f;
         float[] vertexData = new float[]{
-             min, min, min,    .33f, .33f, .66f,  .6f,
-             min, min,zLen,    .66f, .66f, .66f,  .6f,
-             min,yLen, min,    .66f, .66f, .66f,  .6f,
-             min,yLen,zLen,    .66f, .66f, .66f,  .6f,
-            xLen, min, min,    .66f, .66f, .66f,  .6f,
-            xLen, min,zLen,    .66f, .66f, .66f,  .6f,
-            xLen,yLen, min,    .66f, .66f, .66f,  .6f,
-            xLen,yLen,zLen,    .99f, .99f, .66f,  .6f,
+             min, min, min,
+             min, min,zLen,
+             min,yLen, min,
+             min,yLen,zLen,
+            xLen, min, min,
+            xLen, min,zLen,
+            xLen,yLen, min,
+            xLen,yLen,zLen,
         };
         int[] faceIndicies = new int[]{
             0,1,3,  0,3,2, //x = 0 face
@@ -85,8 +88,8 @@ public class EditorUtils {
             6,7
         };
         return new RenderObjectCollection(
-            new NoTextureRenderObject(position, rotation, true, vertexData, faceIndicies),
-            new LinesRenderObject(position, rotation, false, vertexData, lineIndicies)
+            new OnlyPositionRenderObject(position, rotation, color, true, vertexData, faceIndicies),
+            new LinesRenderObject(position, rotation, color, false, vertexData, lineIndicies)
         );
     }
     

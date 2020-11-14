@@ -21,7 +21,12 @@ public enum DataBufferLayoutFormat {
             new BufferElement(0, 3, DataType.FLOAT), //position
             new BufferElement(1, 4, DataType.FLOAT)  //color
         }
-    )
+    ),
+    ONLY_POSITION_DATA_BUFFER_LAYOUT(
+        new BufferElement[]{
+            new BufferElement(0, 3, DataType.FLOAT) //position
+        }
+    ),
     ;
     
     private final BufferElement[] bufferElements;
