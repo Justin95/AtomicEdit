@@ -44,7 +44,7 @@ def getVersion() {
     
     def gitTagStdOut = new ByteArrayOutputStream()
     exec {
-        commandLine "git", "describe", "--tags"
+        commandLine "git", "describe"
         standardOutput = gitTagStdOut
     }
     return gitTagStdOut.toString().split("\n")[0].trim()
