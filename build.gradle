@@ -41,10 +41,13 @@ dependencies {
 }
 
 def getVersion() {
-    if (project.hasProperty("tag")) {
-        return project.getProperties().get("tag")
+    
+    def gitTagStdOut = new ByteArrayOutputStream()
+    exec {
+        commandLine "git", "describe", "--tags"
+        standardOutput = gitTagStdOut
     }
-    return "Unknown"
+    return gitTagStdOut.toString().split("\n")[0].trim()
 }
 
 jar {
