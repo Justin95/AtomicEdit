@@ -16,7 +16,8 @@ import org.junit.Test;
  */
 public class TextureLoadingTest {
     
-    @Test
+    //This test should not be run by an automatically running test suite.
+    //@Test
     public void loadTextureTest() throws Exception {
         Logger.initialize();
         Map<String, BufferedImage> results = TextureLoader.testTextureLoading();
