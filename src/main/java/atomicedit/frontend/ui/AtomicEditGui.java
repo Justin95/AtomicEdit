@@ -3,9 +3,7 @@ package atomicedit.frontend.ui;
 
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
-import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
-import atomicedit.backend.brushes.BrushType;
 import atomicedit.backend.dimension.Dimension;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
@@ -61,22 +59,27 @@ public class AtomicEditGui {
         frame.getContainer().add(editorMenu);
         
         Panel topBar = new Panel();
-        topBar.getStyle().getBackground().setColor(PANEL_COLOR);
+        topBar.getStyle().getBackground().setColor(new Vector4f(.1f, .1f, .1f, 1f));
+        topBar.getStyle().setBorder(null);
+        topBar.getStyle().setShadow(null);
         topBar.getStyle().setPosition(Style.PositionType.ABSOLUTE);
         topBar.getStyle().setHeight(30f);
+        topBar.getStyle().setDisplay(DisplayType.FLEX);
         topBar.getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.ROW);
-        topBar.getStyle().getFlexStyle().setAlignItems(AlignItems.FLEX_START);
+        topBar.getStyle().getFlexStyle().setAlignItems(AlignItems.CENTER);
+        topBar.getStyle().getFlexStyle().setJustifyContent(JustifyContent.FLEX_START);
         topBar.getStyle().setLeft(0f);
         topBar.getStyle().setRight(0f);
         topBar.getStyle().setTop(0);
+        topBar.getStyle().setPadding(2);
         topBar.setFocusable(false);
-        Button selectWorldButton = new Button(10, 5, 80, 20);
+        Button selectWorldButton = new Button();
         selectWorldButton.getTextState().setText("Select World");
-        selectWorldButton.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
+        selectWorldButton.getStyle().setMinimumSize(80, 20);
+        selectWorldButton.getStyle().setMargin(4);
+        selectWorldButton.getStyle().setPosition(Style.PositionType.RELATIVE);
         selectWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if (event.getAction() == MouseClickAction.CLICK) {
-                //backendController.setWorld("/home/justin/.minecraft/saves/AtomicEdit_1_16_Test");
-                
                 if (WORLD_SELECT_LOCK.tryLock()) {
                     try {
                         WorldFileSelector selector = new WorldFileSelector(
@@ -108,20 +111,28 @@ public class AtomicEditGui {
         });
         topBar.add(selectWorldButton);
         
-        //blah
-        Button tempButton = new Button(190, 5, 80, 20);
-        tempButton.getTextState().setText("Debug Button");
-        tempButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
+        /*
+        //Enable this button to print a json of the loaded block states. This is useful with a minecraft debug world
+        //to update the known block states json
+        Button devButton = new Button();
+        devButton.getTextState().setText("Debug Button");
+        devButton.getStyle().setMinimumSize(80, 20);
+        devButton.getStyle().setMargin(4);
+        devButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        devButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
                 BlockState.debugPrintAllBlockStates();
                 //BlockStateModelLookup.debugPrintFootprint();
             }
         });
-        topBar.add(tempButton);
-        //blah
+        topBar.add(devButton);
+        */
         
-        Button saveWorldButton = new Button(100, 5, 80, 20);
+        Button saveWorldButton = new Button();
         saveWorldButton.getTextState().setText("Save World");
+        saveWorldButton.getStyle().setMinimumSize(80, 20);
+        saveWorldButton.getStyle().setMargin(4);
+        saveWorldButton.getStyle().setPosition(Style.PositionType.RELATIVE);
         saveWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
                 try{
@@ -134,8 +145,11 @@ public class AtomicEditGui {
         });
         topBar.add(saveWorldButton);
         
-        Button undoButton = new Button(580, 5, 80, 20);
+        Button undoButton = new Button();
         undoButton.getTextState().setText("Undo");
+        undoButton.getStyle().setMinimumSize(80, 20);
+        undoButton.getStyle().setMargin(4);
+        undoButton.getStyle().setPosition(Style.PositionType.RELATIVE);
         undoButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
                 try{
@@ -148,8 +162,11 @@ public class AtomicEditGui {
         });
         topBar.add(undoButton);
         
-        Button redoButton = new Button(670, 5, 80, 20);
+        Button redoButton = new Button();
         redoButton.getTextState().setText("Redo");
+        redoButton.getStyle().setMinimumSize(80, 20);
+        redoButton.getStyle().setMargin(4);
+        redoButton.getStyle().setPosition(Style.PositionType.RELATIVE);
         redoButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
                 try{
@@ -162,7 +179,7 @@ public class AtomicEditGui {
         });
         topBar.add(redoButton);
         
-        SelectBox<Dimension> dimensionSelectBox = new SelectBox<>(760, 5, 80, 20);
+        SelectBox<Dimension> dimensionSelectBox = new SelectBox<>();
         for (Dimension dim : Dimension.getDimensions()) {
             dimensionSelectBox.addElement(dim);
         }
@@ -170,12 +187,17 @@ public class AtomicEditGui {
         dimensionSelectBox.getSelectBoxChangeSelectionEvents().add((EventListener<SelectBoxChangeSelectionEvent<Dimension>>)(event) -> {
             backendController.setActiveDimension(event.getNewValue());
         });
+        dimensionSelectBox.getStyle().setMinimumSize(80, 20);
+        dimensionSelectBox.getStyle().setMargin(4);
+        dimensionSelectBox.getStyle().setPosition(Style.PositionType.RELATIVE);
         dimensionSelectBox.setTabFocusable(false);
         topBar.add(dimensionSelectBox);
         
-        coordsLabel = new Label(280, 5, 200, 30);
+        coordsLabel = new Label();
+        coordsLabel.getStyle().setMinimumSize(80, 20);
+        coordsLabel.getStyle().setMargin(4);
+        coordsLabel.getStyle().setPosition(Style.PositionType.RELATIVE);
         coordsLabel.getStyle().setFontSize(17f);
-        coordsLabel.getStyle().getFlexStyle().setAlignSelf(FlexStyle.AlignSelf.FLEX_START);
         coordsLabel.getStyle().setTextColor(1f, 1f, 1f, 1f);
         topBar.add(coordsLabel);
         frame.getContainer().add(topBar);

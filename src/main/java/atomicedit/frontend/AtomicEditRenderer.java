@@ -116,7 +116,11 @@ public class AtomicEditRenderer {
         
         EditorSystem.renderTick();
         // poll events to callbacks
-        GLFW.glfwPollEvents();
+        try {
+            GLFW.glfwPollEvents();
+        } catch (Exception e) {
+            Logger.error("Exception Polling Events.", e); //if an exception is thrown in legui callbacks
+        }
         GLFW.glfwSwapBuffers(glfwWindow);
         
     }

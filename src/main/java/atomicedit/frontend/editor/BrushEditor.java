@@ -87,9 +87,9 @@ public class BrushEditor implements Editor {
         //this might be off by one, not a big deal as long as its consistant with the rendering position
         BlockCoord smallestCoord = new BlockCoord(center.x - box.getXLength() / 2, center.y - box.getYLength() / 2, center.z - box.getZLength() / 2);
         WorldVolume worldVolume = new WorldVolume(this.brushVolume, smallestCoord);
-        Operation op = opType.getOperationInstance(worldVolume, params);
         OperationResult result;
         try {
+            Operation op = opType.getOperationInstance(worldVolume, params);
             result = AtomicEdit.getBackendController().applyOperation(op);
         } catch (Exception e) {
             result = new OperationResult(false, "Operation threw Exception.", e);

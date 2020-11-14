@@ -1,8 +1,8 @@
 
 package atomicedit.backend.brushes;
 
+import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.backend.parameters.ParameterDescriptor;
-import atomicedit.backend.parameters.ParameterType;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.backend.utils.BitArray;
 import atomicedit.backend.utils.GeneralUtils;
@@ -19,10 +19,11 @@ import org.joml.Vector3f;
  */
 public class ElipseBrush implements Brush {
     
-    private static final ParameterDescriptor X_RADIUS_PARAM_DESC = new ParameterDescriptor("X Radius", ParameterType.INT, 4);
-    private static final ParameterDescriptor Y_RADIUS_PARAM_DESC = new ParameterDescriptor("Y Radius", ParameterType.INT, 4);
-    private static final ParameterDescriptor Z_RADIUS_PARAM_DESC = new ParameterDescriptor("Z Radius", ParameterType.INT, 4);
-    static final List<ParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(X_RADIUS_PARAM_DESC,
+    private static final IntegerParameterDescriptor X_RADIUS_PARAM_DESC = new IntegerParameterDescriptor("X Radius", 4, 0, 200);
+    private static final IntegerParameterDescriptor Y_RADIUS_PARAM_DESC = new IntegerParameterDescriptor("Y Radius", 4, 0, 200);
+    private static final IntegerParameterDescriptor Z_RADIUS_PARAM_DESC = new IntegerParameterDescriptor("Z Radius", 4, 0, 200);
+    static final List<ParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(
+        X_RADIUS_PARAM_DESC,
         Y_RADIUS_PARAM_DESC,
         Z_RADIUS_PARAM_DESC
     ));

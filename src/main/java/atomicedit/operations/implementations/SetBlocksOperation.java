@@ -7,11 +7,11 @@ import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.blockprovider.BlockProvider;
 import atomicedit.backend.blockprovider.FillBlockProvider;
 import atomicedit.backend.chunk.ChunkController;
+import atomicedit.backend.parameters.BlockStateParameterDescriptor;
 import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.backend.parameters.ParameterDescriptor;
-import atomicedit.backend.parameters.ParameterType;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.volumes.WorldVolume;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class SetBlocksOperation extends Operation {
     
-    private static final ParameterDescriptor TO_SET_BLOCKTYPE_DESC = new ParameterDescriptor("Block Type", ParameterType.BLOCK_SELECTOR, BlockState.AIR);
+    private static final BlockStateParameterDescriptor TO_SET_BLOCKTYPE_DESC = new BlockStateParameterDescriptor("Block Type", BlockState.AIR);
     public static final List<ParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(new ParameterDescriptor[]{
             TO_SET_BLOCKTYPE_DESC
         }

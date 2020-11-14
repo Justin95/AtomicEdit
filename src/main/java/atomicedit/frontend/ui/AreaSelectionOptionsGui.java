@@ -2,6 +2,8 @@
 package atomicedit.frontend.ui;
 
 import atomicedit.backend.BlockState;
+import atomicedit.backend.parameters.FloatParameterDescriptor;
+import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.frontend.editor.AreaSelectionEditor;
 import atomicedit.operations.OperationType;
 import atomicedit.backend.parameters.ParameterDescriptor;
@@ -17,11 +19,11 @@ import org.liquidengine.legui.listener.EventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.flex.FlexStyle;
 import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
+import atomicedit.frontend.ui.atomicedit_legui.DoubleSelectorComponent;
+import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
 import java.util.ArrayList;
 import org.joml.Vector4f;
 import org.liquidengine.legui.component.Label;
-import org.liquidengine.legui.component.Slider;
-import org.liquidengine.legui.component.optional.Orientation;
 import org.liquidengine.legui.style.color.ColorConstants;
 import org.liquidengine.legui.style.length.Length;
 import org.liquidengine.legui.style.length.LengthType;
@@ -172,21 +174,28 @@ public class AreaSelectionOptionsGui {
             
             switch(paramDesc.parameterType) {
                 case INT:
-                    Slider slider = new Slider();
-                    slider.addSliderChangeValueEventListener((event) -> {
-                        this.opParameters.setParam(paramDesc, (int)event.getNewValue());
+                    IntegerParameterDescriptor intDesc = (IntegerParameterDescriptor)paramDesc;
+                    IntegerSelectorComponent intSelector = new IntegerSelectorComponent(intDesc.minAllowed, intDesc.maxAllowed, intDesc.defaultValue);
+                    intSelector.setValueChangeCallback((long newValue) -> {
+                        this.opParameters.setParam(paramDesc, (int)newValue);
                     });
-                    slider.setValue((int)paramDesc.defaultValue);
-                    slider.getStyle().setWidth(200);
-                    slider.getStyle().setMinWidth(200);
-                    slider.getStyle().setMaxWidth(Float.MAX_VALUE);
-                    slider.getStyle().setMinHeight(30);
-                    slider.setOrientation(Orientation.HORIZONTAL);
-                    slider.getStyle().setPosition(Style.PositionType.RELATIVE);
-                    slider.setStepSize(1);
-                    slider.getStyle().getFlexStyle().setFlexGrow(5);
-                    slider.getStyle().getFlexStyle().setFlexShrink(5);
-                    paramPanel.add(slider);
+                    intSelector.getStyle().setMinimumSize(100, 30);
+                    intSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    intSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    intSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(intSelector);
+                    break;
+                case FLOAT:
+                    FloatParameterDescriptor floatDesc = (FloatParameterDescriptor)paramDesc;
+                    DoubleSelectorComponent floatSelector = new DoubleSelectorComponent(floatDesc.minAllowed, floatDesc.maxAllowed, floatDesc.defaultValue);
+                    floatSelector.setValueChangeCallback((double newValue) -> {
+                        this.opParameters.setParam(paramDesc, (float)newValue);
+                    });
+                    floatSelector.getStyle().setMinimumSize(100, 30);
+                    floatSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    floatSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    floatSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(floatSelector);
                     break;
                 case BLOCK_SELECTOR:
                     BlockSelectorComponent blockSelector = new BlockSelectorComponent((BlockState)paramDesc.defaultValue);

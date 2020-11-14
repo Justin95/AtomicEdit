@@ -3,10 +3,14 @@ package atomicedit.frontend.ui;
 
 import atomicedit.backend.BlockState;
 import atomicedit.backend.brushes.BrushType;
+import atomicedit.backend.parameters.FloatParameterDescriptor;
+import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.backend.parameters.ParameterDescriptor;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.frontend.editor.BrushEditor;
 import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
+import atomicedit.frontend.ui.atomicedit_legui.DoubleSelectorComponent;
+import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
 import atomicedit.operations.OperationType;
 import java.util.ArrayList;
 import java.util.List;
@@ -180,24 +184,53 @@ public class BrushGui {
             paramLabel.setFocusable(false);
             paramPanel.add(paramLabel);
             
+            /*
+            this.brushParameters.setParam(paramDesc, (int)event.getNewValue());
+                        editor.setBrush(this.brushType.createInstance(), this.brushParameters);
+            */
+            
             switch(paramDesc.parameterType) {
                 case INT:
-                    Slider slider = new Slider();
-                    slider.addSliderChangeValueEventListener((event) -> {
-                        this.brushParameters.setParam(paramDesc, (int)event.getNewValue());
+                    IntegerParameterDescriptor intDesc = (IntegerParameterDescriptor)paramDesc;
+                    IntegerSelectorComponent intSelector = new IntegerSelectorComponent(intDesc.minAllowed, intDesc.maxAllowed, intDesc.defaultValue);
+                    intSelector.setValueChangeCallback((long newValue) -> {
+                        this.brushParameters.setParam(paramDesc, (int)newValue);
                         editor.setBrush(this.brushType.createInstance(), this.brushParameters);
                     });
-                    slider.setValue((int)paramDesc.defaultValue);
-                    slider.getStyle().setWidth(200);
-                    slider.getStyle().setMinWidth(200);
-                    slider.getStyle().setMaxWidth(Float.MAX_VALUE);
-                    slider.getStyle().setMinHeight(30);
-                    slider.setOrientation(Orientation.HORIZONTAL);
-                    slider.getStyle().setPosition(Style.PositionType.RELATIVE);
-                    slider.setStepSize(1);
-                    slider.getStyle().getFlexStyle().setFlexGrow(5);
-                    slider.getStyle().getFlexStyle().setFlexShrink(5);
-                    paramPanel.add(slider);
+                    intSelector.getStyle().setMinimumSize(100, 30);
+                    intSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    intSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    intSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(intSelector);
+                    break;
+                case FLOAT:
+                    FloatParameterDescriptor floatDesc = (FloatParameterDescriptor)paramDesc;
+                    DoubleSelectorComponent floatSelector = new DoubleSelectorComponent(floatDesc.minAllowed, floatDesc.maxAllowed, floatDesc.defaultValue);
+                    floatSelector.setValueChangeCallback((double newValue) -> {
+                        this.brushParameters.setParam(paramDesc, (float)newValue);
+                        editor.setBrush(this.brushType.createInstance(), this.brushParameters);
+                    });
+                    floatSelector.getStyle().setMinimumSize(100, 30);
+                    floatSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    floatSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    floatSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(floatSelector);
+                    break;
+                case BLOCK_SELECTOR:
+                    BlockSelectorComponent blockSelector = new BlockSelectorComponent((BlockState)paramDesc.defaultValue);
+                    blockSelector.setCallback((blockState) -> {
+                        this.brushParameters.setParam(paramDesc, blockState);
+                        editor.setBrush(this.brushType.createInstance(), this.brushParameters);
+                    });
+                    blockSelector.getStyle().setMinWidth(200);
+                    blockSelector.getStyle().setMaxWidth(Float.MAX_VALUE);
+                    blockSelector.getStyle().setMinHeight(30);
+                    blockSelector.getStyle().setMaxHeight(30);
+                    blockSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    blockSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    blockSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(blockSelector);
+                    break;
             }
             
             this.brushParamComponents.add(paramPanel);
@@ -251,21 +284,28 @@ public class BrushGui {
             
             switch(paramDesc.parameterType) {
                 case INT:
-                    Slider slider = new Slider();
-                    slider.addSliderChangeValueEventListener((event) -> {
-                        this.opParameters.setParam(paramDesc, (int)event.getNewValue());
+                    IntegerParameterDescriptor intDesc = (IntegerParameterDescriptor)paramDesc;
+                    IntegerSelectorComponent intSelector = new IntegerSelectorComponent(intDesc.minAllowed, intDesc.maxAllowed, intDesc.defaultValue);
+                    intSelector.setValueChangeCallback((long newValue) -> {
+                        this.opParameters.setParam(paramDesc, (int)newValue);
                     });
-                    slider.setValue((int)paramDesc.defaultValue);
-                    slider.getStyle().setWidth(200);
-                    slider.getStyle().setMinWidth(200);
-                    slider.getStyle().setMaxWidth(Float.MAX_VALUE);
-                    slider.getStyle().setMinHeight(30);
-                    slider.setOrientation(Orientation.HORIZONTAL);
-                    slider.getStyle().setPosition(Style.PositionType.RELATIVE);
-                    slider.setStepSize(1);
-                    slider.getStyle().getFlexStyle().setFlexGrow(5);
-                    slider.getStyle().getFlexStyle().setFlexShrink(5);
-                    paramPanel.add(slider);
+                    intSelector.getStyle().setMinimumSize(100, 30);
+                    intSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    intSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    intSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(intSelector);
+                    break;
+                case FLOAT:
+                    FloatParameterDescriptor floatDesc = (FloatParameterDescriptor)paramDesc;
+                    DoubleSelectorComponent floatSelector = new DoubleSelectorComponent(floatDesc.minAllowed, floatDesc.maxAllowed, floatDesc.defaultValue);
+                    floatSelector.setValueChangeCallback((double newValue) -> {
+                        this.opParameters.setParam(paramDesc, (float)newValue);
+                    });
+                    floatSelector.getStyle().setMinimumSize(100, 30);
+                    floatSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    floatSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    floatSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(floatSelector);
                     break;
                 case BLOCK_SELECTOR:
                     BlockSelectorComponent blockSelector = new BlockSelectorComponent((BlockState)paramDesc.defaultValue);
