@@ -14,18 +14,20 @@ public class DoubleSelectorComponent extends TextInput {
     private static final Pattern NUMBER_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
     
     private ValueSetCallback valueSetCallback;
+    private DoubleTextState dTextState;
     
     public DoubleSelectorComponent(double min, double max, double initialValue) {
         initialize(min, max, initialValue);
     }
     
     private void initialize(double min, double max, double initialValue) {
-        this.setTextState(new DoubleTextState(min, max, initialValue, this));
+        this.dTextState = new DoubleTextState(min, max, initialValue, this);
+        this.setTextState(dTextState);
         //can use text state validators as well
     }
     
     public double getValue() {
-        return Long.parseLong(this.textState.getText());
+        return this.dTextState.value;
     }
     
     public void setValueChangeCallback(ValueSetCallback callback) {
@@ -37,38 +39,40 @@ public class DoubleSelectorComponent extends TextInput {
         private final double min;
         private final double max;
         private final DoubleSelectorComponent parent;
+        private double value;
         
         DoubleTextState(double min, double max, double initialValue, DoubleSelectorComponent parent) {
             super();
             this.parent = parent;
             this.min = min;
             this.max = max;
+            this.value = initialValue;
             this.setText(Double.toString(initialValue));
         }
         
         @Override
         public void setText(String text) {
-            if (text.isEmpty()) {
-                text = "0";
-            }
             if (!NUMBER_PATTERN.matcher(text).matches()) {
+                super.setText(text);
                 return; //invalid input
             }
-            double value;
+            double newValue;
             try {
-                value = Double.parseDouble(text);
+                newValue = Double.parseDouble(text);
             } catch (NumberFormatException e) {
+                super.setText(text);
                 return; //invalid input
             }
-            if (value > max) {
-                value = max;
-            } else if (value < min) {
-                value = min;
+            if (newValue > max) {
+                newValue = max;
+            } else if (newValue < min) {
+                newValue = min;
             }
+            this.value = newValue;
             if (parent != null && parent.valueSetCallback != null) {
-                parent.valueSetCallback.valueSetCallback(value);
+                parent.valueSetCallback.valueSetCallback(newValue);
             }
-            super.setText(Double.toString(value));
+            super.setText(Double.toString(newValue));
         }
         
     }

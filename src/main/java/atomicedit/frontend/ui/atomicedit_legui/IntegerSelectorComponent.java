@@ -15,18 +15,20 @@ public class IntegerSelectorComponent extends TextInput {
     public static final int RECOMMENDED_WIDTH = 150;
     
     private ValueSetCallback valueSetCallback;
+    private IntegerTextState iTextState;
     
     public IntegerSelectorComponent(long min, long max, long initialValue) {
         initialize(min, max, initialValue);
     }
     
     private void initialize(long min, long max, long initialValue) {
-        this.setTextState(new IntegerTextState(min, max, initialValue, this));
+        this.iTextState = new IntegerTextState(min, max, initialValue, this);
+        this.setTextState(iTextState);
         //can use text state validators as well
     }
     
     public long getValue() {
-        return Long.parseLong(this.textState.getText());
+        return iTextState.value;
     }
     
     public void setValueChangeCallback(ValueSetCallback callback) {
@@ -38,38 +40,40 @@ public class IntegerSelectorComponent extends TextInput {
         private final long min;
         private final long max;
         private final IntegerSelectorComponent parent;
+        private long value;
         
         IntegerTextState(long min, long max, long initialValue, IntegerSelectorComponent parent) {
             super();
             this.min = min;
             this.max = max;
             this.parent = parent;
+            this.value = initialValue;
             setText(Long.toString(initialValue));
         }
         
         @Override
         public void setText(String text) {
-            if (text.isEmpty()) {
-                text = "0";
-            }
             if (!INT_PATTERN.matcher(text).matches()) {
-                return; //invalid input
+                super.setText(text); //invalid input
+                return;
             }
-            long value;
+            long newValue;
             try {
-                value = Long.parseLong(text);
+                newValue = Long.parseLong(text);
             } catch (NumberFormatException e) {
+                super.setText(text);
                 return; //invalid input
             }
-            if (value > max) {
-                value = max;
-            } else if (value < min) {
-                value = min;
+            if (newValue > max) {
+                newValue = max;
+            } else if (newValue < min) {
+                newValue = min;
             }
+            this.value = newValue;
             if (parent != null && parent.valueSetCallback != null) {
-                parent.valueSetCallback.valueSetCallback(value);
+                parent.valueSetCallback.valueSetCallback(newValue);
             }
-            super.setText(Long.toString(value));
+            super.setText(Long.toString(newValue));
         }
         
     }
