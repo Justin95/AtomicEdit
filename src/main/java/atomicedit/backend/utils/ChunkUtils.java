@@ -106,8 +106,8 @@ public class ChunkUtils {
             ChunkCoord chunkCoord = chunkController.getChunkCoord();
             int chunkX = chunkCoord.x - smallestChunk.x;
             int chunkZ = chunkCoord.z - smallestChunk.z;
-            int sectionStart = Math.max(Math.min(smallestChunk.y, chunkController.chunkHeightInSections() - 1), 0); //inclusive
-            int sectionEnd = Math.max(Math.min(largestChunk.y + 1, chunkController.chunkHeightInSections()), 0); //exclusive
+            int sectionStart = Math.max(smallestChunk.y, 0); //inclusive
+            int sectionEnd = Math.min(largestChunk.y + 1, chunkController.chunkHeightInSections()); //exclusive
             for(int sectionIndex = sectionStart; sectionIndex < sectionEnd ; sectionIndex++){
                 int chunkY = sectionIndex - smallestChunk.y;
                 chunkSectionBlocks[GeneralUtils.getIndexYZX(chunkX, chunkY, chunkZ, xChunkLen, zChunkLen)] = 
