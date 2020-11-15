@@ -11,8 +11,8 @@ import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.utils.GeneralUtils;
 import atomicedit.logging.Logger;
 import atomicedit.utils.Tuple;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,6 +26,7 @@ public class LightingUtil {
     
     public static void doLightingCalculation(Map<ChunkCoord, ChunkController> chunkMap) throws MalformedNbtTagException {
         Logger.info("Starting lighting calculation with " + chunkMap.size() + " chunks.");
+        long startTimeMs = System.currentTimeMillis();
         LightingArea lightingArea = createLightingArea(chunkMap);
         LightingAreaIterator iterator = new LightingAreaIterator(lightingArea);
         //block light
@@ -82,7 +83,9 @@ public class LightingUtil {
             });
         }
         lightingArea.clearEdited();
-        Logger.info("Finished block lighting, starting sky lighting.");
+        long currTime = System.currentTimeMillis();
+        Logger.info("Finished block lighting in " + (currTime - startTimeMs) + " ms, starting sky lighting.");
+        startTimeMs = currTime;
         //skylight
         iterator.forEach((x, y, z) -> {
             LightingBehavior lightBehavior = lightingArea.getLightingBehaviorAt(x, y, z);
@@ -144,12 +147,13 @@ public class LightingUtil {
             });
         }
         lightingArea.writeResult(chunkMap);
+        Logger.info("Finished sky lighting calculation in " + (System.currentTimeMillis() - startTimeMs) + " ms.");
         Logger.info("Finished lighting calculation.");
     }
     
     
     private static LightingArea createLightingArea(Map<ChunkCoord, ChunkController> chunkMap) throws MalformedNbtTagException {
-        List<Tuple<ChunkSectionCoord, LightingSection>> lightSections = new ArrayList<>();
+        HashMap<ChunkSectionCoord, Tuple<ChunkSectionCoord, LightingSection>> lightSections = new HashMap<>();
         final LightingBehavior[] blockIdToLightBehavior = calcLightBehaviorData();
         for (ChunkCoord chunkCoord : chunkMap.keySet()) {
             ChunkController chunkController = chunkMap.get(chunkCoord);
@@ -170,7 +174,7 @@ public class LightingUtil {
                     lightingBehaviors[index] = blockIdToLightBehavior[blocks[index]];
                 }
                 LightingSection lightSection = new LightingSection(lightingBehaviors, blockLightData, skyLightData, needsLightingCalc);
-                lightSections.add(new Tuple<>(section.coord, lightSection));
+                lightSections.put(section.coord, new Tuple<>(section.coord, lightSection));
             }
         }
         return new LightingArea(lightSections);
@@ -192,12 +196,14 @@ public class LightingUtil {
     
     private static class LightingArea {
         
-        private List<Tuple<ChunkSectionCoord, LightingSection>> sections;
+        private HashMap<ChunkSectionCoord, Tuple<ChunkSectionCoord, LightingSection>> sections;
         private Tuple<ChunkSectionCoord, LightingSection> lastLookup;
+        private Tuple<ChunkSectionCoord, LightingSection> secondLastLookup;
         
-        LightingArea(List<Tuple<ChunkSectionCoord, LightingSection>> sections) {
+        LightingArea(HashMap<ChunkSectionCoord, Tuple<ChunkSectionCoord, LightingSection>> sections) {
             this.sections = sections;
-            this.lastLookup = sections.get(0);
+            this.lastLookup = sections.values().iterator().next();
+            this.secondLastLookup = lastLookup;
         }
         
         //absolute world coordinates for x,y,z
@@ -260,7 +266,7 @@ public class LightingUtil {
         }
         
         void clearEdited() {
-            for (Tuple<ChunkSectionCoord, LightingSection> tuple : this.sections) {
+            for (Tuple<ChunkSectionCoord, LightingSection> tuple : this.sections.values()) {
                 tuple.right.clearEdited();
             }
         }
@@ -271,29 +277,28 @@ public class LightingUtil {
             int sectionZ = (int) Math.floor((float)z / ChunkSection.SIDE_LENGTH);
             if (lastLookup.left.x == sectionX && lastLookup.left.y == sectionY && lastLookup.left.z == sectionZ) {
                 return lastLookup.right;
+            } else if (secondLastLookup.left.x == sectionX && secondLastLookup.left.y == sectionY && secondLastLookup.left.z == sectionZ) {
+                Tuple<ChunkSectionCoord, LightingSection> temp = secondLastLookup;
+                secondLastLookup = lastLookup;
+                lastLookup = temp;
+                return lastLookup.right;
             }
-            for (Tuple<ChunkSectionCoord, LightingSection> tuple : sections) {
-                if (tuple.left.x == sectionX && tuple.left.y == sectionY && tuple.left.z == sectionZ) {
-                    lastLookup = tuple;
-                    return tuple.right;
-                }
+            Tuple<ChunkSectionCoord, LightingSection> tuple = sections.get(new ChunkSectionCoord(sectionX, sectionY, sectionZ)); //plz alloc on stack
+            if (tuple == null) {
+                Logger.error("Tried to look up an index out of bounds in lighting calc (" + x + ", " + y + ", " + z + "). Valid Sections: " + sections);
+                throw new RuntimeException("Tried to look out of bounds in lighting calc.");
             }
-            Logger.error("Tried to look up an index out of bounds in lighting calc (" + x + ", " + y + ", " + z + "). Valid Sections: " + sections);
-            throw new RuntimeException("Tried to look out of bounds in lighting calc.");
+            secondLastLookup = lastLookup;
+            lastLookup = tuple;
+            return tuple.right;
         }
         
         LightingSection getSectionFromSectionCoord(ChunkSectionCoord sectionCoord) {
-            for (Tuple<ChunkSectionCoord, LightingSection> tuple : sections) {
-                if (tuple.left.equals(sectionCoord)) {
-                    return tuple.right;
-                }
-            }
-            Logger.error("Tried to look up an index out of bounds in lighting calc " + sectionCoord + ". Valid Sections: " + sections);
-            throw new RuntimeException("Tried to look out of bounds in lighting calc.");
+            return sections.get(sectionCoord).right;
         }
         
         void writeResult(Map<ChunkCoord, ChunkController> chunkMap) throws MalformedNbtTagException {
-            for (Tuple<ChunkSectionCoord, LightingSection> tuple : sections) {
+            for (Tuple<ChunkSectionCoord, LightingSection> tuple : sections.values()) {
                 ChunkCoord chunkCoord = ChunkCoord.getInstance(tuple.left.x, tuple.left.z);
                 ChunkController chunk = chunkMap.get(chunkCoord);
                 chunk.setBlockLighting(tuple.left.y, tuple.right.blockLight);
@@ -383,7 +388,7 @@ public class LightingUtil {
         }
         
         public void forEach(ForEachxyz callback) {
-            List<ChunkSectionCoord> sectionCoords = area.sections.stream().map((tuple) -> tuple.left).sorted((a, b) -> b.y - a.y).collect(Collectors.toList());
+            List<ChunkSectionCoord> sectionCoords = area.sections.values().stream().map((tuple) -> tuple.left).sorted((a, b) -> b.y - a.y).collect(Collectors.toList());
             for (ChunkSectionCoord sectionCoord : sectionCoords) {
                 LightingSection lightingSection = area.getSectionFromSectionCoord(sectionCoord);
                 if (!lightingSection.needsLightingCalc) {
