@@ -134,7 +134,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
         try{
             regionInput = new DataInputStream(new FileInputStream(filepath));
         }catch(FileNotFoundException e){
-            Logger.info("Region file not found, chunk not generated yet");
+            Logger.info("Region file not found, chunk not generated yet: " + chunkCoord);
         }
         return regionInput;
     }
@@ -146,7 +146,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
             byte[] rawRegionFile = Files.readAllBytes(Paths.get(filepath));
             regionInput = new DataInputStream(new ByteArrayInputStream(rawRegionFile));
         }catch(FileNotFoundException e){
-            Logger.info("Region file not found, chunk not generated yet");
+            Logger.info("Region file not found " + regionFileName + ", chunk not generated yet.");
         }
         return regionInput;
     }
