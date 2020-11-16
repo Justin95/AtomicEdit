@@ -54,7 +54,7 @@ public class EditorTypesMenu extends Panel{
             new EditorTypeSelectorButton(
                 EditorType.AREA_SELECTION,
                 "icons/area_select_icon.png",
-                "icons/area_select_icon.png"//"icons/area_select_icon_selected.png"
+                "icons/area_select_icon.png"
             ),
             new EditorTypeSelectorButton(
                 EditorType.BRUSH_ACTION,
@@ -63,8 +63,8 @@ public class EditorTypesMenu extends Panel{
             ),
             new EditorTypeSelectorButton(
                 EditorType.BLOCK_ENTITY_EDITOR,
-                "icons/NBT_icon.png",
-                "icons/NBT_icon.png"
+                "icons/block_entity_icon.png",
+                "icons/block_entity_icon.png"
             )
         };
     }

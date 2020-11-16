@@ -85,6 +85,9 @@ public class Volume {
      * @return 
      */
     public Collection<ChunkCoord> getContainedChunkCoords(BlockCoord smallestCoord){
+        if (this.containedChunkCoords != null) {
+            return new ArrayList<>(this.containedChunkCoords);
+        }
         BlockCoord largestCoord = new BlockCoord(smallestCoord.x + enclosingBox.getXLength(), smallestCoord.y + enclosingBox.getYLength(), smallestCoord.z + enclosingBox.getZLength());
         this.containedChunkCoords = new ArrayList<>();
         for(int x = smallestCoord.getChunkCoord().x; x <= largestCoord.getChunkCoord().x; x++){
@@ -102,11 +105,14 @@ public class Volume {
      * @return chunk section coords in 
      */
     public Collection<ChunkSectionCoord> getContainedChunkSectionCoords(BlockCoord smallestCoord){
+        if (this.containedChunkSectionCoords != null) {
+            return new ArrayList<>(this.containedChunkSectionCoords);
+        }
         BlockCoord largestCoord = new BlockCoord(smallestCoord.x + enclosingBox.getXLength(), smallestCoord.y + enclosingBox.getYLength(), smallestCoord.z + enclosingBox.getZLength());
         this.containedChunkSectionCoords = new ArrayList<>();
         for(int x = smallestCoord.getChunkCoord().x; x <= largestCoord.getChunkCoord().x; x++){
             for(int z = smallestCoord.getChunkCoord().z; z <= largestCoord.getChunkCoord().z; z++){
-                for(int y = smallestCoord.getSubChunkIndex(); y < largestCoord.getSubChunkIndex(); y++){
+                for(int y = smallestCoord.getSubChunkIndex(); y <= largestCoord.getSubChunkIndex(); y++){
                     this.containedChunkSectionCoords.add(new ChunkSectionCoord(x, y, z));
                 }
             }
