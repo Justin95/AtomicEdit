@@ -112,7 +112,8 @@ public class NoiseOperation extends Operation {
         int[] blockDistances = calcDistances(operationVolume);
         operationVolume.doForXyz((x, y, z) -> {
             int index = GeneralUtils.getIndexYZX(x, y, z, box.getXLength(), box.getZLength());
-            double noiseValue = amplitude * Noise.gradientCoherentNoise3D(
+            //also consider Noise.gradientCoherentNoise3D
+            double noiseValue = amplitude * Noise.valueCoherentNoise3D(
                 (x + smallestPoint.x) / horizontalScale,
                 (y + smallestPoint.y) / horizontalScale,
                 (z + smallestPoint.z) / horizontalScale,

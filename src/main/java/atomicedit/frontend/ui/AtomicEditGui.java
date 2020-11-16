@@ -9,6 +9,7 @@ import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
+import atomicedit.utils.FileUtils;
 import java.io.File;
 import java.util.concurrent.locks.ReentrantLock;
 import org.joml.Vector2f;
@@ -20,9 +21,11 @@ import org.liquidengine.legui.component.Frame;
 import org.liquidengine.legui.component.Label;
 import org.liquidengine.legui.component.Panel;
 import org.liquidengine.legui.component.SelectBox;
+import org.liquidengine.legui.component.Tooltip;
 import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent;
 import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.event.MouseClickEvent.MouseClickAction;
+import org.liquidengine.legui.icon.ImageIcon;
 import org.liquidengine.legui.listener.EventListener;
 import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
@@ -42,6 +45,20 @@ public class AtomicEditGui {
     //https://github.com/SpinyOwl/legui/blob/develop/src/main/java/org/liquidengine/legui/demo/ExampleGui.java
     private static Label coordsLabel;
     private static final ReentrantLock WORLD_SELECT_LOCK = new ReentrantLock();
+    
+    private static final int ICON_SIZE = 26;
+    private static final int CHAR_WIDTH = 7;
+    private static final ImageIcon SAVE_ICON = FileUtils.loadIcon("icons/save.png");
+    private static final ImageIcon LOAD_ICON = FileUtils.loadIcon("icons/load.png");
+    private static final ImageIcon UNDO_ICON = FileUtils.loadIcon("icons/undo.png");
+    private static final ImageIcon REDO_ICON = FileUtils.loadIcon("icons/redo.png");
+    
+    static {
+        SAVE_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
+        LOAD_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
+        UNDO_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
+        REDO_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
+    }
     
     public static void initializeGui(Frame frame, Context context, BackendController backendController, AtomicEditRenderer renderer){
         Component root = frame.getContainer();
@@ -73,11 +90,17 @@ public class AtomicEditGui {
         topBar.getStyle().setTop(0);
         topBar.getStyle().setPadding(2);
         topBar.setFocusable(false);
-        Button selectWorldButton = new Button();
-        selectWorldButton.getTextState().setText("Select World");
-        selectWorldButton.getStyle().setMinimumSize(80, 20);
+        Button selectWorldButton = new Button("");
+        selectWorldButton.getStyle().setMinimumSize(ICON_SIZE, ICON_SIZE);
         selectWorldButton.getStyle().setMargin(4);
         selectWorldButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        selectWorldButton.getStyle().getBackground().setIcon(LOAD_ICON);
+        Tooltip loadToolTip = new Tooltip();
+        loadToolTip.getTextState().setText("Select World");
+        loadToolTip.setSize("Select World".length() * CHAR_WIDTH, 20);
+        loadToolTip.getStyle().getBackground().setColor(.8f, .8f, .25f, .7f);
+        loadToolTip.getStyle().setTextColor(0f, 0f, 0f, 1f);
+        selectWorldButton.setTooltip(loadToolTip);
         selectWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if (event.getAction() == MouseClickAction.CLICK) {
                 if (WORLD_SELECT_LOCK.tryLock()) {
@@ -129,10 +152,18 @@ public class AtomicEditGui {
         */
         
         Button saveWorldButton = new Button();
-        saveWorldButton.getTextState().setText("Save World");
-        saveWorldButton.getStyle().setMinimumSize(80, 20);
+        saveWorldButton.getTextState().setText("");
+        saveWorldButton.getStyle().setMinimumSize(ICON_SIZE, ICON_SIZE);
         saveWorldButton.getStyle().setMargin(4);
+        saveWorldButton.getStyle().setMarginRight(100f); //put some space between save and undo
         saveWorldButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        saveWorldButton.getStyle().getBackground().setIcon(SAVE_ICON);
+        Tooltip saveToolTip = new Tooltip();
+        saveToolTip.getTextState().setText("Save World");
+        saveToolTip.setSize("Save World".length() * CHAR_WIDTH, 20);
+        saveToolTip.getStyle().getBackground().setColor(.8f, .8f, .25f, .7f);
+        saveToolTip.getStyle().setTextColor(0f, 0f, 0f, 1f);
+        saveWorldButton.setTooltip(saveToolTip);
         saveWorldButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
                 try{
@@ -146,10 +177,17 @@ public class AtomicEditGui {
         topBar.add(saveWorldButton);
         
         Button undoButton = new Button();
-        undoButton.getTextState().setText("Undo");
-        undoButton.getStyle().setMinimumSize(80, 20);
+        undoButton.getTextState().setText("");
+        undoButton.getStyle().setMinimumSize(ICON_SIZE, ICON_SIZE);
         undoButton.getStyle().setMargin(4);
         undoButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        undoButton.getStyle().getBackground().setIcon(UNDO_ICON);
+        Tooltip undoToolTip = new Tooltip();
+        undoToolTip.getTextState().setText("Undo");
+        undoToolTip.setSize("Undo".length() * (CHAR_WIDTH + 1), 20);
+        undoToolTip.getStyle().getBackground().setColor(.8f, .8f, .25f, .7f);
+        undoToolTip.getStyle().setTextColor(0f, 0f, 0f, 1f);
+        undoButton.setTooltip(undoToolTip);
         undoButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
                 try{
@@ -163,10 +201,17 @@ public class AtomicEditGui {
         topBar.add(undoButton);
         
         Button redoButton = new Button();
-        redoButton.getTextState().setText("Redo");
-        redoButton.getStyle().setMinimumSize(80, 20);
+        redoButton.getTextState().setText("");
+        redoButton.getStyle().setMinimumSize(ICON_SIZE, ICON_SIZE);
         redoButton.getStyle().setMargin(4);
         redoButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        redoButton.getStyle().getBackground().setIcon(REDO_ICON);
+        Tooltip redoToolTip = new Tooltip();
+        redoToolTip.getTextState().setText("Redo");
+        redoToolTip.setSize("Redo".length() * CHAR_WIDTH, 20);
+        redoToolTip.getStyle().getBackground().setColor(.8f, .8f, .25f, .7f);
+        redoToolTip.getStyle().setTextColor(0f, 0f, 0f, 1f);
+        redoButton.setTooltip(redoToolTip);
         redoButton.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
             if(event.getAction() == MouseClickAction.CLICK){
                 try{
