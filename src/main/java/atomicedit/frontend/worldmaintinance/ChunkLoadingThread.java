@@ -88,6 +88,7 @@ public class ChunkLoadingThread extends Thread {
                         neededChunks.add(coord);
                     }else if(backendController.doesChunkNeedRedraw(coord, this.drawnDimension)){
                         toRemove.add(loadedChunks.get(coord));
+                        loadedChunks.remove(coord);
                         neededChunks.add(coord);
                     }
                 }
