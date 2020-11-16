@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This thread is responsible for keeping the set of loaded chunks up to date.
@@ -50,7 +51,6 @@ public class ChunkLoadingThread extends Thread {
     public void run(){
         BackendController backendController = AtomicEdit.getBackendController();
         while(keepRunning){
-            restThread();
             Camera camera = renderer.getCamera();
             if(!backendController.hasWorld()) continue;
             if(camera == null) continue;
@@ -102,26 +102,31 @@ public class ChunkLoadingThread extends Thread {
             if(!toRemove.isEmpty()){
                 renderer.getRenderableStage().removeChunkRenderables(toRemove);
             }
-            if(neededChunkReaders != null){
-                for(ChunkCoord chunkCoord : neededChunks){
-                    ChunkReader chunk = neededChunkReaders.get(chunkCoord);
-                    if(chunk == null) {
-                        continue;
-                    }
-                    if(chunk.needsRedraw()){
-                        chunk.clearNeedsRedraw();
-                    }
-                    ChunkReader xMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x - 1, chunkCoord.z));
-                    ChunkReader xPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x + 1, chunkCoord.z));
-                    ChunkReader zMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z - 1));
-                    ChunkReader zPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z + 1));
-                    ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
-                    loadedChunks.put(chunkCoord, renderable);
-                    renderer.getRenderableStage().addChunkRenderable(renderable);
-                    if (!keepRunning) {
-                        break; //no need to finish this if we're shutting down
-                    }
+            if(neededChunkReaders != null && !neededChunks.isEmpty()) {
+                ChunkCoord chunkCoord = neededChunks.stream().sorted(
+                    (a, b) -> (int)(a.distanceSquaredFrom(cameraCoord.x, cameraCoord.z) - b.distanceSquaredFrom(cameraCoord.x, cameraCoord.z))
+                ).collect(Collectors.toList()).get(0);
+                ChunkReader chunk = neededChunkReaders.get(chunkCoord);
+                if(chunk == null) {
+                    continue;
                 }
+                if(chunk.needsRedraw()){
+                    chunk.clearNeedsRedraw();
+                }
+                ChunkReader xMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x - 1, chunkCoord.z));
+                ChunkReader xPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x + 1, chunkCoord.z));
+                ChunkReader zMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z - 1));
+                ChunkReader zPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z + 1));
+                ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
+                loadedChunks.put(chunkCoord, renderable);
+                renderer.getRenderableStage().addChunkRenderable(renderable);
+                if (!keepRunning) {
+                    break; //no need to finish this if we're shutting down
+                }
+            }
+            if (neededChunkReaders == null || neededChunkReaders.size() <= 1) {
+                //read thread if no new chunks are needed right now
+                restThread();
             }
         }
     }

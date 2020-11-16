@@ -101,4 +101,8 @@ public class ChunkCoord {
         return baseAndAdjCoords;
     }
     
+    public int distanceSquaredFrom(int xPos, int zPos) {
+        return (xPos - x) * (xPos - x) + (zPos - z) * (zPos - z);
+    }
+    
 }
