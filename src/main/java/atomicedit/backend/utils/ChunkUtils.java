@@ -17,6 +17,7 @@ import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ChunkUtils {
      * @param smallestPoint
      * @throws MalformedNbtTagException 
      */
-    public static void writeBlocksIntoChunks(Collection<ChunkController> chunkControllers, BlockProvider blockProvider, BlockCoord smallestPoint) throws MalformedNbtTagException{
+    public static void writeBlocksIntoChunks(Collection<ChunkController> chunkControllers, BlockProvider blockProvider, BlockCoord smallestPoint) throws MalformedNbtTagException {
         Volume volume = blockProvider.getVolume();
         Box enclosingBox = volume.getEnclosingBox();
         BlockCoord largestPoint = new BlockCoord(
@@ -101,23 +102,30 @@ public class ChunkUtils {
             int yChunkLen,
             int zChunkLen
     ) throws MalformedNbtTagException {
+        //in some cases (seemingly when a volume borders a chunk section border) this array is created too large, idk why, this doesn't cause any issues though
         ChunkSectionBlocks[] chunkSectionBlocks = new ChunkSectionBlocks[xChunkLen * yChunkLen * zChunkLen];//y, z, x order
         for(ChunkController chunkController : controllers){
             ChunkCoord chunkCoord = chunkController.getChunkCoord();
+            if (chunkCoord.x < smallestChunk.x || chunkCoord.x > largestChunk.x || chunkCoord.z < smallestChunk.z || chunkCoord.z > largestChunk.z) {
+                Logger.warning("Extra chunk controller aquired for operation: " + chunkCoord);
+                continue;
+            }
             int chunkX = chunkCoord.x - smallestChunk.x;
             int chunkZ = chunkCoord.z - smallestChunk.z;
             int sectionStart = Math.max(smallestChunk.y, 0); //inclusive
             int sectionEnd = Math.min(largestChunk.y + 1, chunkController.chunkHeightInSections()); //exclusive
             for(int sectionIndex = sectionStart; sectionIndex < sectionEnd ; sectionIndex++){
                 int chunkY = sectionIndex - smallestChunk.y;
+                Logger.info("Adding section: " + chunkX + " " + chunkY + " " + chunkZ + " out of " + chunkSectionBlocks.length);
                 chunkSectionBlocks[GeneralUtils.getIndexYZX(chunkX, chunkY, chunkZ, xChunkLen, zChunkLen)] = 
                     new ChunkSectionBlocks(chunkController, chunkController.getBlocks(sectionIndex), sectionIndex);
             }
         }
+        Logger.info("Chunk sections blocks: " + Arrays.deepToString(chunkSectionBlocks));
         return chunkSectionBlocks;
     }
     
-    private static class ChunkSectionBlocks{
+    private static class ChunkSectionBlocks {
         public final int sectionIndex;
         public final short[] blocks;
         public final ChunkController controller;
@@ -126,6 +134,15 @@ public class ChunkUtils {
             this.blocks = blocks;
             this.controller = controller;
             this.sectionIndex = sectionIndex;
+        }
+        
+        @Override
+        public String toString() {
+            try {
+                return "{x=" + controller.getChunkCoord().x + ", y=" + sectionIndex + ", z=" + controller.getChunkCoord().z + "}";
+            } catch (Exception e) {
+                return "Exception in ChunkSectionBlocks.toString()";
+            }
         }
         
     }

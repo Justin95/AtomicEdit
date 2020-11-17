@@ -70,16 +70,16 @@ public abstract class ChunkController implements ChunkReader {
         this.chunk.setNeedsRedraw(true);
     }
     
-    public abstract void declareChunkSectionCacheChanged();
-    
     public void setNeedsRedraw() {
         this.chunk.setNeedsRedraw(true);
     }
     
+    @Override
     public boolean needsRedraw(){
         return this.chunk.needsRedraw();
     }
     
+    @Override
     public boolean needsSaving(){
         return this.chunk.needsSaving();
     }
@@ -92,6 +92,7 @@ public abstract class ChunkController implements ChunkReader {
         this.chunk.setNeedsLightingCalc(false);
     }
     
+    @Override
     public void clearNeedsRedraw(){
         this.chunk.setNeedsRedraw(false);
     }

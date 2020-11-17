@@ -7,7 +7,7 @@ import atomicedit.backend.nbt.MalformedNbtTagException;
  *
  * @author Justin Bonner
  */
-class ChunkUtils {
+class ChunkReaderUtils {
     
     
     /**
