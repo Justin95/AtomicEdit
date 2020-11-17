@@ -3,7 +3,7 @@ A Minecraft level editor
 
 designed for Minecraft 1.13+
 
-currently in Alpha (Actual proper software alpha, none of this "a game being 'in alpha' for 5 years when its already done" nonsense)
+currently in Beta (Most features are implemented and all major known bugs are squashed)
 
 ![alt_text](https://i.imgur.com/hhXtmLk.png)
 Nov 2020 - Added Block NBT editing
