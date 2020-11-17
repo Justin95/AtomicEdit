@@ -34,6 +34,9 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     protected ChunkCoord coord;
     protected NbtCompoundTag chunkNbt;
     protected ChunkSection[] chunkSectionCache;
+    /**
+     * True if the cache contains changes that have not yet been written to chunk NBT.
+     */
     protected boolean chunkSectionCacheIsDirty;
     
     public BaseChunkControllerV1(Chunk chunk) throws MalformedNbtTagException {
@@ -81,7 +84,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public BlockState getBlockAt(BlockCoord coord) throws MalformedNbtTagException{
-        if(this.chunkSectionCacheIsDirty || chunkSectionCache[coord.getSubChunkIndex()] == null){
+        if (chunkSectionCache[coord.getSubChunkIndex()] == null){
             readChunkSectionIntoCache(coord.getSubChunkIndex());
         }
         short[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
@@ -92,7 +95,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public void setBlockAt(BlockCoord coord, BlockState block) throws MalformedNbtTagException{
-        if(this.chunkSectionCacheIsDirty || chunkSectionCache[coord.getSubChunkIndex()] == null){
+        if(chunkSectionCache[coord.getSubChunkIndex()] == null){
             readChunkSectionIntoCache(coord.getSubChunkIndex());
         }
         short[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
@@ -106,7 +109,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public ChunkSection getChunkSection(int subChunkIndex) throws MalformedNbtTagException{
-        if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
+        if(chunkSectionCache[subChunkIndex] == null){
             readChunkSectionIntoCache(subChunkIndex);
         }
         return this.chunkSectionCache[subChunkIndex];
@@ -122,7 +125,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         if(subChunkIndex >= this.chunkHeightInSections()){
             throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
         }
-        if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
+        if(chunkSectionCache[subChunkIndex] == null) {
             readChunkSectionIntoCache(subChunkIndex);
         }
         if(blocks.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION){
@@ -147,7 +150,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         if(subChunkIndex >= this.chunkHeightInSections()){
             throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
         }
-        if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
+        if(chunkSectionCache[subChunkIndex] == null){
             readChunkSectionIntoCache(subChunkIndex);
         }
         if(blockLight.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2){
@@ -173,7 +176,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         if(subChunkIndex >= this.chunkHeightInSections()){
             throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
         }
-        if(this.chunkSectionCacheIsDirty || chunkSectionCache[subChunkIndex] == null){
+        if(chunkSectionCache[subChunkIndex] == null){
             readChunkSectionIntoCache(subChunkIndex);
         }
         if(blockLight.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2){
@@ -425,9 +428,9 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public void setChunkNbtTag(NbtCompoundTag tag) throws MalformedNbtTagException{
+    public void setChunkNbtTag(NbtCompoundTag tag) throws MalformedNbtTagException {
+        eraseChunkCache(); //the backing data is being overwritten, it should have been flushed prior anyway
         NbtCompoundTag chunkTag = NbtTypes.getAsCompoundTag(tag);
-        this.chunkSectionCacheIsDirty = true; //it might have been changed, could go through and check if it actually was
         this.chunk.setChunkTag(chunkTag);
         this.chunkNbt = chunkTag;
         declareNbtChanged();
@@ -435,6 +438,13 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     private void declareCacheIsDirty(){
         this.chunkSectionCacheIsDirty = true;
+    }
+    
+    private void eraseChunkCache() {
+        for (int i = 0; i < this.chunkSectionCache.length; i++) {
+            chunkSectionCache[i] = null;
+        }
+        this.chunkSectionCacheIsDirty = false;
     }
     
     @Override
@@ -457,14 +467,6 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
             chunkSectionCache[i].setDirty(false);
         }
         chunkSectionCacheIsDirty = false;
-    }
-    
-    @Override
-    public void declareChunkSectionCacheChanged() {
-        this.chunkSectionCacheIsDirty = true;
-        for (ChunkSection section : this.chunkSectionCache) {
-            section.setDirty(true);
-        }
     }
     
     protected int[] getBiomes() throws MalformedNbtTagException {

@@ -160,10 +160,10 @@ public class LightingUtil {
             boolean needsLightingCalc = chunkController.needsLightingCalc();
             int numSections = chunkController.chunkHeightInSections();
             for (int sectionIndex = numSections - 1; sectionIndex >= 0; sectionIndex--) {
-                ChunkSection section = chunkController.getChunkSection(sectionIndex);
-                short[] blocks = section.getBlockIds();
-                byte[] blockLightData = section.getBlockLightValues();
-                byte[] skyLightData = section.getSkyLightValues();
+                ChunkSectionCoord sectionCoord = new ChunkSectionCoord(chunkCoord.x, sectionIndex, chunkCoord.z);
+                short[] blocks = chunkController.getBlocks(sectionIndex);
+                byte[] blockLightData = chunkController.getBlockLighting(sectionIndex);
+                byte[] skyLightData = chunkController.getSkyLighting(sectionIndex);
                 //clear all existing lighting data in chunks being relit
                 if (needsLightingCalc) {
                     Arrays.fill(blockLightData, (byte)0);
@@ -174,7 +174,7 @@ public class LightingUtil {
                     lightingBehaviors[index] = blockIdToLightBehavior[blocks[index]];
                 }
                 LightingSection lightSection = new LightingSection(lightingBehaviors, blockLightData, skyLightData, needsLightingCalc);
-                lightSections.put(section.coord, new Tuple<>(section.coord, lightSection));
+                lightSections.put(sectionCoord, new Tuple<>(sectionCoord, lightSection));
             }
         }
         return new LightingArea(lightSections);
