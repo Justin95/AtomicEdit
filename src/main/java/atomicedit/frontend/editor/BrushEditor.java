@@ -76,8 +76,8 @@ public class BrushEditor implements Editor {
     private synchronized void doOperationTimed() {
         long currTime = System.currentTimeMillis();
         if (currTime - brushLastUseTime >= BRUSH_USE_DELAY) {
-            brushLastUseTime = currTime;
             doOperation(gui.getOperationType(), gui.getOperationParameters());
+            brushLastUseTime = System.currentTimeMillis(); //update last use time as the finish time of the last op to avoid lag issues
         }
     }
     
