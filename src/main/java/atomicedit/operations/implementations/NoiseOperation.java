@@ -44,26 +44,40 @@ public class NoiseOperation extends Operation {
     /**
      * Affects the range into the volume that the noise can cause to be ignored.
      */
-    private static final FloatParameterDescriptor NOISE_AMP_DESC = new FloatParameterDescriptor("Noise Amplifier", 5f, 0f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_1_AMP_DESC = new FloatParameterDescriptor("Noise 1 Amplifier", 5f, 0f, Float.MAX_VALUE);
     /**
      * Affects the horizontal scaling of the noise. This value cannot be zero.
      */
-    private static final FloatParameterDescriptor NOISE_HOIZ_DESC = new FloatParameterDescriptor("Noise Horizontal Modifier", 4f, .1f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_1_HOIZ_DESC = new FloatParameterDescriptor("Noise 1 Strech", 4f, .1f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_2_AMP_DESC = new FloatParameterDescriptor("Noise 2 Amplifier", 0f, 0f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_2_HOIZ_DESC = new FloatParameterDescriptor("Noise 2 Strech", 3f, .1f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_3_AMP_DESC = new FloatParameterDescriptor("Noise 3 Amplifier", 0f, 0f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_3_HOIZ_DESC = new FloatParameterDescriptor("Noise 3 Strech", 2f, .1f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_4_AMP_DESC = new FloatParameterDescriptor("Noise 4 Amplifier", 0f, 0f, Float.MAX_VALUE);
+    private static final FloatParameterDescriptor NOISE_4_HOIZ_DESC = new FloatParameterDescriptor("Noise 4 Strech", 1f, .1f, Float.MAX_VALUE);
     //TODO add horizontal noise scales
     public static final List<ParameterDescriptor> PARAM_DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(new ParameterDescriptor[]{
             TO_SET_BLOCKTYPE_DESC,
             NOISE_SEED_DESC,
-            NOISE_AMP_DESC,
-            NOISE_HOIZ_DESC,
+            NOISE_1_AMP_DESC,
+            NOISE_1_HOIZ_DESC,
+            NOISE_2_AMP_DESC,
+            NOISE_2_HOIZ_DESC,
+            NOISE_3_AMP_DESC,
+            NOISE_3_HOIZ_DESC,
+            NOISE_4_AMP_DESC,
+            NOISE_4_HOIZ_DESC,
         }
     ));
+    
+    private static final int NUM_OCTAVES = 4;
     
     private final WorldVolume operationVolume; //volume operated on
     private Schematic schematicBackup; //backup for undos
     private final BlockState blockState; //block type to fill
     private final int seed; //noise seed
-    private final double amplitude;
-    private final double horizontalScale;
+    private final double[] amplitudes;
+    private final double[] horizontalScales;
     
     public NoiseOperation(WorldVolume volume, Parameters parameters){
         this.operationVolume = volume;
@@ -72,8 +86,18 @@ public class NoiseOperation extends Operation {
             throw new RuntimeException("Cannot do a set blocks operation with no block to set to");
         }
         this.seed = parameters.getParamAsInteger(NOISE_SEED_DESC);
-        this.amplitude = parameters.getParamAsFloat(NOISE_AMP_DESC);
-        this.horizontalScale = parameters.getParamAsFloat(NOISE_HOIZ_DESC);
+        this.amplitudes = new double[] {
+            parameters.getParamAsFloat(NOISE_1_AMP_DESC),
+            parameters.getParamAsFloat(NOISE_2_AMP_DESC),
+            parameters.getParamAsFloat(NOISE_3_AMP_DESC),
+            parameters.getParamAsFloat(NOISE_4_AMP_DESC)
+        };
+        this.horizontalScales = new double[]{
+            parameters.getParamAsFloat(NOISE_1_HOIZ_DESC),
+            parameters.getParamAsFloat(NOISE_2_HOIZ_DESC),
+            parameters.getParamAsFloat(NOISE_3_HOIZ_DESC),
+            parameters.getParamAsFloat(NOISE_4_HOIZ_DESC)
+        };
     }
     
     public static NoiseOperation getInstance(WorldVolume volume, Parameters parameters) {
@@ -113,13 +137,16 @@ public class NoiseOperation extends Operation {
         operationVolume.doForXyz((x, y, z) -> {
             int index = GeneralUtils.getIndexYZX(x, y, z, box.getXLength(), box.getZLength());
             //also consider Noise.gradientCoherentNoise3D
-            double noiseValue = amplitude * Noise.valueCoherentNoise3D(
-                (x + smallestPoint.x) / horizontalScale,
-                (y + smallestPoint.y) / horizontalScale,
-                (z + smallestPoint.z) / horizontalScale,
-                seed,
-                NoiseQuality.STANDARD
-            );
+            double noiseValue = 0;
+            for (int i = 0; i < NUM_OCTAVES; i++) {
+                noiseValue += amplitudes[i] * Noise.valueCoherentNoise3D(
+                    (x + smallestPoint.x) / horizontalScales[i],
+                    (y + smallestPoint.y) / horizontalScales[i],
+                    (z + smallestPoint.z) / horizontalScales[i],
+                    seed,
+                    NoiseQuality.STANDARD
+                );
+            }
             if (noiseValue < blockDistances[index]) {
                 includedSet.set(index, true);
             }

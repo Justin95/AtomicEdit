@@ -116,12 +116,10 @@ public class ChunkUtils {
             int sectionEnd = Math.min(largestChunk.y + 1, chunkController.chunkHeightInSections()); //exclusive
             for(int sectionIndex = sectionStart; sectionIndex < sectionEnd ; sectionIndex++){
                 int chunkY = sectionIndex - smallestChunk.y;
-                Logger.info("Adding section: " + chunkX + " " + chunkY + " " + chunkZ + " out of " + chunkSectionBlocks.length);
                 chunkSectionBlocks[GeneralUtils.getIndexYZX(chunkX, chunkY, chunkZ, xChunkLen, zChunkLen)] = 
                     new ChunkSectionBlocks(chunkController, chunkController.getBlocks(sectionIndex), sectionIndex);
             }
         }
-        Logger.info("Chunk sections blocks: " + Arrays.deepToString(chunkSectionBlocks));
         return chunkSectionBlocks;
     }
     
