@@ -3,13 +3,22 @@ A Minecraft level editor
 
 designed for Minecraft 1.13+
 
-currently in Alpha (Actual proper software alpha, none of this "a game being 'in alpha' for 5 years when its already done" nonsense)
+currently in Beta (Most features are implemented and all major known bugs are squashed)
+
+![alt_text](https://i.imgur.com/hhXtmLk.png)
+Nov 2020 - Added Block NBT editing
+
+![alt_text](https://i.imgur.com/yd3d8K1.png)
+Nov 2020 - Added brushes and noise operation
 
 ![alt_text](https://i.imgur.com/U3mJV0I.png)
 Nov 1, 2020 - Added mutli-dimension support
 
 ![alt_text](https://i.imgur.com/hhjUDZ9.png)
 Oct 30, 2020 - Added lighting, viewable entities, and tile entities
+
+
+Early Development Images:
 
 ![alt_text](https://i.imgur.com/neMGrCN.png)
 Mar 25, 2019
