@@ -33,7 +33,7 @@ public abstract class NbtTag {
         return input.readUTF();
     }
     
-    public static void writeTag(DataOutputStream writer, NbtTag tag) throws IOException{
+    public static void writeTag(DataOutputStream writer, NbtTag tag) throws IOException {
         //Logger.info("Writing nbt tag:\n" + tag.toString()); //this is a great log message for debugging
         writer.writeByte(tag.getType().ordinal());
         writer.writeUTF(tag.name);

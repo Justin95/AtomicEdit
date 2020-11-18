@@ -118,9 +118,12 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
             NbtTag chunkNbt = NbtInterpreter.interpretNbt(rawChunkData);
             //this is a good place to print chunk data to look at chunk formats
             return interpretChunk(chunkNbt);
-        }catch(MalformedNbtTagException e){
+        } catch(MalformedNbtTagException e) {
             Logger.error("Malformed Nbt in chunk");
             return null;
+        } catch (RuntimeException e) {
+            Logger.error("Exception parsing chunk NBT.", e);
+            throw e;
         }
     }
     
