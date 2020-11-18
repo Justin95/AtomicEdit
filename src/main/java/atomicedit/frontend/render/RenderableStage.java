@@ -2,6 +2,7 @@
 package atomicedit.frontend.render;
 
 import atomicedit.backend.ChunkSectionCoord;
+import atomicedit.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +46,11 @@ public class RenderableStage {
             return;
         }
         synchronized(QUEUE_LOCK){
-            this.chunkRenderablesToRemove.addAll(toRemove);
+            for (ChunkRenderable renderable : toRemove) {
+                if (renderable != null) {
+                    this.chunkRenderablesToRemove.add(renderable);
+                }
+            }
         }
     }
     
@@ -54,7 +59,11 @@ public class RenderableStage {
             return;
         }
         synchronized(QUEUE_LOCK){
-            this.chunkRenderablesToAdd.addAll(toAdd);
+            for (ChunkRenderable renderable : toAdd) {
+                if (renderable != null) {
+                    this.chunkRenderablesToAdd.add(renderable);
+                }
+            }
         }
     }
     
@@ -75,6 +84,9 @@ public class RenderableStage {
         }
         synchronized(QUEUE_LOCK){
             for (Renderable renderable : toAdd) {
+                if (renderable == null) {
+                    continue;
+                }
                 this.renderObjectsToAdd.addAll(renderable.getRenderObjects());
             }
         }
@@ -86,6 +98,9 @@ public class RenderableStage {
         }
         synchronized(this){
             for(Renderable renderable : toRemove){
+                if (renderable == null) {
+                    continue;
+                }
                 this.renderObjectsToRemove.addAll(renderable.getRenderObjects());
             }
         }
