@@ -3,6 +3,8 @@ apply plugin: 'application'
 
 mainClassName = "Main"
 
+def atomicEditVersion = "0.1.0"
+
 def lwjglVersion = "3.2.3" //also dependency of legui
 def leguiVersion = "3.2.1"
 
@@ -46,6 +48,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+/*
 def getVersion() {
     
     def gitTagStdOut = new ByteArrayOutputStream()
@@ -55,13 +58,11 @@ def getVersion() {
     }
     return gitTagStdOut.toString().split("\n")[0].trim()
 }
-
-def version = getVersion()
+*/
 
 jar {
     //destinationDirectory = buildDir
-    version = getVersion()
-    baseName = "AtomicEdit_" + "$version"
+    baseName = "AtomicEdit_" + "$atomicEditVersion"
     manifest{
         attributes "Main-Class": "Main"
     }
@@ -87,7 +88,7 @@ processResources {
     }
     filesMatching('version.txt', { file ->
         file.filter(replace([
-            "atomicedit_version" : version
+            "atomicedit_version" : atomicEditVersion
         ]))
     })
 }

@@ -109,6 +109,7 @@ public class ChunkLoadingThread extends Thread {
                 ).collect(Collectors.toList()).get(0);
                 ChunkReader chunk = neededChunkReaders.get(chunkCoord);
                 if(chunk == null) {
+                    loadedChunks.put(chunkCoord, null); //if we cant load it we cant draw it
                     continue;
                 }
                 if(chunk.needsRedraw()){
