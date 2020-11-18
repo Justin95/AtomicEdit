@@ -255,7 +255,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
             NbtCompoundTag blockStateTag = new NbtCompoundTag("", blockStateNameTag, blockStatePropertiesTag);
             blockPalletTags.add(blockStateTag);
         }
-        sectionTag.putTag(new NbtListTag("Palette", blockPalletTags));
+        sectionTag.putTag(new NbtListTag("Palette", blockPalletTags, NbtTypes.TAG_COMPOUND));
         
         int[] blockValues = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
         for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
@@ -371,7 +371,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     @Override
     public void addEntity(Entity entity) throws MalformedNbtTagException {
         if(!getLevel().contains("Entities")){
-            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>()));
+            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
         entityNbts.add(entity.getNbtData().copy());
@@ -381,7 +381,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     @Override
     public void removeEntity(Entity entity) throws MalformedNbtTagException {
         if(!getLevel().contains("Entities")){
-            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>()));
+            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
         entityNbts.remove(entity.getNbtData());
@@ -404,7 +404,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     @Override
     public void addBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException {
         if(!getLevel().contains("TileEntities")){
-            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>()));
+            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
         List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         blockEntityNbts.add(blockEntity.getNbtData().copy());
@@ -414,7 +414,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     @Override
     public void removeBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException {
         if(!getLevel().contains("TileEntities")){
-            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>()));
+            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
         List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         blockEntityNbts.remove(blockEntity.getNbtData());

@@ -63,7 +63,7 @@ public enum NbtTypes {
     TAG_LIST(
         "List Tag",
         (DataInputStream input, boolean readName) -> new NbtListTag(input, readName),
-        (String name) -> new NbtListTag(name, new ArrayList<>())
+        (String name) -> new NbtListTag(name, new ArrayList<>(), TAG_END)
     ),
     TAG_COMPOUND(
         "Compound Tag",

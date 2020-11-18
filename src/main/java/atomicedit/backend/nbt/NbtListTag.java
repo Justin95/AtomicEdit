@@ -15,7 +15,7 @@ import java.util.List;
 public class NbtListTag extends NbtTag {
     
     private final List<NbtTag> data;
-    private final byte tagId;
+    private byte tagId;
     
     public NbtListTag(DataInputStream input, boolean readName) throws IOException{
         super(NbtTypes.TAG_LIST, readName ? NbtTag.readUtfString(input) : "");
@@ -28,26 +28,39 @@ public class NbtListTag extends NbtTag {
         this.data = temp; //Collections.unmodifiableList(temp); //probably dont make this immutable
     }
     
-    public NbtListTag(String name, List<NbtTag> data){
+    public NbtListTag(String name, List<NbtTag> data, NbtTypes listType){
         super(NbtTypes.TAG_LIST, name);
-        if(data.isEmpty()){
-            this.data = data;
-            this.tagId = 1; //TODO figure out of this should be 0 or if that gets read as a TAG_END
-        }else{
-            NbtTypes type = data.get(0).getType();
-            for(NbtTag tag : data){ //need to be certain all the nbt tags are the same type
-                if(tag.getType() != type){ //enums can be compared with ==
-                    Logger.error("Trying to create malformed Nbt List Tag");
-                    throw new IllegalArgumentException("Nbt tags in Nbt List Tag must all be of the same type");
-                }
+        this.tagId = (byte)listType.ordinal();
+        for(NbtTag tag : data){ //need to be certain all the nbt tags are the same type
+            if(tag.getType() != listType){ //enums can be compared with ==
+                Logger.error("Trying to create malformed Nbt List Tag");
+                throw new IllegalArgumentException("Nbt tags in Nbt List Tag must all be of the same type");
             }
-            this.data = data;
-            this.tagId = (byte)type.ordinal();
         }
+        this.data = data;
+    }
+    
+    /**
+     * List tags, when empty, can have a type of TAG_END. If something is added to the list then
+     * the type will need to be updated or the tag id and data will not match and this list tag
+     * will be corrupt. Update the tag type to reflect the contents of the list.
+     */
+    private void verifyType() {
+        if (data.isEmpty()) {
+            return;
+        }
+        NbtTypes listType = data.get(0).getType();
+        for(NbtTag tag : data){ //need to be certain all the nbt tags are the same type
+            if(tag.getType() != listType){ //enums can be compared with ==
+                Logger.error("Nbt tags in Nbt List Tag do not have matching types: " + listType + " and " + tag.getType() + ". Tag may be corrupt.");
+            }
+        }
+        this.tagId = (byte)listType.ordinal();
     }
     
     @Override
-    protected void write(DataOutputStream output) throws IOException{
+    protected void write(DataOutputStream output) throws IOException {
+        verifyType();
         output.writeByte(tagId);
         output.writeInt(data.size());
         for(NbtTag tag : data){
@@ -55,7 +68,8 @@ public class NbtListTag extends NbtTag {
         }
     }
     
-    public List<NbtTag> getPayload(){
+    public List<NbtTag> getPayload() {
+        verifyType();
         return this.data;
     }
     
@@ -73,12 +87,13 @@ public class NbtListTag extends NbtTag {
         for (NbtTag tag : data) {
             dataCopy.add(tag.copy());
         }
-        return new NbtListTag(name, dataCopy);
+        return new NbtListTag(name, dataCopy, NbtTypes.getTypeFromId(tagId));
     }
     
     //time savers
     
     public List<NbtByteArrayTag> getByteArrayTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_BYTE_ARRAY || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtByteArrayTag>)(List<?>) data; //we can use a (List<?>) cast because we expressly check types here and in the constructor
         }
@@ -86,6 +101,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtByteTag> getByteTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_BYTE || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtByteTag>)(List<?>) data;
         }
@@ -93,6 +109,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtCompoundTag> getCompoundTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_COMPOUND || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtCompoundTag>)(List<?>) data;
         }
@@ -100,6 +117,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtDoubleTag> getDoubleTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_DOUBLE || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtDoubleTag>)(List<?>) data;
         }
@@ -107,6 +125,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtFloatTag> getFloatTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_FLOAT || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtFloatTag>)(List<?>) data;
         }
@@ -114,6 +133,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtIntArrayTag> getIntArrayTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_INT_ARRAY || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtIntArrayTag>)(List<?>) data;
         }
@@ -121,6 +141,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtIntTag> getIntTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_INT || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtIntTag>)(List<?>) data;
         }
@@ -128,6 +149,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtListTag> getListTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_LIST || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtListTag>)(List<?>) data;
         }
@@ -135,6 +157,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtLongTag> getLongTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_LONG || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtLongTag>)(List<?>) data;
         }
@@ -142,6 +165,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtLongArrayTag> getLongArrayTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_LONG_ARRAY || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtLongArrayTag>)(List<?>) data;
         }
@@ -149,6 +173,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtShortTag> getShortTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_SHORT || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtShortTag>)(List<?>) data;
         }
@@ -156,6 +181,7 @@ public class NbtListTag extends NbtTag {
     }
     
     public List<NbtStringTag> getStringTags() throws MalformedNbtTagException{
+        verifyType();
         if(getListType() == NbtTypes.TAG_STRING || (getListType() == NbtTypes.TAG_END && data.isEmpty())){
             return (List<NbtStringTag>)(List<?>) data;
         }

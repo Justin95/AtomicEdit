@@ -5,6 +5,7 @@ import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtDoubleTag;
 import atomicedit.backend.nbt.NbtListTag;
 import atomicedit.backend.nbt.NbtTag;
+import atomicedit.backend.nbt.NbtTypes;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class EntityUtils {
             coordList.add(new NbtDoubleTag("", x));
             coordList.add(new NbtDoubleTag("", y));
             coordList.add(new NbtDoubleTag("", z));
-            NbtListTag pos = new NbtListTag("Pos", coordList);
+            NbtListTag pos = new NbtListTag("Pos", coordList, NbtTypes.TAG_DOUBLE);
             entity.getNbtData().putTag(pos);
             updated.add(entity);
         }
@@ -53,7 +54,7 @@ public class EntityUtils {
             coordList.add(new NbtDoubleTag("", x));
             coordList.add(new NbtDoubleTag("", y));
             coordList.add(new NbtDoubleTag("", z));
-            NbtListTag pos = new NbtListTag("Pos", coordList);
+            NbtListTag pos = new NbtListTag("Pos", coordList, NbtTypes.TAG_DOUBLE);
             entity.getNbtData().putTag(pos);
             updated.add(entity);
         }

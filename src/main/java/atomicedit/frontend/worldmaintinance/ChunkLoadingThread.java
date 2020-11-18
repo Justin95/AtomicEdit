@@ -12,6 +12,7 @@ import atomicedit.frontend.render.ChunkRenderable;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -93,43 +94,44 @@ public class ChunkLoadingThread extends Thread {
                     }
                 }
             }
-            Set<ChunkCoord> neededAndAdjacentChunks = expandToAdjacentChunks(neededChunks);
+            if(!toRemove.isEmpty()){
+                renderer.getRenderableStage().removeChunkRenderables(toRemove);
+            }
+            if (neededChunks.isEmpty()) {
+                restThread();
+                continue;
+            }
+            //only load one chunk per loop
+            ChunkCoord chunkCoord = neededChunks.stream().sorted(
+                    (a, b) -> (int)(a.distanceSquaredFrom(cameraCoord.x, cameraCoord.z) - b.distanceSquaredFrom(cameraCoord.x, cameraCoord.z))
+                ).collect(Collectors.toList()).get(0);
+            Set<ChunkCoord> neededAndAdjacentChunks = expandToAdjacentChunks(Collections.singleton(chunkCoord));
             Map<ChunkCoord, ChunkReader> neededChunkReaders = null;
             try{
                 neededChunkReaders = backendController.getReadOnlyChunks(neededAndAdjacentChunks, this.drawnDimension);
             }catch(Exception e){
                 Logger.error("Exception while trying to load chunks for drawing", e);
             }
-            if(!toRemove.isEmpty()){
-                renderer.getRenderableStage().removeChunkRenderables(toRemove);
-            }
-            if(neededChunkReaders != null && !neededChunks.isEmpty()) {
-                ChunkCoord chunkCoord = neededChunks.stream().sorted(
-                    (a, b) -> (int)(a.distanceSquaredFrom(cameraCoord.x, cameraCoord.z) - b.distanceSquaredFrom(cameraCoord.x, cameraCoord.z))
-                ).collect(Collectors.toList()).get(0);
-                ChunkReader chunk = neededChunkReaders.get(chunkCoord);
-                if(chunk == null) {
-                    loadedChunks.put(chunkCoord, null); //if we cant load it we cant draw it
-                    continue;
-                }
-                if(chunk.needsRedraw()){
-                    chunk.clearNeedsRedraw();
-                }
-                ChunkReader xMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x - 1, chunkCoord.z));
-                ChunkReader xPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x + 1, chunkCoord.z));
-                ChunkReader zMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z - 1));
-                ChunkReader zPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z + 1));
-                ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
-                loadedChunks.put(chunkCoord, renderable);
-                renderer.getRenderableStage().addChunkRenderable(renderable);
-                if (!keepRunning) {
-                    break; //no need to finish this if we're shutting down
-                }
-            }
-            if (neededChunkReaders == null || neededChunkReaders.size() <= 1) {
-                //read thread if no new chunks are needed right now
+            if (neededChunkReaders == null) {
                 restThread();
+                continue;
             }
+            
+            ChunkReader chunk = neededChunkReaders.get(chunkCoord);
+            if(chunk == null) {
+                loadedChunks.put(chunkCoord, null); //if we cant load it we cant draw it
+                continue;
+            }
+            if(chunk.needsRedraw()){
+                chunk.clearNeedsRedraw();
+            }
+            ChunkReader xMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x - 1, chunkCoord.z));
+            ChunkReader xPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x + 1, chunkCoord.z));
+            ChunkReader zMinus = neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z - 1));
+            ChunkReader zPlus =  neededChunkReaders.get(ChunkCoord.getInstance(chunkCoord.x, chunkCoord.z + 1));
+            ChunkRenderable renderable = new ChunkRenderable(chunk, xMinus, xPlus, zMinus, zPlus);
+            loadedChunks.put(chunkCoord, renderable);
+            renderer.getRenderableStage().addChunkRenderable(renderable);
         }
     }
     
