@@ -12,17 +12,22 @@ public class BlockModel {
     
     private final List<ModelBox> modelBoxes;
     private final boolean isFullBlock;
+    private final boolean isOpaque;
     
     private BlockModel(List<ModelBox> modelBoxes){
         this.modelBoxes = modelBoxes;
         boolean fullBlock = false;
+        boolean opaque = false;
         for(ModelBox model : modelBoxes){
             if(model.isFullBlock()){
                 fullBlock = true;
-                break;
+            }
+            if (model.isOpaque()) {
+                opaque = true;
             }
         }
         this.isFullBlock = fullBlock;
+        this.isOpaque = opaque;
     }
     
     public static BlockModel getInstance(BlockModelPrecursor precursor){
@@ -33,8 +38,12 @@ public class BlockModel {
         return new BlockModel(models);
     }
     
-    public boolean isFullBlock(){
+    public boolean isFullBlock() {
         return this.isFullBlock;
+    }
+    
+    public boolean isOpaque() {
+        return this.isOpaque;
     }
     
     public List<ModelBox> getBlockModels(){
