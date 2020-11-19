@@ -13,11 +13,13 @@ public class BlockStateModel {
     private final BlockModel blockModel;
     private final Vector3f rotation;
     private final boolean isFullBlock;
+    private final boolean isOpaque;
     
     public BlockStateModel(BlockModel blockModel, Vector3f rotation){
         this.blockModel = blockModel;
         this.rotation = rotation;
         this.isFullBlock = blockModel.isFullBlock();
+        this.isOpaque = blockModel.isOpaque();
     }
     
     public BlockModel getBlockModel(){
@@ -30,6 +32,10 @@ public class BlockStateModel {
     
     public boolean isFullBlock(){
         return this.isFullBlock;
+    }
+    
+    public boolean isOpaque() {
+        return this.isOpaque;
     }
     
 }

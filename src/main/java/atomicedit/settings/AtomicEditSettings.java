@@ -39,6 +39,12 @@ public enum AtomicEditSettings {
         SettingDataType.STRING,
         () -> "latest"
     ),
+    SHOW_HIDDEN_BLOCK_FACES(
+        "Show Hidden Block Faces",
+        "show_hidden_block_faces",
+        SettingDataType.BOOLEAN,
+        () -> false
+    ),
     ;
     
     public final String DISPLAY_NAME;

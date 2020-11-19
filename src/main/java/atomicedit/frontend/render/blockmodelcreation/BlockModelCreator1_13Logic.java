@@ -1,6 +1,7 @@
 
 package atomicedit.frontend.render.blockmodelcreation;
 
+import atomicedit.AtomicEdit;
 import atomicedit.backend.BlockState;
 import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.frontend.render.RenderObject;
@@ -8,6 +9,7 @@ import atomicedit.jarreading.blockmodels.ModelBox;
 import atomicedit.jarreading.blockmodels.ModelBox.ModelBoxFace;
 import atomicedit.jarreading.blockstates.BlockStateModel;
 import atomicedit.jarreading.blockstates.BlockStateModelLookup;
+import atomicedit.settings.AtomicEditSettings;
 import atomicedit.utils.FloatList;
 import atomicedit.utils.IntList;
 import atomicedit.utils.MathUtils;
@@ -28,9 +30,11 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
     private static final ModelBoxFace[] MODEL_FACES = ModelBoxFace.values();
     
     private final CreatorBuffer buffer;
+    private final boolean showHiddenFaces;
     
     private BlockModelCreator1_13Logic() {
         buffer = new CreatorBuffer();
+        this.showHiddenFaces = AtomicEdit.getSettings().getSettingValueAsBoolean(AtomicEditSettings.SHOW_HIDDEN_BLOCK_FACES);
     }
     
     public static BlockModelCreator1_13Logic getInstance(){
@@ -128,7 +132,7 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
      * Determines if a full block is completely surrounded by identical blocks.
      * @return 
      */
-    private static boolean isUnseeable(ChunkSectionPlus section, short blockId, int x, int y, int z){
+    private boolean isUnseeable(ChunkSectionPlus section, short blockId, int x, int y, int z){
         for(int k = 0; k < MODEL_FACES.length; k++){
             ModelBoxFace face = MODEL_FACES[k];
             if(!isFaceUnviewable(face.getAdjacentDirection(), section, blockId, x, y, z)){
@@ -138,8 +142,21 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
         return true;
     }
     
-    private static boolean isFaceUnviewable(Vector3ic adjDir, ChunkSectionPlus section, short blockId, int x, int y, int z){
-        return section.getBlockAt(x + adjDir.x(), y + adjDir.y(), z + adjDir.z()) == blockId; //check is adjacent block is the same
+    private boolean isFaceUnviewable(Vector3ic adjDir, ChunkSectionPlus section, short blockId, int x, int y, int z){
+        short adjBlockId = section.getBlockAt(x + adjDir.x(), y + adjDir.y(), z + adjDir.z());
+        return adjBlockId == blockId //check is adjacent block is the same
+            || (!showHiddenFaces && isFullSolidBlock(adjBlockId) && isFullSolidBlock(blockId)); 
+    }
+    
+    private boolean isFullSolidBlock(short blockId) {
+        BlockState blockState = GlobalBlockStateMap.getBlockType(blockId);
+        List<BlockStateModel> blockStateModels = BlockStateModelLookup.getBlockStateModel(blockState);
+        for (BlockStateModel model : blockStateModels) {
+            if (model.isFullBlock() && model.isOpaque()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static Vector3ic getAdjacent(ModelBox.ModelBoxFace face, Vector3f rotation){

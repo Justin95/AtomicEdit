@@ -40,16 +40,26 @@ public class ModelBox {
     private final Vector3f[] blockTintColorData;
     private final boolean[] existingFaces;
     private final boolean hasTranslucency;
+    private final boolean isOpaque;
     private final boolean useShade;
     private final Vector3f center;
     
-    private ModelBox(float[] posData, float[] texCoordData, Vector3f[] blockTintColors, boolean[] existingFaces, boolean hasTranslucency, boolean useShade){
+    private ModelBox(
+        float[] posData,
+        float[] texCoordData,
+        Vector3f[] blockTintColors,
+        boolean[] existingFaces,
+        boolean hasTranslucency,
+        boolean isOpaque,
+        boolean useShade
+    ){
         this.posData = posData;
         this.texCoordData = texCoordData;
         this.isFullBlock = checkFullBlock(posData);
         this.blockTintColorData = blockTintColors;
         this.existingFaces = existingFaces;
         this.hasTranslucency = hasTranslucency;
+        this.isOpaque = isOpaque;
         this.useShade = useShade;
         this.center = calcCenter();
     }
@@ -62,8 +72,9 @@ public class ModelBox {
         rotatePosData(posData, precursor.rotation, precursor.rotateAbout);
         setTextureCoords(texCoordData, precursor);
         boolean hasTranslucency = checkTranslucency(precursor);
+        boolean isOpaque = checkOpacity(precursor);
         Vector3f[] blockTintColors = createBlockTintColorData(precursor);
-        ModelBox box = new ModelBox(posData, texCoordData, blockTintColors, existingFaces, hasTranslucency, precursor.useShade);
+        ModelBox box = new ModelBox(posData, texCoordData, blockTintColors, existingFaces, hasTranslucency, isOpaque, precursor.useShade);
         if (instanceCache.containsKey(box)) {
             return instanceCache.get(box);
         }
@@ -122,6 +133,10 @@ public class ModelBox {
     
     public boolean hasTranslucency(){
         return this.hasTranslucency;
+    }
+    
+    public boolean isOpaque() {
+        return this.isOpaque;
     }
     
     public boolean getUseShade(){
@@ -224,6 +239,17 @@ public class ModelBox {
             }
         }
         return false;
+    }
+    
+    private static boolean checkOpacity(ModelBoxPrecursor precursor) {
+        for(ModelBoxFace face : ModelBoxFace.values()){
+            MinecraftTexture tex = TextureLoader.getMinecraftDefaultTexture();
+            int texIndex = tex.getIndexFromTextureName(precursor.faceToTexName.get(face));
+            if(!tex.isTextureOpaque(texIndex)){
+                return false;
+            }
+        }
+        return true;
     }
     
     private static boolean[] getExistingFaces(ModelBoxPrecursor precursor){

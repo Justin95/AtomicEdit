@@ -18,14 +18,15 @@ public class MinecraftTexture extends Texture{
     public static final String UNKNOWN_TEXTURE_NAME = "ATOMICEDIT_UNKNOWN_TEXTURE";
     
     private final Map<String, Integer> texNameToIndex;
-    private final boolean[] textureIndexIsTranslucent;
+    private boolean[] textureIndexIsTranslucent;
+    private boolean[] textureIndexIsOpaque;
     private final int textureSquareLength;
     
     public MinecraftTexture(Map<String, BufferedImage> namedTextures, BufferedImage defaultTexture){
         super(createSuperImage(namedTextures, defaultTexture));
         this.texNameToIndex = createNameToIndexMap(namedTextures);
         this.textureSquareLength = getSideLengthInTextures(namedTextures.size());
-        this.textureIndexIsTranslucent = calculateTranslucency(namedTextures, texNameToIndex);
+        calculateTranslucency(namedTextures, texNameToIndex);
     }
     
     
@@ -106,14 +107,23 @@ public class MinecraftTexture extends Texture{
         return this.textureIndexIsTranslucent[texIndex];
     }
     
-    private static boolean[] calculateTranslucency(Map<String, BufferedImage> namedTextures, Map<String, Integer> texNameToIndex){
-        boolean[] translucencies = new boolean[namedTextures.size() + 1];
+    public boolean isTextureOpaque(int texIndex) {
+        return this.textureIndexIsOpaque[texIndex];
+    }
+    
+    private void calculateTranslucency(Map<String, BufferedImage> namedTextures, Map<String, Integer> texNameToIndex){
+        boolean[] translucencies = new boolean[namedTextures.size() + 1]; //num textures + unknown tex
+        boolean[] opacities = new boolean[namedTextures.size() + 1];
         outer:
         for(String texName : namedTextures.keySet()){
             BufferedImage tex = namedTextures.get(texName);
+            boolean opaque = true;
             for(int x = 0; x < tex.getWidth(); x++){
                 for(int y = 0; y < tex.getHeight(); y++){
                     int alpha = ((tex.getRGB(x, y) >> 24) & 0xFF);
+                    if (alpha < 255) {
+                        opaque = false;
+                    }
                     if(alpha > 0 && alpha < 255){ //not completely opaque and not completely transparent
                         translucencies[texNameToIndex.get(texName)] = true;
                         Logger.debug("Translucent texture: " + texName);
@@ -121,8 +131,10 @@ public class MinecraftTexture extends Texture{
                     }
                 }
             }
+            opacities[texNameToIndex.get(texName)] = opaque;
         }
-        return translucencies;
+        this.textureIndexIsTranslucent = translucencies;
+        this.textureIndexIsOpaque = opacities;
     }
     
 }
