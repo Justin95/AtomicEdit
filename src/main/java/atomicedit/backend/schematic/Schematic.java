@@ -63,7 +63,7 @@ public class Schematic {
     ) throws Exception {
         Map<ChunkCoord, ChunkController> controllers = world.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
         short[] blocks = ChunkUtils.readBlocksFromChunks(controllers, volume);
-        Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunks(controllers, volume) : null;
+        Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunkControllers(controllers.values(), volume) : null;
         entities = EntityUtils.translateEntityCoordsToVolume(entities, volume);
         Collection<BlockEntity> blockEntities = includeBlockEntities ? ChunkUtils.readBlockEntitiesFromChunkControllers(controllers.values(), volume) : null;
         blockEntities = BlockEntityUtils.translateBlockEntityCoordsToVolume(blockEntities, volume);

@@ -273,9 +273,9 @@ public class ChunkUtils {
         return readBlocksFromChunks(controllers.values(), readVolume);
     }
     
-    public static Collection<Entity> readEntitiesFromChunks(Collection<ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+    public static List<Entity> readEntitiesFromChunkReaders(Collection<ChunkReader> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
         List<Entity> entities = new ArrayList<>();
-        for(ChunkController controller : controllers){
+        for(ChunkReader controller : controllers){
             for(Entity entity : controller.getEntities()){
                 EntityCoord coord = entity.getCoord();
                 if(readVolume.containsCoord((int)coord.x, (int)coord.y, (int)coord.z)){
@@ -287,11 +287,11 @@ public class ChunkUtils {
         return entities;
     }
     
-    public static Collection<Entity> readEntitiesFromChunks(Map<ChunkCoord, ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
-        return readEntitiesFromChunks(controllers.values(), readVolume);
+    public static List<Entity> readEntitiesFromChunkControllers(Collection<ChunkController> chunkReaders, WorldVolume readVolume) throws MalformedNbtTagException{
+        return readEntitiesFromChunkReaders((Collection<ChunkReader>)(Collection)chunkReaders, readVolume);
     }
     
-    public static Collection<BlockEntity> readBlockEntitiesFromChunkReaders(Collection<ChunkReader> chunkReaders, WorldVolume readVolume) throws MalformedNbtTagException{
+    public static List<BlockEntity> readBlockEntitiesFromChunkReaders(Collection<ChunkReader> chunkReaders, WorldVolume readVolume) throws MalformedNbtTagException{
         List<BlockEntity> blockEntities = new ArrayList<>();
         for(ChunkReader chunkReader : chunkReaders){
             for(BlockEntity blockEntity : chunkReader.getBlockEntities()){
@@ -305,7 +305,7 @@ public class ChunkUtils {
         return blockEntities;
     }
     
-    public static Collection<BlockEntity> readBlockEntitiesFromChunkControllers(Collection<ChunkController> chunkReaders, WorldVolume readVolume) throws MalformedNbtTagException{
+    public static List<BlockEntity> readBlockEntitiesFromChunkControllers(Collection<ChunkController> chunkReaders, WorldVolume readVolume) throws MalformedNbtTagException{
         return readBlockEntitiesFromChunkReaders((Collection<ChunkReader>)(Collection)chunkReaders, readVolume);
     }
     

@@ -77,7 +77,6 @@ public class NbtEditorWidget extends Widget {
         STRING_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
     }
     
-    private final List<NbtTag> originalTags;
     private final List<NbtTag> nbtTags;
     private final List<NbtComponent> nbtComponents;
     private final WorldVolume worldVolume;
@@ -88,12 +87,8 @@ public class NbtEditorWidget extends Widget {
         super(title);
         this.worldVolume = worldVolume;
         this.callback = callback;
-        this.originalTags = Collections.unmodifiableList(nbtTags);
         this.nbtComponents = new ArrayList<>();
-        this.nbtTags = new ArrayList<>();
-        for (NbtTag tag : originalTags) {
-            this.nbtTags.add(tag.copy());
-        }
+        this.nbtTags = nbtTags;
         initialize();
     }
     
@@ -134,7 +129,7 @@ public class NbtEditorWidget extends Widget {
                         for (NbtTagHolder tagHolder : this.nbtComponents) {
                             tagHolder.updateHeldNbt();
                         }
-                        this.callback.changedNbt(worldVolume, originalTags, nbtTags);
+                        this.callback.changedNbt(worldVolume, nbtTags);
                     }
                 }
             }
@@ -232,7 +227,7 @@ public class NbtEditorWidget extends Widget {
     }
     
     public static interface ChangedNbtCallback {
-        void changedNbt(WorldVolume worldVolume, List<NbtTag> originalTags, List<NbtTag> newTags);
+        void changedNbt(WorldVolume worldVolume, List<NbtTag> newTags);
     }
     
     private static interface NbtTagHolder {
@@ -538,7 +533,7 @@ public class NbtEditorWidget extends Widget {
         
         @Override
         DoubleSelectorComponent createSelectorComp() {
-            DoubleSelectorComponent comp = new DoubleSelectorComponent(Float.MIN_VALUE, Float.MAX_VALUE, ((NbtFloatTag)nbtTag).getPayload());
+            DoubleSelectorComponent comp = new DoubleSelectorComponent(-Float.MAX_VALUE, Float.MAX_VALUE, ((NbtFloatTag)nbtTag).getPayload());
             comp.setSize(SELECTOR_WIDTH, HEIGHT_PER_TAG - 2 * MARGIN);
             return comp;
         }
@@ -553,7 +548,6 @@ public class NbtEditorWidget extends Widget {
     private static class DoubleComponent extends SingleComponent<DoubleSelectorComponent> {
         
         private static final int SELECTOR_WIDTH = CHAR_WIDTH * 35;
-        private DoubleSelectorComponent selectorComp;
         
         DoubleComponent(NbtDoubleTag nbtTag, NbtEditorWidget nbtWidget, NbtTagParent parent) {
             super(nbtWidget, nbtTag, parent);
@@ -561,7 +555,7 @@ public class NbtEditorWidget extends Widget {
         
         @Override
         DoubleSelectorComponent createSelectorComp() {
-            DoubleSelectorComponent comp = new DoubleSelectorComponent(Double.MIN_VALUE, Double.MAX_VALUE, ((NbtDoubleTag)nbtTag).getPayload());
+            DoubleSelectorComponent comp = new DoubleSelectorComponent(-Double.MAX_VALUE, Double.MAX_VALUE, ((NbtDoubleTag)nbtTag).getPayload());
             comp.setSize(SELECTOR_WIDTH, HEIGHT_PER_TAG - 2 * MARGIN);
             return comp;
         }

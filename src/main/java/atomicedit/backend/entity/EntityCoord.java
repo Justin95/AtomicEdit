@@ -30,10 +30,11 @@ public class EntityCoord {
     }
     
     public Vector3f getChunkRelativePosition() {
+        final int len = ChunkSection.SIDE_LENGTH;
         return new Vector3f(
-            (float) x % ChunkSection.SIDE_LENGTH,
+            (float) (((x % len) + len) % len),
             (float) y,
-            (float) z % ChunkSection.SIDE_LENGTH
+            (float) (((z % len) + len) % len)
         );
     }
     

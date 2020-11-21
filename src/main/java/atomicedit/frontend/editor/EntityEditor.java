@@ -4,9 +4,9 @@ package atomicedit.frontend.editor;
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockCoord;
-import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
+import atomicedit.backend.entity.Entity;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtTag;
 import atomicedit.backend.nbt.NbtTypes;
@@ -14,13 +14,13 @@ import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.Renderable;
-import atomicedit.frontend.ui.BlockEntityEditorGui;
+import atomicedit.frontend.ui.EntityEditorGui;
 import atomicedit.frontend.ui.NbtEditorWidget;
 import atomicedit.frontend.ui.NbtEditorWidget.ChangedNbtCallback;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
-import atomicedit.operations.nbt.EditBlockEntityOperation;
+import atomicedit.operations.nbt.EditEntityOperation;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.lwjgl.glfw.GLFW;
  *
  * @author Justin Bonner
  */
-public class BlockEntityEditor implements Editor {
+public class EntityEditor implements Editor {
     
     private Vector3i pointA;
     private Vector3i pointB;
@@ -44,11 +44,11 @@ public class BlockEntityEditor implements Editor {
     private Renderable selectionBoxRenderable;
     private boolean currentlyDrawingBox;
     private final AtomicEditRenderer renderer;
-    private BlockEntityEditorGui gui;
+    private EntityEditorGui gui;
     private final EditorPointer editorPointer;
     private volatile boolean editorWidgetOpen;
     
-    public BlockEntityEditor(AtomicEditRenderer renderer, EditorPointer editorPointer){
+    public EntityEditor(AtomicEditRenderer renderer, EditorPointer editorPointer){
         pointA = null;
         pointB = null;
         this.renderer = renderer;
@@ -59,7 +59,7 @@ public class BlockEntityEditor implements Editor {
     
     @Override
     public void initialize(){
-        this.gui = new BlockEntityEditorGui(this);
+        this.gui = new EntityEditorGui(this);
         this.pointerRenderObject = EditorUtils.createEditorPointerRenderObject(editorPointer.getSelectorPoint());
         renderer.getFrame().getContainer().add(gui.getOpPanel());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
@@ -126,31 +126,31 @@ public class BlockEntityEditor implements Editor {
                 worldVolume.getContainedChunkCoords(),
                 backendController.getActiveDimension()
             );
-            Collection<BlockEntity> blockEntities = ChunkUtils.readBlockEntitiesFromChunkReaders(chunks.values(), worldVolume);
-            nbtTags = blockEntities.stream().map((blockEntity) -> blockEntity.getNbtData()).collect(Collectors.toList());
+            Collection<Entity> entities = ChunkUtils.readEntitiesFromChunkReaders(chunks.values(), worldVolume);
+            nbtTags = entities.stream().map((entity) -> entity.getNbtData()).collect(Collectors.toList());
         } catch (MalformedNbtTagException e) {
-            Logger.warning("Cannot edit Block Entity NBT due to exception.", e);
+            Logger.warning("Cannot edit Entity NBT due to exception.", e);
             return null;
         }
         
         this.editorWidgetOpen = true;
         ChangedNbtCallback callback = (vol, newTags) -> {
-            List<BlockEntity> changes = new ArrayList<>();
+            List<Entity> changes = new ArrayList<>();
             for (NbtTag tag : newTags) {
                 if (tag == null) {
                     changes.add(null);
                 } else {
                     try {
-                        changes.add(new BlockEntity(NbtTypes.getAsCompoundTag(tag)));
+                        changes.add(new Entity(NbtTypes.getAsCompoundTag(tag)));
                     } catch (MalformedNbtTagException e) {
-                        Logger.warning("Block Entity NBT is not a compound tag.", e);
+                        Logger.warning("Entity NBT is not a compound tag.", e);
                         changes.add(null);
                     }
                 }
             }
             doOperation(vol, changes, true);
         };
-        NbtEditorWidget editorWidget = new NbtEditorWidget("Edit Block Entities", worldVolume, callback, nbtTags);
+        NbtEditorWidget editorWidget = new NbtEditorWidget("Edit Entities", worldVolume, callback, nbtTags);
         editorWidget.addWidgetCloseEventListener((event) -> {
             this.editorWidgetOpen = false;
         });
@@ -159,12 +159,12 @@ public class BlockEntityEditor implements Editor {
         return editorWidget;
     }
     
-    public OperationResult doOperation(WorldVolume volume, List<BlockEntity> changes, boolean replaceExisting) {
+    public OperationResult doOperation(WorldVolume volume, List<Entity> changes, boolean replaceExisting) {
         this.editorWidgetOpen = false;
         if (volume == null) {
             return new OperationResult(false, "Cannot do operation with no volume");
         }
-        Operation op = new EditBlockEntityOperation(volume, changes, replaceExisting);
+        Operation op = new EditEntityOperation(volume, changes, replaceExisting);
         OperationResult result;
         try {
             result = AtomicEdit.getBackendController().applyOperation(op);
@@ -178,6 +178,22 @@ public class BlockEntityEditor implements Editor {
         return result;
     }
     
+    public OperationResult doDeleteOperation() {
+        BackendController backendController = AtomicEdit.getBackendController();
+        if (!backendController.hasWorld()) {
+            return new OperationResult(false, "Cannot do operation with no world.");
+        }
+        if (this.editorWidgetOpen) {
+            return new OperationResult(false, "Should not do operation when widget is open.");
+        }
+        if(pointA == null || pointB == null){
+            return new OperationResult(false, "Cannot do operation with no volume.");
+        }
+        Volume volume = Volume.getInstance(pointA, pointB);
+        BlockCoord smallestCoord = new BlockCoord(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
+        WorldVolume worldVolume = new WorldVolume(volume, smallestCoord);
+        return doOperation(worldVolume, new ArrayList<>(0), true);
+    }
     
     @Override
     public void cleanUp(){
