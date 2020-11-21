@@ -376,6 +376,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
         entityNbts.add(entity.getNbtData().copy());
         declareNbtChanged();
+        declareVisiblyChanged();
     }
     
     @Override
@@ -386,6 +387,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
         entityNbts.remove(entity.getNbtData());
         declareNbtChanged();
+        declareVisiblyChanged();
     }
     
     @Override
@@ -409,6 +411,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         blockEntityNbts.add(blockEntity.getNbtData().copy());
         declareNbtChanged();
+        declareVisiblyChanged();
     }
     
     @Override
@@ -419,6 +422,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
         blockEntityNbts.remove(blockEntity.getNbtData());
         declareNbtChanged();
+        declareVisiblyChanged();
     }
     
     @Override

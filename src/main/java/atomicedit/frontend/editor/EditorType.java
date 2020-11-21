@@ -16,7 +16,10 @@ public enum EditorType {
     ),
     BLOCK_ENTITY_EDITOR(
         (renderer, editorPointer) -> new BlockEntityEditor(renderer, editorPointer)
-    )
+    ),
+    ENTITY_EDITOR(
+        (renderer, editorPointer) -> new EntityEditor(renderer, editorPointer)
+    ),
     //SCHEMATIC_TOOL,
     ;
     private final EditorCreator editorCreator;

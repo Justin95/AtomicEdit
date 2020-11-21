@@ -62,6 +62,11 @@ public class EditorTypesMenu extends Panel{
                 "icons/brush_icon.png"
             ),
             new EditorTypeSelectorButton(
+                EditorType.ENTITY_EDITOR,
+                "icons/entity_icon.png",
+                "icons/entity_icon.png"
+            ),
+            new EditorTypeSelectorButton(
                 EditorType.BLOCK_ENTITY_EDITOR,
                 "icons/block_entity_icon.png",
                 "icons/block_entity_icon.png"
