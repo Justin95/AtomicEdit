@@ -23,7 +23,7 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
  */
 public class RenderObject {
     
-    public static DataBufferLayoutFormat BUFFER_FORMAT = DataBufferLayoutFormat.DEFAULT_DATA_BUFFER_LAYOUT;
+    public static DataBufferLayoutFormat DEFAULT_BUFFER_FORMAT = DataBufferLayoutFormat.DEFAULT_DATA_BUFFER_LAYOUT;
     
     protected Vector3f position;
     protected Vector3f rotation;
@@ -53,7 +53,7 @@ public class RenderObject {
         this.vertexData = vertexData;
         this.indicies = indicies;
         this.drawingShape = GL_TRIANGLES;
-        this.bufferFormat = BUFFER_FORMAT;
+        this.bufferFormat = DEFAULT_BUFFER_FORMAT;
     }
     
     public void initialize(){

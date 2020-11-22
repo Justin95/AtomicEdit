@@ -3,6 +3,8 @@ package atomicedit.frontend.render;
 
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.backend.chunk.ChunkSection;
+import atomicedit.frontend.render.shaders.DataBufferLayoutFormat;
+import atomicedit.frontend.render.shaders.ShaderProgram;
 import atomicedit.jarreading.texture.TextureLoader;
 import org.joml.Vector3f;
 
@@ -23,6 +25,8 @@ public class ChunkSectionRenderObject extends RenderObject{
             verticies,
             indicies
         );
+        this.shaderProgram = ShaderProgram.getShaderProgram(ShaderProgram.BLOCK_SHADER_PROGRAM);
+        this.bufferFormat = DataBufferLayoutFormat.BLOCK_DATA_BUFFER_LAYOUT;
         this.chunkSectionPos = pos;
     }
     

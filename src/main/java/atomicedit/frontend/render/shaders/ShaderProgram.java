@@ -27,6 +27,10 @@ public enum ShaderProgram {
         "OnlyPositionVertexShader",
         "OnlyPositionFragmentShader"
     ),
+    BLOCK_SHADER_PROGRAM(
+        "BlockVertexShader",
+        "BlockFragmentShader"
+    ),
     ;
     
     private final String vertexShaderName;
