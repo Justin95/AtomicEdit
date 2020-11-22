@@ -5,6 +5,7 @@ import atomicedit.AtomicEdit;
 import atomicedit.backend.BlockState;
 import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.frontend.render.RenderObject;
+import atomicedit.frontend.render.shaders.DataBufferLayoutFormat;
 import atomicedit.jarreading.blockmodels.ModelBox;
 import atomicedit.jarreading.blockmodels.ModelBox.ModelBoxFace;
 import atomicedit.jarreading.blockstates.BlockStateModel;
@@ -102,12 +103,12 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
         float lightC = (modelBox.getUseShade() && posC.y < 0.01 ? SHADE : 1f) * light;
         float lightD = (modelBox.getUseShade() && posD.y < 0.01 ? SHADE : 1f) * light;
         
-        addFaceIndicies(vertexData.size() / RenderObject.BUFFER_FORMAT.NUM_ELEMENTS_PER_VERTEX, new int[]{0, 1, 2, 0, 2, 3}, indicies);
+        addFaceIndicies(vertexData.size() / DataBufferLayoutFormat.BLOCK_DATA_BUFFER_LAYOUT.NUM_ELEMENTS_PER_VERTEX, new int[]{0, 1, 2, 0, 2, 3}, indicies);
         float[] v = buffer.vd;
-        v[0] = x + posA.x; v[1] = y + posA.y; v[2] = z + posA.z;   v[3] = texA.x; v[4] = texA.y;   v[5] = lightA * tint.x; v[6] = lightA * tint.y; v[7] = lightA * tint.z; v[8] = 1;
-        v[9] = x + posB.x; v[10]= y + posB.y; v[11]= z + posB.z;   v[12]= texB.x; v[13]= texB.y;   v[14]= lightB * tint.x; v[15]= lightB * tint.y; v[16]= lightB * tint.z; v[17]= 1;
-        v[18]= x + posC.x; v[19]= y + posC.y; v[20]= z + posC.z;   v[21]= texC.x; v[22]= texC.y;   v[23]= lightC * tint.x; v[24]= lightC * tint.y; v[25]= lightC * tint.z; v[26]= 1;
-        v[27]= x + posD.x; v[28]= y + posD.y; v[29]= z + posD.z;   v[30]= texD.x; v[31]= texD.y;   v[32]= lightD * tint.x; v[33]= lightD * tint.y; v[34]= lightD * tint.z; v[35]= 1;
+        v[0] = x + posA.x; v[1] = y + posA.y; v[2] = z + posA.z;   v[3] = texA.x; v[4] = texA.y;   v[5] = lightA * tint.x; v[6] = lightA * tint.y; v[7] = lightA * tint.z;
+        v[8] = x + posB.x; v[9] = y + posB.y; v[10]= z + posB.z;   v[11]= texB.x; v[12]= texB.y;   v[13]= lightB * tint.x; v[14]= lightB * tint.y; v[15]= lightB * tint.z;
+        v[16]= x + posC.x; v[17]= y + posC.y; v[18]= z + posC.z;   v[19]= texC.x; v[20]= texC.y;   v[21]= lightC * tint.x; v[22]= lightC * tint.y; v[23]= lightC * tint.z;
+        v[24]= x + posD.x; v[25]= y + posD.y; v[26]= z + posD.z;   v[27]= texD.x; v[28]= texD.y;   v[29]= lightD * tint.x; v[30]= lightD * tint.y; v[31]= lightD * tint.z;
         vertexData.addAll(v);
         /*
         vertexData.addAll(
@@ -210,7 +211,7 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
            texB = new Vector2f();
            texC = new Vector2f();
            texD = new Vector2f();
-           vd = new float[9 * 4]; //9 floats per vertex, 4 verticies
+           vd = new float[8 * 4]; //8 floats per vertex, 4 verticies
            rot = new Vector3f();
        }
 

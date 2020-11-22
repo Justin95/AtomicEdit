@@ -27,6 +27,13 @@ public enum DataBufferLayoutFormat {
             new BufferElement(0, 3, DataType.FLOAT) //position
         }
     ),
+    BLOCK_DATA_BUFFER_LAYOUT(
+        new BufferElement[]{
+            new BufferElement(0, 3, DataType.FLOAT), //position
+            new BufferElement(1, 2, DataType.FLOAT), //tex coords
+            new BufferElement(2, 3, DataType.FLOAT)  //color (no alpha)
+        }
+    ),
     ;
     
     private final BufferElement[] bufferElements;
