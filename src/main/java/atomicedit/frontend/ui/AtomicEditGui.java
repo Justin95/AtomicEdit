@@ -10,6 +10,7 @@ import atomicedit.frontend.ui.editormenu.EditorTypesMenu;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import atomicedit.utils.FileUtils;
+import atomicedit.utils.VersionUtils;
 import java.io.File;
 import java.util.concurrent.locks.ReentrantLock;
 import org.joml.Vector2f;
@@ -245,6 +246,24 @@ public class AtomicEditGui {
         coordsLabel.getStyle().setFontSize(17f);
         coordsLabel.getStyle().setTextColor(1f, 1f, 1f, 1f);
         topBar.add(coordsLabel);
+        
+        if (VersionUtils.isUpdateAvailable()) {
+            Label updateLabel = new Label();
+            updateLabel.getStyle().setMinimumSize(150, 20);
+            updateLabel.getStyle().setMargin(4);
+            updateLabel.getStyle().setPosition(Style.PositionType.ABSOLUTE);
+            updateLabel.getStyle().setRight(4);
+            updateLabel.getStyle().setFontSize(17f);
+            updateLabel.getStyle().setTextColor(1f, 1f, 1f, 1f);
+            updateLabel.getTextState().setText("Update Available: " + VersionUtils.getNewestAvailableVersion());
+            updateLabel.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
+                if(event.getAction() == MouseClickAction.CLICK){
+                    VersionUtils.openAtomicEditDownloadPage();
+                }
+            });
+            topBar.add(updateLabel);
+        }
+        
         frame.getContainer().add(topBar);
     }
     
