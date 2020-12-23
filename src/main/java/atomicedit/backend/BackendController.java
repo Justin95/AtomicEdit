@@ -85,8 +85,12 @@ public class BackendController {
         return this.world.getLoadedChunkStage(dimension).getReadOnlyChunks(chunkCoords);
     }
     
-    public Schematic createSchematic(WorldVolume volume, Dimension dimension) throws Exception{
-        return Schematic.createSchematicFromWorld(world, dimension, volume);
+    public Schematic createSchematic(WorldVolume volume) throws Exception {
+        return Schematic.createSchematicFromWorld(world, world.getActiveDimension(), volume);
+    }
+    
+    public void putSchematicIntoWorld(Schematic schematic, BlockCoord smallestCoord) throws Exception {
+        Schematic.putSchematicIntoWorld(world, world.getActiveDimension(), schematic, smallestCoord);
     }
     
     public BlockState getBlockType(short blockRuntimeId){

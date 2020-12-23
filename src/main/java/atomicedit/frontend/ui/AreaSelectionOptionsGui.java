@@ -110,6 +110,7 @@ public class AreaSelectionOptionsGui {
         Component opComp = new Panel();
         opComp.setFocusable(false);
         opComp.getStyle().setBorder(null);
+        opComp.getStyle().setShadow(null);
         opComp.getStyle().getBackground().setColor(ColorConstants.transparent());
         opComp.getStyle().setPosition(Style.PositionType.RELATIVE);
         opComp.getStyle().setDisplay(Style.DisplayType.FLEX);

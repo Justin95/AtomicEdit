@@ -10,6 +10,6 @@ import atomicedit.utils.IntList;
  */
 public interface BlockModelCreatorLogic {
     
-    void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, FloatList vertexData, IntList indicies, boolean includeTranslucent);
+    void addBlockRenderData(int x, int y, int z, BlockVolumeDataProvider section, FloatList vertexData, IntList indicies, boolean includeTranslucent);
     
 }

@@ -29,6 +29,10 @@ public class GlobalBlockStateMap {
         }
         blockToIdMap.put(blockType, idCounter);
         idCounter++;
+        if (idCounter == Short.MAX_VALUE) {
+            Logger.critical("Too many loaded block types: " + idCounter);
+            throw new IllegalStateException("Too many loaded block types!");
+        }
     }
     
     public static boolean hasBlockType(BlockState blockType){
@@ -48,6 +52,10 @@ public class GlobalBlockStateMap {
         synchronized(idToBlockTypeMap){
             return new ArrayList(idToBlockTypeMap);
         }
+    }
+    
+    public static int getNumBlockStates() {
+        return idCounter;
     }
     
 }

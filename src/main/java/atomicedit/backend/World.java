@@ -1,12 +1,20 @@
 
 package atomicedit.backend;
 
+import atomicedit.backend.blockentity.BlockEntity;
+import atomicedit.backend.blockentity.BlockEntityUtils;
+import atomicedit.backend.blockprovider.BlockProvider;
+import atomicedit.backend.blockprovider.SchematicBlockProvider;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.Chunk;
 import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.dimension.Dimension;
+import atomicedit.backend.entity.Entity;
+import atomicedit.backend.entity.EntityUtils;
 import atomicedit.backend.lighting.LightingUtil;
 import atomicedit.backend.nbt.MalformedNbtTagException;
+import atomicedit.backend.schematic.Schematic;
+import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.backend.worldformats.CorruptedRegionFileException;
 import atomicedit.backend.worldformats.MinecraftAnvilWorldFormat;
 import atomicedit.backend.worldformats.WorldFormat;
@@ -14,6 +22,7 @@ import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.utils.FileUtils;
+import atomicedit.volumes.WorldVolume;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -21,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -183,6 +193,27 @@ public class World {
         }
         operationHistory.push(lastOp);
         return result;
+    }
+    
+    public OperationResult putSchematicIntoWorld(Schematic schematic, Dimension dim, BlockCoord smallestCoord) throws Exception {
+        BlockProvider provider = new SchematicBlockProvider(schematic);
+        WorldVolume volume = new WorldVolume(schematic.volume, smallestCoord);
+        Map<ChunkCoord, ChunkController> chunkControllers = this.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
+        ChunkUtils.writeBlocksIntoChunks(chunkControllers.values(), provider, smallestCoord);
+        Collection<BlockEntity> blockEntitiesToRemove = ChunkUtils.readBlockEntitiesFromChunkControllers(chunkControllers.values(), volume);
+        ChunkUtils.removeBlockEntitiesFromChunks(chunkControllers, blockEntitiesToRemove);
+        //Do not have to remove all entities from schematic destination
+        //update entity and block entity positions
+        Collection<BlockEntity> blockEntities = BlockEntityUtils.translateBlockEntityCoordsToWorld(schematic.getBlockEntities(), volume);
+        Collection<Entity> entities = EntityUtils.translateEntityCoordsToWorld(schematic.getEntities(), volume);
+        ChunkUtils.writeBlockEntitiesIntoChunks(chunkControllers, blockEntities);
+        ChunkUtils.writeEntitiesIntoChunks(chunkControllers, entities);
+        chunkControllers.forEach((ChunkCoord coord, ChunkController chunkController) -> {
+            if(chunkController.getChunk().needsSaving()){
+                this.dimToUnsavedChunkMap.get(dim).put(coord, chunkController);
+            }
+        });
+        return new OperationResult(true);
     }
     
     private static void writeSessionLock(long time, String filepath) throws SessionLockException {

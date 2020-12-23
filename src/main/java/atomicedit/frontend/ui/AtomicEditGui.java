@@ -42,7 +42,7 @@ import org.liquidengine.legui.system.context.Context;
  */
 public class AtomicEditGui {
     
-    public static final Vector4f PANEL_COLOR = new Vector4f(.1f, .1f, .1f, .5f);
+    public static final Vector4f PANEL_COLOR = new Vector4f(.2f, .2f, .2f, .8f);
     //https://github.com/SpinyOwl/legui/blob/develop/src/main/java/org/liquidengine/legui/demo/ExampleGui.java
     private static Label coordsLabel;
     private static final ReentrantLock WORLD_SELECT_LOCK = new ReentrantLock();

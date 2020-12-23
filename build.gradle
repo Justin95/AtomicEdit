@@ -6,7 +6,7 @@ mainClassName = "Main"
 def atomicEditVersion = "0.1.0"
 
 def lwjglVersion = "3.2.3" //also dependency of legui
-def leguiVersion = "3.2.1"
+def leguiVersion = "3.3.0-SNAPSHOT"
 
 repositories {
     mavenCentral()

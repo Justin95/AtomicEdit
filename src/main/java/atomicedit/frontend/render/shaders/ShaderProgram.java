@@ -31,6 +31,10 @@ public enum ShaderProgram {
         "BlockVertexShader",
         "BlockFragmentShader"
     ),
+    BLOCK_COLOR_SHADER_PROGRAM(
+        "BlockWithColorVertexShader",
+        "BlockFragmentShader"
+    ),
     ;
     
     private final String vertexShaderName;

@@ -51,8 +51,7 @@ public class VersionUtils {
             .addHeader("Accept", "application/vnd.github.v3+json")
             .build();
         String responseJsonStr;
-        try {
-            Response response = client.newCall(request).execute(); 
+        try (Response response = client.newCall(request).execute()) {
             if(response == null || !response.isSuccessful()) {
                 Logger.warning("Request to " + CHECK_RELEASES_URL + " failed.");
                 return null;

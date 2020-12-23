@@ -59,6 +59,7 @@ public class BlockEntityEditorGui {
         editButton.getStyle().setPosition(Style.PositionType.RELATIVE);
         editButton.getStyle().setMinHeight(30f);
         editButton.getStyle().setMinWidth(100f);
+        editButton.getStyle().setMargin(20);
         this.opPanel.add(editButton);
     }
     

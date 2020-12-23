@@ -1,5 +1,5 @@
 
-package atomicedit.frontend;
+package atomicedit.frontend.render.blockmodelcreation;
 
 import atomicedit.backend.BlockCoord;
 import atomicedit.backend.ChunkSectionCoord;
