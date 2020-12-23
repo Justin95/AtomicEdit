@@ -32,11 +32,6 @@ public class SchematicBlockProvider implements BlockProvider{
         if(!volume.containsXYZ(x, y, z)){
             throw new IllegalArgumentException("Volume does not contain (" + x + ", " + y + ", " + z + ")");
         }
-        /* no longer store schematic blocks compressed
-        if(uncompressedBlocks == null){
-            Logger.notice("Uncompressing schematic in schematic block provider");
-            uncompressSchematic();
-        }*/
         int index = GeneralUtils.getIndexYZX(x, y, z, volume.getEnclosingBox().getXLength(), volume.getEnclosingBox().getZLength());
         return blocks[index];
     }

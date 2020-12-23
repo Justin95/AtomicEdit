@@ -4,20 +4,27 @@ import atomicedit.backend.BlockCoord;
 import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.World;
 import atomicedit.backend.blockentity.BlockEntityUtils;
-import atomicedit.backend.blockprovider.BlockProvider;
-import atomicedit.backend.blockprovider.SchematicBlockProvider;
 import atomicedit.backend.chunk.ChunkController;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.dimension.Dimension;
 import atomicedit.backend.entity.Entity;
+import atomicedit.backend.entity.EntityCoord;
 import atomicedit.backend.entity.EntityUtils;
+import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.nbt.NbtCompoundTag;
+import atomicedit.backend.utils.BitArray;
 import atomicedit.backend.utils.ChunkUtils;
+import atomicedit.backend.utils.GeneralUtils;
+import atomicedit.logging.Logger;
 import atomicedit.operations.OperationResult;
+import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import org.joml.Vector3i;
 
 /**
  * Store an arbitrarily shaped section of a world. Reference:
@@ -69,7 +76,139 @@ public class Schematic {
         blockEntities = BlockEntityUtils.translateBlockEntityCoordsToVolume(blockEntities, volume);
         return new Schematic(volume, blocks, entities, blockEntities);
     }
-
+    
+    /**
+     * Create a new schematic that is rotated right a certain number of times.
+     * @param original the original schematic
+     * @param rightRotations
+     * @return 
+     */
+    public static Schematic createRotatedSchematic(Schematic original, int rightRotations) {
+        final int rightRots = (rightRotations % 4 + 4) % 4;
+        //create new volume
+        Box origBox = original.volume.getEnclosingBox();
+        Volume newVolume = Volume.getInstance(
+            new Vector3i(0,0,0),
+            new Vector3i(
+                (rightRots % 2 == 1 ? origBox.getZLength() : origBox.getXLength()) - 1,
+                origBox.getYLength() - 1,
+                (rightRots % 2 == 1 ? origBox.getXLength() : origBox.getZLength()) - 1
+            )
+        );
+        //create new blocks
+        Box newBox = newVolume.getEnclosingBox();
+        short[] newBlocks = new short[original.blocks.length];
+        BitArray includedSet = new BitArray(newBox.getNumBlocksContained());
+        final int origXLen = origBox.getXLength();
+        final int origZLen = origBox.getZLength();
+        origBox.doForXyz((x, y, z) -> {
+            int newX = calcNewX(x, z, origXLen, origZLen, rightRots);
+            int newY = y;
+            int newZ = calcNewZ(x, z, origXLen, origZLen, rightRots);
+            final int newIndex = GeneralUtils.getIndexYZX(newX, newY, newZ, newBox.getXLength(), newBox.getZLength());
+            final int oldIndex = GeneralUtils.getIndexYZX(x, y, z, origBox.getXLength(), origBox.getZLength());
+            includedSet.set(newIndex, original.volume.getIncludedSet().get(oldIndex));
+            newBlocks[newIndex] = original.blocks[oldIndex];
+        });
+        //create new entity list
+        List<Entity> newEntities = new ArrayList<>(original.entities.size());
+        for (Entity entity : original.entities) {
+            Entity copy = entity.copy();
+            EntityCoord coord;
+            try {
+                coord = copy.getCoord();
+            } catch (MalformedNbtTagException e) {
+                Logger.error("Error rotating entity in schematic.", e);
+                coord = new EntityCoord(0, 0, 0);
+            }
+            double newX = calcNewXDouble(coord.x, coord.z, origXLen, origZLen, rightRots);
+            double newY = coord.y;
+            double newZ = calcNewZDouble(coord.x, coord.z, origXLen, origZLen, rightRots);
+            copy.setCoord(newX, newY, newZ);
+            newEntities.add(copy);
+        }
+        
+        //create new block entity list
+        List<BlockEntity> newBlockEntities = new ArrayList<>(original.blockEntities.size());
+        for (BlockEntity entity : original.blockEntities) {
+            BlockEntity copy = entity.copy();
+            BlockCoord coord;
+            try {
+                coord = copy.getBlockCoord();
+            } catch (MalformedNbtTagException e) {
+                Logger.error("Error rotating block entity in schematic.", e);
+                coord = new BlockCoord(0, 0, 0);
+            }
+            int newX = calcNewX(coord.x, coord.z, origXLen, origZLen, rightRots);
+            int newY = coord.y;
+            int newZ = calcNewZ(coord.x, coord.z, origXLen, origZLen, rightRots);
+            copy.setBlockCoord(newX, newY, newZ);
+            newBlockEntities.add(copy);
+        }
+        
+        return new Schematic(newVolume, newBlocks, newEntities, newBlockEntities);
+    }
+    
+    private static int calcNewX(int x, int z, int origXLen, int origZLen, int rightRots) {
+        switch (rightRots) {
+            case 0:
+                return x;
+            case 1:
+                return (origZLen - 1) - z;
+            case 2:
+                return (origXLen - 1) - x;
+            case 3:
+                return z;
+            default:
+                throw new IllegalArgumentException("Bad number of rotations.");
+        }
+    }
+    
+    private static int calcNewZ(int x, int z, int origXLen, int origZLen, int rightRots) {
+        switch (rightRots) {
+            case 0:
+                return z;
+            case 1:
+                return x;
+            case 2:
+                return (origZLen - 1) - z;
+            case 3:
+                return (origXLen - 1) - x;
+            default:
+                throw new IllegalArgumentException("Bad number of rotations.");
+        }
+    }
+    
+    private static double calcNewXDouble(double x, double z, int origXLen, int origZLen, int rightRots) {
+        switch (rightRots) {
+            case 0:
+                return x;
+            case 1:
+                return (origZLen - 1) - z;
+            case 2:
+                return (origXLen - 1) - x;
+            case 3:
+                return z;
+            default:
+                throw new IllegalArgumentException("Bad number of rotations.");
+        }
+    }
+    
+    private static double calcNewZDouble(double x, double z, int origXLen, int origZLen, int rightRots) {
+        switch (rightRots) {
+            case 0:
+                return z;
+            case 1:
+                return (origXLen - 1) - x;
+            case 2:
+                return (origZLen - 1) - z;
+            case 3:
+                return x;
+            default:
+                throw new IllegalArgumentException("Bad number of rotations.");
+        }
+    }
+    
     /**
      * Put a schematic into the world at a given location.
      *
@@ -82,19 +221,8 @@ public class Schematic {
      * @throws Exception
      */
     public static OperationResult putSchematicIntoWorld(World world, Dimension dim, Schematic schematic, BlockCoord smallestCoord) throws Exception {
-        BlockProvider provider = new SchematicBlockProvider(schematic);
-        WorldVolume volume = new WorldVolume(schematic.volume, smallestCoord);
-        Map<ChunkCoord, ChunkController> chunkControllers = world.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
-        ChunkUtils.writeBlocksIntoChunks(chunkControllers.values(), provider, smallestCoord);
-        Collection<BlockEntity> blockEntitiesToRemove = ChunkUtils.readBlockEntitiesFromChunkControllers(chunkControllers.values(), volume);
-        ChunkUtils.removeBlockEntitiesFromChunks(chunkControllers, blockEntitiesToRemove);
-        //Do not have to remove all entities from schematic destination
-        //update entity and block entity positions
-        Collection<BlockEntity> blockEntities = BlockEntityUtils.translateBlockEntityCoordsToWorld(schematic.blockEntities, volume);
-        Collection<Entity> entities = EntityUtils.translateEntityCoordsToWorld(schematic.entities, volume);
-        ChunkUtils.writeBlockEntitiesIntoChunks(chunkControllers, blockEntities);
-        ChunkUtils.writeEntitiesIntoChunks(chunkControllers, entities);
-        return new OperationResult(true);
+        //function writing to the world is in the world class to allow updating the unsaved chunks map
+        return world.putSchematicIntoWorld(schematic, dim, smallestCoord);
     }
     
     protected Volume getVolume() {
@@ -112,17 +240,5 @@ public class Schematic {
     public Collection<BlockEntity> getBlockEntities() {
         return this.blockEntities;
     }
-
-    /*
-    private void uncompressSchematic(){ //schematic nbts will be compressed but not in schematic objects
-        if(uncompressedBlocks != null) return;
-        uncompressedBlocks = new short[volume.getEnclosingBox().getNumBlocksContained()];
-        int xLen = volume.getEnclosingBox().getXLength();
-        int zLen = volume.getEnclosingBox().getZLength();
-        doForBlock((x, y, z, block) -> {
-            //if a block isn't set it defaults to 0 which is always counted as minecraft:air, but we shouldnt try to access those anyway as they aren't in the schematic
-            uncompressedBlocks[GeneralUtils.getIndexYZX(x, y, z, xLen, zLen)] = block;
-        });
-    }
-     */
+    
 }

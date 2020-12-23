@@ -4,7 +4,7 @@ package atomicedit.frontend.render;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.nbt.MalformedNbtTagException;
-import atomicedit.frontend.ChunkRenderObjectCreator;
+import atomicedit.frontend.render.blockmodelcreation.ChunkRenderObjectCreator;
 import atomicedit.logging.Logger;
 import java.util.Collection;
 

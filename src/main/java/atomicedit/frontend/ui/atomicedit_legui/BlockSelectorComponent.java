@@ -17,6 +17,7 @@ import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.border.SimpleLineBorder;
+import org.liquidengine.legui.style.flex.FlexStyle;
 
 /**
  *
@@ -91,7 +92,12 @@ public class BlockSelectorComponent extends Label {
             this.selectedBlock = initValue;
             this.blockOptions = new ArrayList<>();
             this.blockOptionsPanel = new ScrollablePanel(40, 80, WIDTH - 80, HEIGHT - 160);
-            this.blockOptionsPanel.getContainer().getStyle().setDisplay(Style.DisplayType.MANUAL);
+            this.blockOptionsPanel.getContainer().getStyle().setDisplay(Style.DisplayType.FLEX);
+            this.blockOptionsPanel.getContainer().setSize(WIDTH - 90, HEIGHT - 170);
+            this.blockOptionsPanel.getContainer().getStyle().setMinimumSize(WIDTH - 90, HEIGHT - 170);
+            this.blockOptionsPanel.getContainer().getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.FLEX_START);
+            this.blockOptionsPanel.getContainer().getStyle().getFlexStyle().setAlignContent(FlexStyle.AlignContent.CENTER);
+            this.blockOptionsPanel.getContainer().getStyle().getFlexStyle().setFlexDirection(FlexStyle.FlexDirection.COLUMN);
             this.blockOptionsPanel.setHorizontalScrollBarVisible(false);
             this.textBox = new TextInput(40, 40, WIDTH - 80, 25);
             this.textBox.getTextState().setText(searchText);
@@ -124,7 +130,6 @@ public class BlockSelectorComponent extends Label {
             this.blockOptions.clear();
             List<BlockState> blockStates = GlobalBlockStateMap.getBlockTypes();
             blockStates.sort((a, b) -> a.toString().length() - b.toString().length());
-            int index = 0;
             for (BlockState blockState : blockStates) {
                 if (!blockState.name.contains(filter)) {
                     continue;
@@ -133,9 +138,8 @@ public class BlockSelectorComponent extends Label {
                     break;
                 }
                 BlockOptionLabel option = new BlockOptionLabel(this, blockState);
-                option.setPosition(10, index * 35 + 5);
+                option.getStyle().setMargin(5);
                 this.blockOptions.add(option);
-                index++;
             }
             this.blockOptionsPanel.getContainer().addAll(blockOptions);
         }
@@ -148,7 +152,8 @@ public class BlockSelectorComponent extends Label {
         
         BlockOptionLabel(SelectBlockWidget widget, BlockState value) {
             super(value.toString());
-            this.setSize(SelectBlockWidget.WIDTH - 100, 30);
+            this.getStyle().setMinimumSize(SelectBlockWidget.WIDTH - 100, 20);
+            this.getStyle().setPosition(Style.PositionType.RELATIVE);
             this.value = value;
             this.getStyle().getBackground().setColor(.8f, .8f, .8f, 1);
             this.getStyle().setBorder(new SimpleLineBorder(new Vector4f(1, 0, 0, 1), 3));

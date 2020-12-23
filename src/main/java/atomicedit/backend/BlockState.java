@@ -433,6 +433,7 @@ public class BlockState {
                 }
             }
         }
+        Logger.info("Loaded " + GlobalBlockStateMap.getNumBlockStates() + " block states.");
     }
     
     

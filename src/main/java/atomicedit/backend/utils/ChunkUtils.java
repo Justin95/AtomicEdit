@@ -17,7 +17,6 @@ import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

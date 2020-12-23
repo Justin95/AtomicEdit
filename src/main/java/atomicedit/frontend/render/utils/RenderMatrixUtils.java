@@ -13,10 +13,10 @@ public class RenderMatrixUtils {
     
     public static Matrix4f createModelMatrix(Vector3f pos, Vector3f rot){
         Matrix4f model = new Matrix4f(); //identity matrix
+        model.translate(pos);
         model.rotate(-(float)Math.toRadians(rot.x), 1, 0, 0);
         model.rotate(-(float)Math.toRadians(rot.y), 0, 1, 0);
         model.rotate(-(float)Math.toRadians(rot.z), 0, 0, 1);
-        model.translate(pos);
         return model;
     }
     
@@ -24,7 +24,12 @@ public class RenderMatrixUtils {
     public static Matrix4f createViewMatrix(Vector3f pos, Vector3f rot){
         Vector3f negPos = new Vector3f(pos).negate();
         Vector3f negRot = new Vector3f(rot).negate();
-        return createModelMatrix(negPos, negRot);
+        Matrix4f view = new Matrix4f(); //identity matrix
+        view.rotate(-(float)Math.toRadians(negRot.x), 1, 0, 0);
+        view.rotate(-(float)Math.toRadians(negRot.y), 0, 1, 0);
+        view.rotate(-(float)Math.toRadians(negRot.z), 0, 0, 1);
+        view.translate(negPos);
+        return view;
     }
     
     

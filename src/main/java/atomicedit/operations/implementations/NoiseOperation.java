@@ -11,7 +11,6 @@ import atomicedit.backend.parameters.BlockStateParameterDescriptor;
 import atomicedit.backend.parameters.FloatParameterDescriptor;
 import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.backend.parameters.ParameterDescriptor;
-import atomicedit.backend.parameters.ParameterType;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.utils.BitArray;

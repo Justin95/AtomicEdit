@@ -8,7 +8,7 @@ import atomicedit.backend.utils.GeneralUtils;
  *
  * @author Justin Bonner
  */
-public class ChunkSectionPlus {
+public class ChunkSectionPlus implements BlockVolumeDataProvider {
     
     public final int xCoord;
     public final int yCoord;

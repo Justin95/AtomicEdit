@@ -122,13 +122,13 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public void setBlocks(int subChunkIndex, short[] blocks) throws MalformedNbtTagException{
-        if(subChunkIndex >= this.chunkHeightInSections()){
+        if(subChunkIndex >= this.chunkHeightInSections()) {
             throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
         }
         if(chunkSectionCache[subChunkIndex] == null) {
             readChunkSectionIntoCache(subChunkIndex);
         }
-        if(blocks.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION){
+        if(blocks.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION) {
             throw new IllegalArgumentException("Wrong number of blocks tried to occupy chunk sub section");
         }
         if(blocks != chunkSectionCache[subChunkIndex].getBlockIds()){ //if the array we are trying to set not in the same location as the one we already have

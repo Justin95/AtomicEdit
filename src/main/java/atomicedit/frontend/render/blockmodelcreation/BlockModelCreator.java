@@ -26,7 +26,7 @@ public class BlockModelCreator {
         return INSTANCE;
     }
     
-    public void addBlockRenderData(int x, int y, int z, ChunkSectionPlus section, FloatList vertexData, IntList indicies, boolean includeTranslucent){
+    public void addBlockRenderData(int x, int y, int z, BlockVolumeDataProvider section, FloatList vertexData, IntList indicies, boolean includeTranslucent){
         modelCreatorLogic.addBlockRenderData(x, y, z, section, vertexData, indicies, includeTranslucent);
     }
     

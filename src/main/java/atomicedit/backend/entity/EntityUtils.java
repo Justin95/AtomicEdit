@@ -28,12 +28,7 @@ public class EntityUtils {
             double x = coord.x - volume.getSmallestPoint().x;
             double y = coord.y - volume.getSmallestPoint().y;
             double z = coord.z - volume.getSmallestPoint().z;
-            List<NbtTag> coordList = new ArrayList<>();
-            coordList.add(new NbtDoubleTag("", x));
-            coordList.add(new NbtDoubleTag("", y));
-            coordList.add(new NbtDoubleTag("", z));
-            NbtListTag pos = new NbtListTag("Pos", coordList, NbtTypes.TAG_DOUBLE);
-            entity.getNbtData().putTag(pos);
+            entity.setCoord(x, y, z);
             updated.add(entity);
         }
         return updated;
@@ -50,12 +45,7 @@ public class EntityUtils {
             double x = coord.x + volume.getSmallestPoint().x;
             double y = coord.y + volume.getSmallestPoint().y;
             double z = coord.z + volume.getSmallestPoint().z;
-            List<NbtTag> coordList = new ArrayList<>();
-            coordList.add(new NbtDoubleTag("", x));
-            coordList.add(new NbtDoubleTag("", y));
-            coordList.add(new NbtDoubleTag("", z));
-            NbtListTag pos = new NbtListTag("Pos", coordList, NbtTypes.TAG_DOUBLE);
-            entity.getNbtData().putTag(pos);
+            entity.setCoord(x, y, z);
             updated.add(entity);
         }
         return updated;

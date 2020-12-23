@@ -92,9 +92,7 @@ public class AreaSelectionEditor implements Editor {
         if(pointA == null || pointB == null){
             return new OperationResult(false, "Cannot do operation with no volume.");
         }
-        Volume volume = Volume.getInstance(pointA, pointB);
-        BlockCoord smallestCoord = new BlockCoord(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
-        WorldVolume worldVolume = new WorldVolume(volume, smallestCoord);
+        WorldVolume worldVolume = WorldVolume.getInstance(pointA, pointB);
         Operation op = opType.getOperationInstance(worldVolume, params);
         OperationResult result;
         try {

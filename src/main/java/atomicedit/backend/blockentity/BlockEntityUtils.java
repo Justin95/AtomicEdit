@@ -33,9 +33,7 @@ public class BlockEntityUtils {
             int x = coord.x - volume.getSmallestPoint().x;
             int y = coord.y - volume.getSmallestPoint().y;
             int z = coord.z - volume.getSmallestPoint().z;
-            blockEntity.getNbtData().putTag(new NbtIntTag("x", x));
-            blockEntity.getNbtData().putTag(new NbtIntTag("y", y));
-            blockEntity.getNbtData().putTag(new NbtIntTag("z", z));
+            blockEntity.setBlockCoord(x, y, z);
             updated.add(blockEntity);
         }
         return updated;
@@ -52,9 +50,7 @@ public class BlockEntityUtils {
             int x = coord.x + volume.getSmallestPoint().x;
             int y = coord.y + volume.getSmallestPoint().y;
             int z = coord.z + volume.getSmallestPoint().z;
-            blockEntity.getNbtData().putTag(new NbtIntTag("x", x));
-            blockEntity.getNbtData().putTag(new NbtIntTag("y", y));
-            blockEntity.getNbtData().putTag(new NbtIntTag("z", z));
+            blockEntity.setBlockCoord(x, y, z);
             updated.add(blockEntity);
         }
         return updated;
