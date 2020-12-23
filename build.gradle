@@ -3,7 +3,7 @@ apply plugin: 'application'
 
 mainClassName = "Main"
 
-def atomicEditVersion = "0.1.0"
+def atomicEditVersion = "0.2.0"
 
 def lwjglVersion = "3.2.3" //also dependency of legui
 def leguiVersion = "3.3.0-SNAPSHOT"
