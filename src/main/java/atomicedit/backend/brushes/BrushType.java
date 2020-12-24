@@ -14,7 +14,11 @@ public enum BrushType {
             ElipseBrush.PARAM_DESCRIPTORS,
             ElipseBrush::getInstance
     ),
-    
+    DIAMOND(
+            "Diamond",
+            DiamondBrush.PARAM_DESCRIPTORS,
+            DiamondBrush::getInstance
+    ),
     ;
     
     public final String displayName;
