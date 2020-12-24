@@ -234,6 +234,7 @@ public class BrushGui {
             this.brushParamComponents.add(paramPanel);
             this.brushPanel.add(paramPanel);
         }
+        this.editor.setBrush(this.brushType.createInstance(), this.brushParameters);
     }
     
     private void updateOpType(OperationType newOpType) {
