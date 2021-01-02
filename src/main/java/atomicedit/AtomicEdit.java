@@ -4,6 +4,7 @@ package atomicedit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockState;
 import atomicedit.backend.GcThread;
+import atomicedit.backend.LegacyBlockIdMap;
 import atomicedit.frontend.AtomicEditFrontEnd;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.jarreading.blockmodels.BlockModelLookup;
@@ -50,6 +51,7 @@ public class AtomicEdit {
         BlockModelLookup.initialize();
         BlockStateModelLookup.initialize();
         BlockState.postModelLoadingInitialization();
+        LegacyBlockIdMap.initialize();
         gcThread.start();
     }
     

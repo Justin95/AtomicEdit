@@ -39,7 +39,7 @@ public class Schematic {
     private Collection<Entity> entities;
     private Collection<BlockEntity> blockEntities;
 
-    private Schematic(Volume volume, short[] blocks, Collection<Entity> entities, Collection<BlockEntity> blockEntities) {
+    Schematic(Volume volume, short[] blocks, Collection<Entity> entities, Collection<BlockEntity> blockEntities) {
         if (volume.getEnclosingBox().getNumBlocksContained() != blocks.length) {
             throw new IllegalArgumentException("Number of blocks and volume size differ");
         }
@@ -49,12 +49,12 @@ public class Schematic {
         this.blockEntities = blockEntities;
     }
 
-    public static Schematic interpretSchematic(NbtCompoundTag schmaticNbt) {
-        throw new UnsupportedOperationException(); //need different schematic interpreters + factory
+    public static Schematic interpretSchematic(NbtCompoundTag schmaticNbt) throws MalformedNbtTagException {
+        return SchematicFileFormats.determineFileFormat(schmaticNbt).readSchematic(schmaticNbt);
     }
 
-    public static NbtCompoundTag writeSchematicToNbt(Schematic schematic) {
-        throw new UnsupportedOperationException(); //TODO
+    public static NbtCompoundTag writeSchematicToNbt(SchematicFileFormat schematicFileFormat, Schematic schematic) {
+        return schematicFileFormat.writeSchematic(schematic);
     }
 
     public static Schematic createSchematicFromWorld(World world, Dimension dim, WorldVolume volume) throws Exception {
@@ -108,7 +108,7 @@ public class Schematic {
             final int newIndex = GeneralUtils.getIndexYZX(newX, newY, newZ, newBox.getXLength(), newBox.getZLength());
             final int oldIndex = GeneralUtils.getIndexYZX(x, y, z, origBox.getXLength(), origBox.getZLength());
             includedSet.set(newIndex, original.volume.getIncludedSet().get(oldIndex));
-            newBlocks[newIndex] = original.blocks[oldIndex];
+            newBlocks[newIndex] = rotateBlock(original.blocks[oldIndex], rightRots);
         });
         //create new entity list
         List<Entity> newEntities = new ArrayList<>(original.entities.size());
@@ -207,6 +207,11 @@ public class Schematic {
             default:
                 throw new IllegalArgumentException("Bad number of rotations.");
         }
+    }
+    
+    private static short rotateBlock(short block, int rightRotations) {
+        //TODO add block rotations
+        return block;
     }
     
     /**

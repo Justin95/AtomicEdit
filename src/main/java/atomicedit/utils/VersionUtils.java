@@ -18,7 +18,7 @@ import okhttp3.ResponseBody;
  */
 public class VersionUtils {
     
-    private static final String CHECK_RELEASES_URL = "https://api.github.com/Justin95/AtomicEdit/releases/latest";
+    private static final String CHECK_RELEASES_URL = "https://api.github.com/repos/Justin95/AtomicEdit/releases/latest";
     private static final String DOWNLOAD_PAGE_URL = "https://github.com/Justin95/AtomicEdit/releases";
     private static final String VERSION;
     private static final String NEWEST_VERSION;
@@ -30,7 +30,7 @@ public class VersionUtils {
     
     private static String readVersion() {
         try {
-            return FileUtils.readResourceFile("/version.txt");
+            return FileUtils.readResourceFile("/version.txt").trim();
         } catch (IOException e) {
             Logger.error("Cannot read version.", e);
             return null;
