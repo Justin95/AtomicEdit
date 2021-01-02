@@ -12,6 +12,20 @@ public class BitArray {
     private final long[] bitArray;
     private final int sizeInBits;
     
+    /**
+     * Use of this constructor is discouraged because it exposes the internal storage of bits.
+     * @param size
+     * @param values 
+     */
+    public BitArray(int size, long[] values) {
+        int minArraySize = size % 64 == 0 ? size / 64 : (size / 64) + 1;
+        if (values.length < minArraySize) {
+            throw new IllegalArgumentException("Backing array in Bit Array is too small.");
+        }
+        this.sizeInBits = size;
+        this.bitArray = values;
+    }
+    
     public BitArray(int size){
         this.sizeInBits = size;
         int backingArraySize = size % 64 == 0 ? size / 64 : (size / 64) + 1;
@@ -66,6 +80,10 @@ public class BitArray {
      */
     public int size(){
         return this.sizeInBits;
+    }
+    
+    public long[] getBackingValues() {
+        return Arrays.copyOf(bitArray, bitArray.length);
     }
     
     @Override

@@ -1,0 +1,1959 @@
+[
+  {
+    "block_id": "minecraft:air",
+    "legacy_num_id": "0"
+  },
+  {
+    "block_id": "minecraft:stone",
+    "legacy_num_id": "1"
+  },
+  {
+    "block_id": "minecraft:stone",
+    "legacy_num_id": "1",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:stone",
+    "legacy_num_id": "1",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:stone",
+    "legacy_num_id": "1",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:stone",
+    "legacy_num_id": "1",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:stone",
+    "legacy_num_id": "1",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:stone",
+    "legacy_num_id": "1",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:grass",
+    "legacy_num_id": "2"
+  },
+  {
+    "block_id": "minecraft:dirt",
+    "legacy_num_id": "3"
+  },
+  {
+    "block_id": "minecraft:dirt",
+    "legacy_num_id": "3",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:dirt",
+    "legacy_num_id": "3",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:cobblestone",
+    "legacy_num_id": "4"
+  },
+  {
+    "block_id": "minecraft:planks",
+    "legacy_num_id": "5"
+  },
+  {
+    "block_id": "minecraft:planks",
+    "legacy_num_id": "5",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:planks",
+    "legacy_num_id": "5",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:planks",
+    "legacy_num_id": "5",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:planks",
+    "legacy_num_id": "5",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:planks",
+    "legacy_num_id": "5",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:sapling",
+    "legacy_num_id": "6"
+  },
+  {
+    "block_id": "minecraft:sapling",
+    "legacy_num_id": "6",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:sapling",
+    "legacy_num_id": "6",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:sapling",
+    "legacy_num_id": "6",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:sapling",
+    "legacy_num_id": "6",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:sapling",
+    "legacy_num_id": "6",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:bedrock",
+    "legacy_num_id": "7"
+  },
+  {
+    "block_id": "minecraft:flowing_water",
+    "legacy_num_id": "8"
+  },
+  {
+    "block_id": "minecraft:water",
+    "legacy_num_id": "9"
+  },
+  {
+    "block_id": "minecraft:flowing_lava",
+    "legacy_num_id": "10"
+  },
+  {
+    "block_id": "minecraft:lava",
+    "legacy_num_id": "11"
+  },
+  {
+    "block_id": "minecraft:sand",
+    "legacy_num_id": "12"
+  },
+  {
+    "block_id": "minecraft:sand",
+    "legacy_num_id": "12",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:gravel",
+    "legacy_num_id": "13"
+  },
+  {
+    "block_id": "minecraft:gold_ore",
+    "legacy_num_id": "14"
+  },
+  {
+    "block_id": "minecraft:iron_ore",
+    "legacy_num_id": "15"
+  },
+  {
+    "block_id": "minecraft:coal_ore",
+    "legacy_num_id": "16"
+  },
+  {
+    "block_id": "minecraft:log",
+    "legacy_num_id": "17"
+  },
+  {
+    "block_id": "minecraft:log",
+    "legacy_num_id": "17",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:log",
+    "legacy_num_id": "17",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:log",
+    "legacy_num_id": "17",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:leaves",
+    "legacy_num_id": "18"
+  },
+  {
+    "block_id": "minecraft:leaves",
+    "legacy_num_id": "18",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:leaves",
+    "legacy_num_id": "18",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:leaves",
+    "legacy_num_id": "18",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:sponge",
+    "legacy_num_id": "19"
+  },
+  {
+    "block_id": "minecraft:sponge",
+    "legacy_num_id": "19",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:glass",
+    "legacy_num_id": "20"
+  },
+  {
+    "block_id": "minecraft:lapis_ore",
+    "legacy_num_id": "21"
+  },
+  {
+    "block_id": "minecraft:lapis_block",
+    "legacy_num_id": "22"
+  },
+  {
+    "block_id": "minecraft:dispenser",
+    "legacy_num_id": "23"
+  },
+  {
+    "block_id": "minecraft:sandstone",
+    "legacy_num_id": "24"
+  },
+  {
+    "block_id": "minecraft:sandstone",
+    "legacy_num_id": "24",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:sandstone",
+    "legacy_num_id": "24",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:noteblock",
+    "legacy_num_id": "25"
+  },
+  {
+    "block_id": "minecraft:bed",
+    "legacy_num_id": "26"
+  },
+  {
+    "block_id": "minecraft:golden_rail",
+    "legacy_num_id": "27"
+  },
+  {
+    "block_id": "minecraft:detector_rail",
+    "legacy_num_id": "28"
+  },
+  {
+    "block_id": "minecraft:sticky_piston",
+    "legacy_num_id": "29"
+  },
+  {
+    "block_id": "minecraft:web",
+    "legacy_num_id": "30"
+  },
+  {
+    "block_id": "minecraft:tallgrass",
+    "legacy_num_id": "31"
+  },
+  {
+    "block_id": "minecraft:tallgrass",
+    "legacy_num_id": "31",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:tallgrass",
+    "legacy_num_id": "31",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:deadbush",
+    "legacy_num_id": "32"
+  },
+  {
+    "block_id": "minecraft:piston",
+    "legacy_num_id": "33"
+  },
+  {
+    "block_id": "minecraft:piston_head",
+    "legacy_num_id": "34"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "9"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "10"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "11"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "12"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "13"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "14"
+  },
+  {
+    "block_id": "minecraft:wool",
+    "legacy_num_id": "35",
+    "legacy_num_variant": "15"
+  },
+  {
+    "block_id": "minecraft:yellow_flower",
+    "legacy_num_id": "37"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:red_flower",
+    "legacy_num_id": "38",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:brown_mushroom",
+    "legacy_num_id": "39"
+  },
+  {
+    "block_id": "minecraft:red_mushroom",
+    "legacy_num_id": "40"
+  },
+  {
+    "block_id": "minecraft:gold_block",
+    "legacy_num_id": "41"
+  },
+  {
+    "block_id": "minecraft:iron_block",
+    "legacy_num_id": "42"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab",
+    "legacy_num_id": "43",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:stone_slab",
+    "legacy_num_id": "44",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:brick_block",
+    "legacy_num_id": "45"
+  },
+  {
+    "block_id": "minecraft:tnt",
+    "legacy_num_id": "46"
+  },
+  {
+    "block_id": "minecraft:bookshelf",
+    "legacy_num_id": "47"
+  },
+  {
+    "block_id": "minecraft:mossy_cobblestone",
+    "legacy_num_id": "48"
+  },
+  {
+    "block_id": "minecraft:obsidian",
+    "legacy_num_id": "49"
+  },
+  {
+    "block_id": "minecraft:torch",
+    "legacy_num_id": "50"
+  },
+  {
+    "block_id": "minecraft:fire",
+    "legacy_num_id": "51"
+  },
+  {
+    "block_id": "minecraft:mob_spawner",
+    "legacy_num_id": "52"
+  },
+  {
+    "block_id": "minecraft:oak_stairs",
+    "legacy_num_id": "53"
+  },
+  {
+    "block_id": "minecraft:chest",
+    "legacy_num_id": "54"
+  },
+  {
+    "block_id": "minecraft:redstone_wire",
+    "legacy_num_id": "55"
+  },
+  {
+    "block_id": "minecraft:diamond_ore",
+    "legacy_num_id": "56"
+  },
+  {
+    "block_id": "minecraft:diamond_block",
+    "legacy_num_id": "57"
+  },
+  {
+    "block_id": "minecraft:crafting_table",
+    "legacy_num_id": "58"
+  },
+  {
+    "block_id": "minecraft:wheat",
+    "legacy_num_id": "59"
+  },
+  {
+    "block_id": "minecraft:farmland",
+    "legacy_num_id": "60"
+  },
+  {
+    "block_id": "minecraft:furnace",
+    "legacy_num_id": "61"
+  },
+  {
+    "block_id": "minecraft:lit_furnace",
+    "legacy_num_id": "62"
+  },
+  {
+    "block_id": "minecraft:standing_sign",
+    "legacy_num_id": "63"
+  },
+  {
+    "block_id": "minecraft:wooden_door",
+    "legacy_num_id": "64"
+  },
+  {
+    "block_id": "minecraft:ladder",
+    "legacy_num_id": "65"
+  },
+  {
+    "block_id": "minecraft:rail",
+    "legacy_num_id": "66"
+  },
+  {
+    "block_id": "minecraft:stone_stairs",
+    "legacy_num_id": "67"
+  },
+  {
+    "block_id": "minecraft:wall_sign",
+    "legacy_num_id": "68"
+  },
+  {
+    "block_id": "minecraft:lever",
+    "legacy_num_id": "69"
+  },
+  {
+    "block_id": "minecraft:stone_pressure_plate",
+    "legacy_num_id": "70"
+  },
+  {
+    "block_id": "minecraft:iron_door",
+    "legacy_num_id": "71"
+  },
+  {
+    "block_id": "minecraft:wooden_pressure_plate",
+    "legacy_num_id": "72"
+  },
+  {
+    "block_id": "minecraft:redstone_ore",
+    "legacy_num_id": "73"
+  },
+  {
+    "block_id": "minecraft:lit_redstone_ore",
+    "legacy_num_id": "74"
+  },
+  {
+    "block_id": "minecraft:unlit_redstone_torch",
+    "legacy_num_id": "75"
+  },
+  {
+    "block_id": "minecraft:redstone_torch",
+    "legacy_num_id": "76"
+  },
+  {
+    "block_id": "minecraft:stone_button",
+    "legacy_num_id": "77"
+  },
+  {
+    "block_id": "minecraft:snow_layer",
+    "legacy_num_id": "78"
+  },
+  {
+    "block_id": "minecraft:ice",
+    "legacy_num_id": "79"
+  },
+  {
+    "block_id": "minecraft:snow",
+    "legacy_num_id": "80"
+  },
+  {
+    "block_id": "minecraft:cactus",
+    "legacy_num_id": "81"
+  },
+  {
+    "block_id": "minecraft:clay",
+    "legacy_num_id": "82"
+  },
+  {
+    "block_id": "minecraft:reeds",
+    "legacy_num_id": "83"
+  },
+  {
+    "block_id": "minecraft:jukebox",
+    "legacy_num_id": "84"
+  },
+  {
+    "block_id": "minecraft:fence",
+    "legacy_num_id": "85"
+  },
+  {
+    "block_id": "minecraft:pumpkin",
+    "legacy_num_id": "86"
+  },
+  {
+    "block_id": "minecraft:netherrack",
+    "legacy_num_id": "87"
+  },
+  {
+    "block_id": "minecraft:soul_sand",
+    "legacy_num_id": "88"
+  },
+  {
+    "block_id": "minecraft:glowstone",
+    "legacy_num_id": "89"
+  },
+  {
+    "block_id": "minecraft:portal",
+    "legacy_num_id": "90"
+  },
+  {
+    "block_id": "minecraft:lit_pumpkin",
+    "legacy_num_id": "91"
+  },
+  {
+    "block_id": "minecraft:cake",
+    "legacy_num_id": "92"
+  },
+  {
+    "block_id": "minecraft:unpowered_repeater",
+    "legacy_num_id": "93"
+  },
+  {
+    "block_id": "minecraft:powered_repeater",
+    "legacy_num_id": "94"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "9"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "10"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "11"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "12"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "13"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "14"
+  },
+  {
+    "block_id": "minecraft:stained_glass",
+    "legacy_num_id": "95",
+    "legacy_num_variant": "15"
+  },
+  {
+    "block_id": "minecraft:trapdoor",
+    "legacy_num_id": "96"
+  },
+  {
+    "block_id": "minecraft:monster_egg",
+    "legacy_num_id": "97"
+  },
+  {
+    "block_id": "minecraft:monster_egg",
+    "legacy_num_id": "97",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:monster_egg",
+    "legacy_num_id": "97",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:monster_egg",
+    "legacy_num_id": "97",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:monster_egg",
+    "legacy_num_id": "97",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:monster_egg",
+    "legacy_num_id": "97",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:stonebrick",
+    "legacy_num_id": "98"
+  },
+  {
+    "block_id": "minecraft:stonebrick",
+    "legacy_num_id": "98",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:stonebrick",
+    "legacy_num_id": "98",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:stonebrick",
+    "legacy_num_id": "98",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:brown_mushroom_block",
+    "legacy_num_id": "99"
+  },
+  {
+    "block_id": "minecraft:red_mushroom_block",
+    "legacy_num_id": "100"
+  },
+  {
+    "block_id": "minecraft:iron_bars",
+    "legacy_num_id": "101"
+  },
+  {
+    "block_id": "minecraft:glass_pane",
+    "legacy_num_id": "102"
+  },
+  {
+    "block_id": "minecraft:melon_block",
+    "legacy_num_id": "103"
+  },
+  {
+    "block_id": "minecraft:pumpkin_stem",
+    "legacy_num_id": "104"
+  },
+  {
+    "block_id": "minecraft:melon_stem",
+    "legacy_num_id": "105"
+  },
+  {
+    "block_id": "minecraft:vine",
+    "legacy_num_id": "106"
+  },
+  {
+    "block_id": "minecraft:fence_gate",
+    "legacy_num_id": "107"
+  },
+  {
+    "block_id": "minecraft:brick_stairs",
+    "legacy_num_id": "108"
+  },
+  {
+    "block_id": "minecraft:stone_brick_stairs",
+    "legacy_num_id": "109"
+  },
+  {
+    "block_id": "minecraft:mycelium",
+    "legacy_num_id": "110"
+  },
+  {
+    "block_id": "minecraft:waterlily",
+    "legacy_num_id": "111"
+  },
+  {
+    "block_id": "minecraft:nether_brick",
+    "legacy_num_id": "112"
+  },
+  {
+    "block_id": "minecraft:nether_brick_fence",
+    "legacy_num_id": "113"
+  },
+  {
+    "block_id": "minecraft:nether_brick_stairs",
+    "legacy_num_id": "114"
+  },
+  {
+    "block_id": "minecraft:nether_wart",
+    "legacy_num_id": "115"
+  },
+  {
+    "block_id": "minecraft:enchanting_table",
+    "legacy_num_id": "116"
+  },
+  {
+    "block_id": "minecraft:brewing_stand",
+    "legacy_num_id": "117"
+  },
+  {
+    "block_id": "minecraft:cauldron",
+    "legacy_num_id": "118"
+  },
+  {
+    "block_id": "minecraft:end_portal",
+    "legacy_num_id": "119"
+  },
+  {
+    "block_id": "minecraft:end_portal_frame",
+    "legacy_num_id": "120"
+  },
+  {
+    "block_id": "minecraft:end_stone",
+    "legacy_num_id": "121"
+  },
+  {
+    "block_id": "minecraft:dragon_egg",
+    "legacy_num_id": "122"
+  },
+  {
+    "block_id": "minecraft:redstone_lamp",
+    "legacy_num_id": "123"
+  },
+  {
+    "block_id": "minecraft:lit_redstone_lamp",
+    "legacy_num_id": "124"
+  },
+  {
+    "block_id": "minecraft:double_wooden_slab",
+    "legacy_num_id": "125"
+  },
+  {
+    "block_id": "minecraft:double_wooden_slab",
+    "legacy_num_id": "125",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:double_wooden_slab",
+    "legacy_num_id": "125",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:double_wooden_slab",
+    "legacy_num_id": "125",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:double_wooden_slab",
+    "legacy_num_id": "125",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:double_wooden_slab",
+    "legacy_num_id": "125",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:wooden_slab",
+    "legacy_num_id": "126"
+  },
+  {
+    "block_id": "minecraft:wooden_slab",
+    "legacy_num_id": "126",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:wooden_slab",
+    "legacy_num_id": "126",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:wooden_slab",
+    "legacy_num_id": "126",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:wooden_slab",
+    "legacy_num_id": "126",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:wooden_slab",
+    "legacy_num_id": "126",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:cocoa",
+    "legacy_num_id": "127"
+  },
+  {
+    "block_id": "minecraft:sandstone_stairs",
+    "legacy_num_id": "128"
+  },
+  {
+    "block_id": "minecraft:emerald_ore",
+    "legacy_num_id": "129"
+  },
+  {
+    "block_id": "minecraft:ender_chest",
+    "legacy_num_id": "130"
+  },
+  {
+    "block_id": "minecraft:tripwire_hook",
+    "legacy_num_id": "131"
+  },
+  {
+    "block_id": "minecraft:tripwire_hook",
+    "legacy_num_id": "132"
+  },
+  {
+    "block_id": "minecraft:emerald_block",
+    "legacy_num_id": "133"
+  },
+  {
+    "block_id": "minecraft:spruce_stairs",
+    "legacy_num_id": "134"
+  },
+  {
+    "block_id": "minecraft:birch_stairs",
+    "legacy_num_id": "135"
+  },
+  {
+    "block_id": "minecraft:jungle_stairs",
+    "legacy_num_id": "136"
+  },
+  {
+    "block_id": "minecraft:command_block",
+    "legacy_num_id": "137"
+  },
+  {
+    "block_id": "minecraft:beacon",
+    "legacy_num_id": "138"
+  },
+  {
+    "block_id": "minecraft:cobblestone_wall",
+    "legacy_num_id": "139"
+  },
+  {
+    "block_id": "minecraft:cobblestone_wall",
+    "legacy_num_id": "139",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:flower_pot",
+    "legacy_num_id": "140"
+  },
+  {
+    "block_id": "minecraft:carrots",
+    "legacy_num_id": "141"
+  },
+  {
+    "block_id": "minecraft:potatoes",
+    "legacy_num_id": "142"
+  },
+  {
+    "block_id": "minecraft:wooden_button",
+    "legacy_num_id": "143"
+  },
+  {
+    "block_id": "minecraft:skull",
+    "legacy_num_id": "144"
+  },
+  {
+    "block_id": "minecraft:anvil",
+    "legacy_num_id": "145"
+  },
+  {
+    "block_id": "minecraft:trapped_chest",
+    "legacy_num_id": "146"
+  },
+  {
+    "block_id": "minecraft:light_weighted_pressure_plate",
+    "legacy_num_id": "147"
+  },
+  {
+    "block_id": "minecraft:heavy_weighted_pressure_plate",
+    "legacy_num_id": "148"
+  },
+  {
+    "block_id": "minecraft:unpowered_comparator",
+    "legacy_num_id": "149"
+  },
+  {
+    "block_id": "minecraft:powered_comparator",
+    "legacy_num_id": "150"
+  },
+  {
+    "block_id": "minecraft:daylight_detector",
+    "legacy_num_id": "151"
+  },
+  {
+    "block_id": "minecraft:redstone_block",
+    "legacy_num_id": "152"
+  },
+  {
+    "block_id": "minecraft:quartz_ore",
+    "legacy_num_id": "153"
+  },
+  {
+    "block_id": "minecraft:hopper",
+    "legacy_num_id": "154"
+  },
+  {
+    "block_id": "minecraft:quartz_block",
+    "legacy_num_id": "155"
+  },
+  {
+    "block_id": "minecraft:quartz_block",
+    "legacy_num_id": "155",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:quartz_block",
+    "legacy_num_id": "155",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:quartz_stairs",
+    "legacy_num_id": "156"
+  },
+  {
+    "block_id": "minecraft:activator_rail",
+    "legacy_num_id": "157"
+  },
+  {
+    "block_id": "minecraft:dropper",
+    "legacy_num_id": "158"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "9"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "10"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "11"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "12"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "13"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "14"
+  },
+  {
+    "block_id": "minecraft:stained_hardened_clay",
+    "legacy_num_id": "159",
+    "legacy_num_variant": "15"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "9"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "10"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "11"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "12"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "13"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "14"
+  },
+  {
+    "block_id": "minecraft:stained_glass_pane",
+    "legacy_num_id": "160",
+    "legacy_num_variant": "15"
+  },
+  {
+    "block_id": "minecraft:leaves2",
+    "legacy_num_id": "161"
+  },
+  {
+    "block_id": "minecraft:leaves2",
+    "legacy_num_id": "161",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:log2",
+    "legacy_num_id": "162"
+  },
+  {
+    "block_id": "minecraft:log2",
+    "legacy_num_id": "162",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:acacia_stairs",
+    "legacy_num_id": "163"
+  },
+  {
+    "block_id": "minecraft:dark_oak_stairs",
+    "legacy_num_id": "164"
+  },
+  {
+    "block_id": "minecraft:slime",
+    "legacy_num_id": "165"
+  },
+  {
+    "block_id": "minecraft:barrier",
+    "legacy_num_id": "166"
+  },
+  {
+    "block_id": "minecraft:iron_trapdoor",
+    "legacy_num_id": "167"
+  },
+  {
+    "block_id": "minecraft:prismarine",
+    "legacy_num_id": "168"
+  },
+  {
+    "block_id": "minecraft:prismarine",
+    "legacy_num_id": "168",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:prismarine",
+    "legacy_num_id": "168",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:sea_lantern",
+    "legacy_num_id": "169"
+  },
+  {
+    "block_id": "minecraft:hay_block",
+    "legacy_num_id": "170"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "9"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "10"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "11"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "12"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "13"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "14"
+  },
+  {
+    "block_id": "minecraft:carpet",
+    "legacy_num_id": "171",
+    "legacy_num_variant": "15"
+  },
+  {
+    "block_id": "minecraft:hardened_clay",
+    "legacy_num_id": "172"
+  },
+  {
+    "block_id": "minecraft:coal_block",
+    "legacy_num_id": "173"
+  },
+  {
+    "block_id": "minecraft:packed_ice",
+    "legacy_num_id": "174"
+  },
+  {
+    "block_id": "minecraft:double_plant",
+    "legacy_num_id": "175"
+  },
+  {
+    "block_id": "minecraft:double_plant",
+    "legacy_num_id": "175",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:double_plant",
+    "legacy_num_id": "175",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:double_plant",
+    "legacy_num_id": "175",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:double_plant",
+    "legacy_num_id": "175",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:double_plant",
+    "legacy_num_id": "175",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:standing_banner",
+    "legacy_num_id": "176"
+  },
+  {
+    "block_id": "minecraft:wall_banner",
+    "legacy_num_id": "177"
+  },
+  {
+    "block_id": "minecraft:daylight_detector_inverted",
+    "legacy_num_id": "178"
+  },
+  {
+    "block_id": "minecraft:red_sandstone",
+    "legacy_num_id": "179"
+  },
+  {
+    "block_id": "minecraft:red_sandstone",
+    "legacy_num_id": "179",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:red_sandstone",
+    "legacy_num_id": "179",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:red_sandstone_stairs",
+    "legacy_num_id": "180"
+  },
+  {
+    "block_id": "minecraft:double_stone_slab2",
+    "legacy_num_id": "181"
+  },
+  {
+    "block_id": "minecraft:stone_slab2",
+    "legacy_num_id": "182"
+  },
+  {
+    "block_id": "minecraft:spruce_fence_gate",
+    "legacy_num_id": "183"
+  },
+  {
+    "block_id": "minecraft:birch_fence_gate",
+    "legacy_num_id": "184"
+  },
+  {
+    "block_id": "minecraft:jungle_fence_gate",
+    "legacy_num_id": "185"
+  },
+  {
+    "block_id": "minecraft:dark_oak_fence_gate",
+    "legacy_num_id": "186"
+  },
+  {
+    "block_id": "minecraft:acacia_fence_gate",
+    "legacy_num_id": "187"
+  },
+  {
+    "block_id": "minecraft:spruce_fence",
+    "legacy_num_id": "188"
+  },
+  {
+    "block_id": "minecraft:birch_fence",
+    "legacy_num_id": "189"
+  },
+  {
+    "block_id": "minecraft:jungle_fence",
+    "legacy_num_id": "190"
+  },
+  {
+    "block_id": "minecraft:dark_oak_fence",
+    "legacy_num_id": "191"
+  },
+  {
+    "block_id": "minecraft:acacia_fence",
+    "legacy_num_id": "192"
+  },
+  {
+    "block_id": "minecraft:spruce_door",
+    "legacy_num_id": "193"
+  },
+  {
+    "block_id": "minecraft:birch_door",
+    "legacy_num_id": "194"
+  },
+  {
+    "block_id": "minecraft:jungle_door",
+    "legacy_num_id": "195"
+  },
+  {
+    "block_id": "minecraft:acacia_door",
+    "legacy_num_id": "196"
+  },
+  {
+    "block_id": "minecraft:dark_oak_door",
+    "legacy_num_id": "197"
+  },
+  {
+    "block_id": "minecraft:end_rod",
+    "legacy_num_id": "198"
+  },
+  {
+    "block_id": "minecraft:chorus_plant",
+    "legacy_num_id": "199"
+  },
+  {
+    "block_id": "minecraft:chorus_flower",
+    "legacy_num_id": "200"
+  },
+  {
+    "block_id": "minecraft:purpur_block",
+    "legacy_num_id": "201"
+  },
+  {
+    "block_id": "minecraft:purpur_pillar",
+    "legacy_num_id": "202"
+  },
+  {
+    "block_id": "minecraft:purpur_stairs",
+    "legacy_num_id": "203"
+  },
+  {
+    "block_id": "minecraft:purpur_double_slab",
+    "legacy_num_id": "204"
+  },
+  {
+    "block_id": "minecraft:purpur_slab",
+    "legacy_num_id": "205"
+  },
+  {
+    "block_id": "minecraft:end_bricks",
+    "legacy_num_id": "206"
+  },
+  {
+    "block_id": "minecraft:beetroots",
+    "legacy_num_id": "207"
+  },
+  {
+    "block_id": "minecraft:grass_path",
+    "legacy_num_id": "208"
+  },
+  {
+    "block_id": "minecraft:end_gateway",
+    "legacy_num_id": "209"
+  },
+  {
+    "block_id": "minecraft:repeating_command_block",
+    "legacy_num_id": "210"
+  },
+  {
+    "block_id": "minecraft:chain_command_block",
+    "legacy_num_id": "211"
+  },
+  {
+    "block_id": "minecraft:frosted_ice",
+    "legacy_num_id": "212"
+  },
+  {
+    "block_id": "minecraft:magma",
+    "legacy_num_id": "213"
+  },
+  {
+    "block_id": "minecraft:nether_wart_block",
+    "legacy_num_id": "214"
+  },
+  {
+    "block_id": "minecraft:red_nether_brick",
+    "legacy_num_id": "215"
+  },
+  {
+    "block_id": "minecraft:bone_block",
+    "legacy_num_id": "216"
+  },
+  {
+    "block_id": "minecraft:structure_void",
+    "legacy_num_id": "217"
+  },
+  {
+    "block_id": "minecraft:observer",
+    "legacy_num_id": "218"
+  },
+  {
+    "block_id": "minecraft:white_shulker_box",
+    "legacy_num_id": "219"
+  },
+  {
+    "block_id": "minecraft:orange_shulker_box",
+    "legacy_num_id": "220"
+  },
+  {
+    "block_id": "minecraft:magenta_shulker_box",
+    "legacy_num_id": "221"
+  },
+  {
+    "block_id": "minecraft:light_blue_shulker_box",
+    "legacy_num_id": "222"
+  },
+  {
+    "block_id": "minecraft:yellow_shulker_box",
+    "legacy_num_id": "223"
+  },
+  {
+    "block_id": "minecraft:lime_shulker_box",
+    "legacy_num_id": "224"
+  },
+  {
+    "block_id": "minecraft:pink_shulker_box",
+    "legacy_num_id": "225"
+  },
+  {
+    "block_id": "minecraft:gray_shulker_box",
+    "legacy_num_id": "226"
+  },
+  {
+    "block_id": "minecraft:silver_shulker_box",
+    "legacy_num_id": "227"
+  },
+  {
+    "block_id": "minecraft:cyan_shulker_box",
+    "legacy_num_id": "228"
+  },
+  {
+    "block_id": "minecraft:purple_shulker_box",
+    "legacy_num_id": "229"
+  },
+  {
+    "block_id": "minecraft:blue_shulker_box",
+    "legacy_num_id": "230"
+  },
+  {
+    "block_id": "minecraft:brown_shulker_box",
+    "legacy_num_id": "231"
+  },
+  {
+    "block_id": "minecraft:green_shulker_box",
+    "legacy_num_id": "232"
+  },
+  {
+    "block_id": "minecraft:red_shulker_box",
+    "legacy_num_id": "233"
+  },
+  {
+    "block_id": "minecraft:black_shulker_box",
+    "legacy_num_id": "234"
+  },
+  {
+    "block_id": "minecraft:white_glazed_terracotta",
+    "legacy_num_id": "235"
+  },
+  {
+    "block_id": "minecraft:orange_glazed_terracotta",
+    "legacy_num_id": "236"
+  },
+  {
+    "block_id": "minecraft:magenta_glazed_terracotta",
+    "legacy_num_id": "237"
+  },
+  {
+    "block_id": "minecraft:light_blue_glazed_terracotta",
+    "legacy_num_id": "238"
+  },
+  {
+    "block_id": "minecraft:yellow_glazed_terracotta",
+    "legacy_num_id": "239"
+  },
+  {
+    "block_id": "minecraft:lime_glazed_terracotta",
+    "legacy_num_id": "240"
+  },
+  {
+    "block_id": "minecraft:pink_glazed_terracotta",
+    "legacy_num_id": "241"
+  },
+  {
+    "block_id": "minecraft:gray_glazed_terracotta",
+    "legacy_num_id": "242"
+  },
+  {
+    "block_id": "minecraft:light_gray_glazed_terracotta",
+    "legacy_num_id": "243"
+  },
+  {
+    "block_id": "minecraft:cyan_glazed_terracotta",
+    "legacy_num_id": "244"
+  },
+  {
+    "block_id": "minecraft:purple_glazed_terracotta",
+    "legacy_num_id": "245"
+  },
+  {
+    "block_id": "minecraft:blue_glazed_terracotta",
+    "legacy_num_id": "246"
+  },
+  {
+    "block_id": "minecraft:brown_glazed_terracotta",
+    "legacy_num_id": "247"
+  },
+  {
+    "block_id": "minecraft:green_glazed_terracotta",
+    "legacy_num_id": "248"
+  },
+  {
+    "block_id": "minecraft:red_glazed_terracotta",
+    "legacy_num_id": "249"
+  },
+  {
+    "block_id": "minecraft:black_glazed_terracotta",
+    "legacy_num_id": "250"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "9"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "10"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "11"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "12"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "13"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "14"
+  },
+  {
+    "block_id": "minecraft:concrete",
+    "legacy_num_id": "251",
+    "legacy_num_variant": "15"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "1"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "2"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "3"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "4"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "5"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "6"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "7"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "8"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "9"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "10"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "11"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "12"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "13"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "14"
+  },
+  {
+    "block_id": "minecraft:concrete_powder",
+    "legacy_num_id": "252",
+    "legacy_num_variant": "15"
+  },
+  {
+    "block_id": "minecraft:structure_block",
+    "legacy_num_id": "255"
+  }
+]
