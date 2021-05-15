@@ -15,7 +15,8 @@ public class GlobalBlockStateMap {
     
     private static final Map<BlockState, Short> blockToIdMap = new HashMap<>();
     private static final ArrayList<BlockState> idToBlockTypeMap = new ArrayList<>(100);
-    private static short idCounter = 0;
+    private static final Map<Short, Short[]> idToRotatedBlockIdMap = new HashMap<>();
+    private static volatile short idCounter = 0;
     
     public static void addBlockType(BlockState blockType){
         if(idToBlockTypeMap.contains(blockType)){
@@ -44,7 +45,9 @@ public class GlobalBlockStateMap {
     }
     
     public static BlockState getBlockType(short id){
-        if(id < 0 || id >= idCounter) throw new IllegalArgumentException("Bad id used in looking up mapping: " + id);
+        if (id < 0 || id >= idCounter) {
+            throw new IllegalArgumentException("Bad id used in looking up mapping: " + id);
+        }
         return idToBlockTypeMap.get(id);
     }
     
@@ -52,6 +55,27 @@ public class GlobalBlockStateMap {
         synchronized(idToBlockTypeMap){
             return new ArrayList(idToBlockTypeMap);
         }
+    }
+    
+    public static short getRotatedBlockId(short blockId, int rightRots) {
+        rightRots %= 4;
+        if (rightRots == 0) {
+            return blockId;
+        }
+        Short[] rotatedIds = idToRotatedBlockIdMap.get(blockId);
+        if (rotatedIds == null) {
+            BlockState blockState = idToBlockTypeMap.get(blockId);
+            rotatedIds = new Short[] {
+                blockToIdMap.get(BlockStateRotationUtil.guessRotatedBlockState(blockState, 1)),
+                blockToIdMap.get(BlockStateRotationUtil.guessRotatedBlockState(blockState, 2)),
+                blockToIdMap.get(BlockStateRotationUtil.guessRotatedBlockState(blockState, 3))
+            };
+            idToRotatedBlockIdMap.put(
+                blockId,
+                rotatedIds
+            );
+        }
+        return rotatedIds[rightRots - 1]; //one rotation at index 0, etc
     }
     
     public static int getNumBlockStates() {

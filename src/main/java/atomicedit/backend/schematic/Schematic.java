@@ -1,6 +1,7 @@
 package atomicedit.backend.schematic;
 
 import atomicedit.backend.BlockCoord;
+import atomicedit.backend.GlobalBlockStateMap;
 import atomicedit.backend.blockentity.BlockEntity;
 import atomicedit.backend.World;
 import atomicedit.backend.blockentity.BlockEntityUtils;
@@ -210,8 +211,7 @@ public class Schematic {
     }
     
     private static short rotateBlock(short block, int rightRotations) {
-        //TODO add block rotations
-        return block;
+        return GlobalBlockStateMap.getRotatedBlockId(block, rightRotations);
     }
     
     /**
