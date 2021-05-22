@@ -20,6 +20,7 @@ public class SchematicRenderObject extends RenderObject {
         super(
             new Vector3f(0,0,0),
             new Vector3f(0,0,0),
+            new Vector3f(1,1,1),
             TextureLoader.getMinecraftDefaultTexture(),
             containsTranslucent,
             verticies,

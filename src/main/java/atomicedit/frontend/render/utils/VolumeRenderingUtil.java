@@ -130,6 +130,7 @@ public class VolumeRenderingUtil {
         RenderObject boxRenderObject = new OnlyPositionRenderObject(
             new Vector3f(0,0,0),
             new Vector3f(0,0,0),
+            new Vector3f(1,1,1),
             COLOR,
             true,
             vertexData,
@@ -139,6 +140,7 @@ public class VolumeRenderingUtil {
         RenderObject linesRenderObject = new LinesRenderObject(
             new Vector3f(0,0,0),
             new Vector3f(0,0,0),
+            new Vector3f(1,1,1),
             new Vector4f(0,0,0,1f),
             true,
             vertexData,

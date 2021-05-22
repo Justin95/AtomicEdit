@@ -20,6 +20,7 @@ public class ChunkSectionRenderObject extends RenderObject{
         super(
             new Vector3f(pos.x * ChunkSection.SIDE_LENGTH, pos.y * ChunkSection.SIDE_LENGTH, pos.z * ChunkSection.SIDE_LENGTH),
             new Vector3f(0,0,0),
+            new Vector3f(1,1,1),
             TextureLoader.getMinecraftDefaultTexture(),
             containsTranslucent,
             verticies,

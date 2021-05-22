@@ -11,12 +11,13 @@ import org.joml.Vector3f;
 public class RenderMatrixUtils {
     
     
-    public static Matrix4f createModelMatrix(Vector3f pos, Vector3f rot){
+    public static Matrix4f createModelMatrix(Vector3f pos, Vector3f rot, Vector3f scale){
         Matrix4f model = new Matrix4f(); //identity matrix
         model.translate(pos);
         model.rotate(-(float)Math.toRadians(rot.x), 1, 0, 0);
         model.rotate(-(float)Math.toRadians(rot.y), 0, 1, 0);
         model.rotate(-(float)Math.toRadians(rot.z), 0, 0, 1);
+        model.scale(scale);
         return model;
     }
     
