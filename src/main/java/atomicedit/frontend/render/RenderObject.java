@@ -27,6 +27,7 @@ public class RenderObject {
     
     protected Vector3f position;
     protected Vector3f rotation;
+    protected Vector3f scale;
     protected final boolean containsTranslucent;
     protected Matrix4f modelMatrix;
     protected Texture texture;
@@ -40,11 +41,12 @@ public class RenderObject {
     protected float[] vertexData;
     protected int[] indicies;
     
-    public RenderObject(Vector3f pos, Vector3f rot, Texture texture, boolean containsTranslucent, float[] vertexData, int[] indicies){
+    public RenderObject(Vector3f pos, Vector3f rot, Vector3f scale, Texture texture, boolean containsTranslucent, float[] vertexData, int[] indicies){
         this.position = pos;
         this.rotation = rot;
+        this.scale = scale;
         this.containsTranslucent = containsTranslucent;
-        this.modelMatrix = RenderMatrixUtils.createModelMatrix(pos, rot);
+        this.modelMatrix = RenderMatrixUtils.createModelMatrix(pos, rot, scale);
         this.texture = texture;
         this.shaderProgram = ShaderProgram.getShaderProgram(ShaderProgram.DEFAULT_SHADER_PROGRAM); //can add a choice here later
         this.numIndicies = indicies.length;
@@ -78,18 +80,23 @@ public class RenderObject {
     
     public void updatePosition(Vector3f pos){
         this.position = pos;
-        this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation);
+        this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation, this.scale);
     }
     
     public void updateRotation(Vector3f rot){
         this.rotation = rot;
-        this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation);
+        this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation, this.scale);
     }
     
     public void updatePositionAndRotation(Vector3f pos, Vector3f rot){
         this.position = pos;
         this.rotation = rot;
-        this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation);
+        this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation, this.scale);
+    }
+    
+    public void updateScale(Vector3f scale) {
+        this.scale = scale;
+        this.modelMatrix = RenderMatrixUtils.createModelMatrix(this.position, this.rotation, this.scale);
     }
     
     protected void setUniforms() {

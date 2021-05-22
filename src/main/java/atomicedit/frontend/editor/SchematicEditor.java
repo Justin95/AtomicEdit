@@ -40,6 +40,8 @@ public class SchematicEditor implements Editor {
     private SchematicEditorGui gui;
     private Schematic heldSchematic;
     private int rightRotations;
+    private boolean yFlip;
+    private boolean processFlip;
     private Renderable schematicRenderable;
     private Vector3i schemPlacementMinPos;
     private int repeatTimes;
@@ -56,6 +58,8 @@ public class SchematicEditor implements Editor {
         this.repeatTimes = 0;
         this.repeatOffset = new Vector3i(0, 0, 0);
         this.rightRotations = 0;
+        this.yFlip = false;
+        this.processFlip = false;
     }
     
     @Override
@@ -69,6 +73,17 @@ public class SchematicEditor implements Editor {
     
     @Override
     public void renderTick() {
+        //handle flip
+        if (this.processFlip) {
+            this.processFlip = false;
+            this.heldSchematic = Schematic.createRotatedSchematic(heldSchematic, 0, true);
+            if (this.schematicRenderable != null) {
+                renderer.getRenderableStage().removeRenderable(schematicRenderable);
+            }
+            this.schematicRenderable = EditorUtils.createSchematicRenderable(this.heldSchematic);
+            this.renderer.getRenderableStage().addRenderable(schematicRenderable);
+        }
+        
         int xLen = heldSchematic != null ? heldSchematic.volume.getEnclosingBox().getXLength() : 0;
         int yLen = heldSchematic != null ? heldSchematic.volume.getEnclosingBox().getYLength() : 0;
         int zLen = heldSchematic != null ? heldSchematic.volume.getEnclosingBox().getZLength() : 0;
@@ -224,6 +239,14 @@ public class SchematicEditor implements Editor {
         this.rightRotations = ((this.rightRotations - 1) % 4 + 4) % 4;
     }
     
+    public void doYFlip() {
+        if (this.processFlip) {
+            return; //if last flip has not been processed yet don't do another one
+        }
+        this.yFlip = !this.yFlip;
+        this.processFlip = true;
+    }
+    
     public void setRepeatTimes(int repeatTimes) {
         this.repeatTimes = repeatTimes;
     }
@@ -249,7 +272,7 @@ public class SchematicEditor implements Editor {
     }
     
     public void placeSchematic() {
-        Schematic schematic = updateSchematicWithRotation(heldSchematic, rightRotations);
+        Schematic schematic = updateSchematicWithRotation(heldSchematic, rightRotations, false);
         BlockCoord placementCoord = new BlockCoord(schemPlacementMinPos.x, schemPlacementMinPos.y, schemPlacementMinPos.z);
         PlaceSchematicOperation op = PlaceSchematicOperation.getInstance(schematic, placementCoord, repeatTimes, repeatOffset);
         try {
@@ -322,13 +345,14 @@ public class SchematicEditor implements Editor {
      * property. Create a rotated schematic equivilant to schematic.
      * @param schematic
      * @param rightRotations 
+     * @param yFlip should the schematic be flipped on the y axis
      * @return the rotated schematic
      */
-    private static Schematic updateSchematicWithRotation(Schematic schematic, int rightRotations) {
-        if (rightRotations == 0) {
+    private static Schematic updateSchematicWithRotation(Schematic schematic, int rightRotations, boolean yFlip) {
+        if (rightRotations == 0 && yFlip == false) {
             return schematic;
         }
-        return Schematic.createRotatedSchematic(schematic, rightRotations);
+        return Schematic.createRotatedSchematic(schematic, rightRotations, yFlip);
     }
     
 }

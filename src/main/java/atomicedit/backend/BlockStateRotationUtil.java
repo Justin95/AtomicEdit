@@ -9,7 +9,96 @@ import atomicedit.backend.BlockStateProperty.BlockStateDataType;
  */
 public class BlockStateRotationUtil {
     
+    static BlockState guessFlippedBlockState(BlockState blockState) {
+        if (blockState.blockStateProperties == null) {
+            return blockState; //no properties means no rotation related properties
+        }
+        BlockStateProperty[] rotProps = new BlockStateProperty[blockState.blockStateProperties.length];
+        for (int i = 0 ; i < blockState.blockStateProperties.length; i++) {
+            rotProps[i] = FlipCases.getFlippedProperty(blockState.blockStateProperties[i]);
+        }
+        return BlockState.getBlockState(blockState.name, rotProps);
+    }
     
+    private static enum FlipCases {
+        HALF(
+            "half",
+            (oldProp) -> {
+                if (oldProp.valueType != BlockStateDataType.STRING) {
+                    return oldProp;
+                }
+                if ("top".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("half", "bottom");
+                }
+                if ("bottom".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("half", "top");
+                }
+                return oldProp;
+            }
+        ),
+        FACING(
+            "facing",
+            (oldProp) -> {
+                if (oldProp.valueType != BlockStateDataType.STRING) {
+                    return oldProp;
+                }
+                if ("up".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("facing", "down");
+                }
+                if ("down".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("facing", "up");
+                }
+                return oldProp;
+            }
+        ),
+        TYPE(
+            "type",
+            (oldProp) -> {
+                if (oldProp.valueType != BlockStateDataType.STRING) {
+                    return oldProp;
+                }
+                if ("top".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("type", "bottom");
+                }
+                if ("bottom".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("type", "top");
+                }
+                return oldProp;
+            }
+        ),
+        FACE(
+            "face",
+            (oldProp) -> {
+                if (oldProp.valueType != BlockStateDataType.STRING) {
+                    return oldProp;
+                }
+                if ("ceiling".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("face", "floor");
+                }
+                if ("floor".equals(oldProp.VALUE)) {
+                    return BlockStateProperty.getInstance("face", "ceiling");
+                }
+                return oldProp;
+            }
+        ),
+        ;
+        private final String propName;
+        private final PropertyFlipper flipper;
+        
+        FlipCases(String propName, PropertyFlipper flipper) {
+            this.propName = propName;
+            this.flipper = flipper;
+        }
+        
+        static BlockStateProperty getFlippedProperty(BlockStateProperty prop) {
+            for (FlipCases flipCase : values()) {
+                if (flipCase.propName.equals(prop.NAME)) {
+                    return flipCase.flipper.getFlippedProperty(prop);
+                }
+            }
+            return prop;
+        }
+    }
     
     static BlockState guessRotatedBlockState(BlockState blockState, int rightRots) {
         rightRots %= 4;
@@ -137,6 +226,10 @@ public class BlockStateRotationUtil {
     
     private interface PropertyRotator {
         BlockStateProperty getRotatedProperty(BlockStateProperty oldProp, int rightRots);
+    }
+    
+    private interface PropertyFlipper {
+        BlockStateProperty getFlippedProperty(BlockStateProperty oldProp);
     }
     
 }

@@ -14,8 +14,9 @@ import java.util.Map;
 public class GlobalBlockStateMap {
     
     private static final Map<BlockState, Short> blockToIdMap = new HashMap<>();
-    private static final ArrayList<BlockState> idToBlockTypeMap = new ArrayList<>(100);
+    private static final ArrayList<BlockState> idToBlockTypeMap = new ArrayList<>();
     private static final Map<Short, Short[]> idToRotatedBlockIdMap = new HashMap<>();
+    private static final Map<Short, Short> idToFlippedBlockIdMap = new HashMap<>();
     private static volatile short idCounter = 0;
     
     public static void addBlockType(BlockState blockType){
@@ -76,6 +77,22 @@ public class GlobalBlockStateMap {
             );
         }
         return rotatedIds[rightRots - 1]; //one rotation at index 0, etc
+    }
+    
+    /**
+     * Get the flipped block type.
+     * @param blockId
+     * @return 
+     */
+    public static short getFlippedBlockId(short blockId) {
+        Short flippedId = idToFlippedBlockIdMap.get(blockId);
+        if (flippedId == null) {
+            BlockState blockState = idToBlockTypeMap.get(blockId);
+            BlockState flippedState = BlockStateRotationUtil.guessFlippedBlockState(blockState);
+            flippedId = blockToIdMap.get(flippedState);
+            idToFlippedBlockIdMap.put(blockId, flippedId);
+        }
+        return flippedId;
     }
     
     public static int getNumBlockStates() {

@@ -31,4 +31,10 @@ public interface Renderable {
         }
     }
     
+    default void updateScale(Vector3f scale) {
+        for (RenderObject obj : getRenderObjects()) {
+            obj.updateScale(scale);
+        }
+    }
+    
 }

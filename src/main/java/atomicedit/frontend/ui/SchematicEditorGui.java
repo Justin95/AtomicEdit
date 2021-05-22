@@ -30,12 +30,14 @@ public class SchematicEditorGui {
     
     private static final int GUI_WIDTH = 350;
     private static final int GUI_HEIGHT = 800;
-    private static final ImageIcon ROTATE_LEFT_ICON = FileUtils.loadIcon("icons/undo.png");
-    private static final ImageIcon ROTATE_RIGHT_ICON = FileUtils.loadIcon("icons/redo.png");
+    private static final ImageIcon ROTATE_LEFT_ICON = FileUtils.loadIcon("icons/rotate_left.png");
+    private static final ImageIcon ROTATE_RIGHT_ICON = FileUtils.loadIcon("icons/rotate_right.png");
+    private static final ImageIcon Y_FLIP_ICON = FileUtils.loadIcon("icons/flip.png");
     
     static {
         ROTATE_LEFT_ICON.setSize(new Vector2f(30, 30));
         ROTATE_RIGHT_ICON.setSize(new Vector2f(30, 30));
+        Y_FLIP_ICON.setSize((new Vector2f(30, 30)));
     }
     
     private final SchematicEditor editor;
@@ -225,6 +227,22 @@ public class SchematicEditorGui {
         this.statusToComponents.get(EditorStatus.INITIAL_PLACE).add(rotateRightButton);
         this.statusToComponents.get(EditorStatus.FINE_TUNING).add(rotateRightButton);
         
+        //y flip button
+        Button yFlipButton = new Button();
+        yFlipButton.getListenerMap().addListener(MouseClickEvent.class, (event) -> {
+            if(event.getAction() == MouseClickEvent.MouseClickAction.CLICK){
+                editor.doYFlip();
+            }
+        });
+        yFlipButton.getStyle().getBackground().setIcon(Y_FLIP_ICON);
+        yFlipButton.getTextState().setText("");
+        yFlipButton.getStyle().setPosition(Style.PositionType.RELATIVE);
+        yFlipButton.getStyle().setMinHeight(30f);
+        yFlipButton.getStyle().setMinWidth(30f);
+        yFlipButton.getStyle().setMargin(10);
+        this.statusToComponents.get(EditorStatus.INITIAL_PLACE).add(yFlipButton);
+        this.statusToComponents.get(EditorStatus.FINE_TUNING).add(yFlipButton);
+        
         //rotate button panel
         Panel rotatePanel = new Panel();
         rotatePanel.setFocusable(false);
@@ -241,6 +259,7 @@ public class SchematicEditorGui {
         rotatePanel.getStyle().setMargin(20);
         rotatePanel.add(rotateLeftButton);
         rotatePanel.add(rotateRightButton);
+        rotatePanel.add(yFlipButton);
         this.schematicPanel.add(rotatePanel);
         
         //x+ button

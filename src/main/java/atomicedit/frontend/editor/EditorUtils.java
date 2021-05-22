@@ -26,6 +26,7 @@ public class EditorUtils {
         return new NoTextureRenderObject(
             new Vector3f(position),
             new Vector3f(0,0,0),
+            new Vector3f(1,1,1),
             true,
             new float[]{
                 min,min,min,    .33f, .33f, .66f,  .7f,
@@ -51,6 +52,7 @@ public class EditorUtils {
     static Renderable createSelectionBoxRenderable(Vector3i pointA, Vector3i pointB){
         Vector3f position = new Vector3f(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
         Vector3f rotation = new Vector3f(0,0,0);
+        Vector3f scale = new Vector3f(1,1,1);
         Vector4f boxColor = new Vector4f(.66f, .66f, .66f, .6f);
         Vector4f lineColor = new Vector4f(0, 0, 0, 1f);
         float min = -0.02f;
@@ -92,8 +94,8 @@ public class EditorUtils {
             6,7
         };
         return new RenderObjectCollection(
-            new OnlyPositionRenderObject(position, rotation, boxColor, true, vertexData, faceIndicies),
-            new LinesRenderObject(position, rotation, lineColor, false, vertexData, lineIndicies)
+            new OnlyPositionRenderObject(position, rotation, scale, boxColor, true, vertexData, faceIndicies),
+            new LinesRenderObject(position, rotation, scale, lineColor, false, vertexData, lineIndicies)
         );
     }
     
@@ -103,6 +105,7 @@ public class EditorUtils {
         SchematicRenderObject schematicRo = SchematicRenderObjectCreator.createSchematicRenderObject(schematic);
         schematicRo.updatePosition(pos);
         Vector3f rotation = new Vector3f(0,0,0);
+        Vector3f scale = new Vector3f(1,1,1);
         Vector4f boxColor = new Vector4f(.3f, .7f, .3f, .4f);
         Vector4f lineColor = new Vector4f(0, 0, 0, 1f);
         int schemXLen = schematic.volume.getEnclosingBox().getXLength();
@@ -162,8 +165,8 @@ public class EditorUtils {
         };
         return new RenderObjectCollection(
             schematicRo,
-            new OnlyPositionRenderObject(pos, rotation, boxColor, true, faceVertexData, faceIndicies),
-            new LinesRenderObject(pos, rotation, lineColor, false, lineVertexData, lineIndicies)
+            new OnlyPositionRenderObject(pos, rotation, scale, boxColor, true, faceVertexData, faceIndicies),
+            new LinesRenderObject(pos, rotation, scale, lineColor, false, lineVertexData, lineIndicies)
         );
     }
     

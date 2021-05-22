@@ -82,9 +82,10 @@ public class Schematic {
      * Create a new schematic that is rotated right a certain number of times.
      * @param original the original schematic
      * @param rightRotations
+     * @param yFlip
      * @return 
      */
-    public static Schematic createRotatedSchematic(Schematic original, int rightRotations) {
+    public static Schematic createRotatedSchematic(Schematic original, int rightRotations, boolean yFlip) {
         final int rightRots = (rightRotations % 4 + 4) % 4;
         //create new volume
         Box origBox = original.volume.getEnclosingBox();
@@ -101,15 +102,16 @@ public class Schematic {
         short[] newBlocks = new short[original.blocks.length];
         BitArray includedSet = new BitArray(newBox.getNumBlocksContained());
         final int origXLen = origBox.getXLength();
+        final int origYLen = origBox.getYLength();
         final int origZLen = origBox.getZLength();
         origBox.doForXyz((x, y, z) -> {
             int newX = calcNewX(x, z, origXLen, origZLen, rightRots);
-            int newY = y;
+            int newY = yFlip ? origYLen - 1 - y : y;
             int newZ = calcNewZ(x, z, origXLen, origZLen, rightRots);
             final int newIndex = GeneralUtils.getIndexYZX(newX, newY, newZ, newBox.getXLength(), newBox.getZLength());
             final int oldIndex = GeneralUtils.getIndexYZX(x, y, z, origBox.getXLength(), origBox.getZLength());
             includedSet.set(newIndex, original.volume.getIncludedSet().get(oldIndex));
-            newBlocks[newIndex] = rotateBlock(original.blocks[oldIndex], rightRots);
+            newBlocks[newIndex] = rotateBlock(original.blocks[oldIndex], rightRots, yFlip);
         });
         //create new entity list
         List<Entity> newEntities = new ArrayList<>(original.entities.size());
@@ -123,7 +125,7 @@ public class Schematic {
                 coord = new EntityCoord(0, 0, 0);
             }
             double newX = calcNewXDouble(coord.x, coord.z, origXLen, origZLen, rightRots);
-            double newY = coord.y;
+            double newY = yFlip ? origYLen - 1 - coord.y : coord.y;
             double newZ = calcNewZDouble(coord.x, coord.z, origXLen, origZLen, rightRots);
             copy.setCoord(newX, newY, newZ);
             newEntities.add(copy);
@@ -141,7 +143,7 @@ public class Schematic {
                 coord = new BlockCoord(0, 0, 0);
             }
             int newX = calcNewX(coord.x, coord.z, origXLen, origZLen, rightRots);
-            int newY = coord.y;
+            int newY = yFlip ? origYLen - 1 - coord.y : coord.y;
             int newZ = calcNewZ(coord.x, coord.z, origXLen, origZLen, rightRots);
             copy.setBlockCoord(newX, newY, newZ);
             newBlockEntities.add(copy);
@@ -210,8 +212,9 @@ public class Schematic {
         }
     }
     
-    private static short rotateBlock(short block, int rightRotations) {
-        return GlobalBlockStateMap.getRotatedBlockId(block, rightRotations);
+    private static short rotateBlock(short block, int rightRotations, boolean yFlip) {
+        short rotBlock = GlobalBlockStateMap.getRotatedBlockId(block, rightRotations);
+        return yFlip ? GlobalBlockStateMap.getFlippedBlockId(block) : rotBlock;
     }
     
     /**

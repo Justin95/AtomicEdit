@@ -149,10 +149,10 @@ public class ChunkRenderObjectCreator {
         }
         Vector3f pos = new Vector3f(chunkCoord.getMinBlockCoord().x, chunkCoord.getMinBlockCoord().y, chunkCoord.getMinBlockCoord().z);
         miscRenderObjects.add(
-            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), BLOCK_ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
+            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), BLOCK_ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
         );
         miscRenderObjects.add(
-            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
+            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
         );
         //create entity render object
         vertexData.reset();
@@ -179,10 +179,10 @@ public class ChunkRenderObjectCreator {
         }
         
         miscRenderObjects.add(
-            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
+            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
         );
         miscRenderObjects.add(
-            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
+            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
         );
         return miscRenderObjects;
     }
