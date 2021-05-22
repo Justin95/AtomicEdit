@@ -2,7 +2,6 @@
 package atomicedit.frontend.editor;
 
 import atomicedit.AtomicEdit;
-import atomicedit.backend.BlockCoord;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.Renderable;
@@ -12,7 +11,6 @@ import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.OperationType;
 import atomicedit.backend.parameters.Parameters;
-import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -24,20 +22,14 @@ import org.lwjgl.glfw.GLFW;
  */
 public class AreaSelectionEditor implements Editor {
     
-    private Vector3i pointA;
-    private Vector3i pointB;
     private RenderObject pointerRenderObject;
     private Renderable selectionBoxRenderable;
-    private boolean currentlyDrawingBox;
     private final AtomicEditRenderer renderer;
     private AreaSelectionOptionsGui gui;
     private final EditorPointer editorPointer;
     
     public AreaSelectionEditor(AtomicEditRenderer renderer, EditorPointer editorPointer){
-        pointA = null;
-        pointB = null;
         this.renderer = renderer;
-        this.currentlyDrawingBox = false;
         this.editorPointer = editorPointer;
     }
     
@@ -56,6 +48,8 @@ public class AreaSelectionEditor implements Editor {
             renderer.getRenderableStage().removeRenderable(selectionBoxRenderable);
             this.selectionBoxRenderable = null;
         }
+        final Vector3i pointA = this.editorPointer.getPointA();
+        final Vector3i pointB = this.editorPointer.getPointB();
         if(pointA != null){
             Vector3i secondVec = pointB != null ? pointB : this.editorPointer.getSelectorPoint();
             this.selectionBoxRenderable = EditorUtils.createSelectionBoxRenderable(pointA, secondVec);
@@ -75,20 +69,13 @@ public class AreaSelectionEditor implements Editor {
     
     private void mainClick(){
         synchronized(editorPointer){
-            if(pointA != null && pointB != null){ //already have full box
-                pointA = null; //clear existing box
-                pointB = null;
-            }
-            if(!currentlyDrawingBox){
-                pointA = editorPointer.getSelectorPoint();
-            }else{
-                pointB = editorPointer.getSelectorPoint();
-            }
-            currentlyDrawingBox = !currentlyDrawingBox;
+            this.editorPointer.clickUpdate();
         }
     }
     
     public OperationResult doOperation(OperationType opType, Parameters params){
+        final Vector3i pointA = this.editorPointer.getPointA();
+        final Vector3i pointB = this.editorPointer.getPointB();
         if(pointA == null || pointB == null){
             return new OperationResult(false, "Cannot do operation with no volume.");
         }
