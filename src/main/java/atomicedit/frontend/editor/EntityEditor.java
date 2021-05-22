@@ -38,21 +38,15 @@ import org.lwjgl.glfw.GLFW;
  */
 public class EntityEditor implements Editor {
     
-    private Vector3i pointA;
-    private Vector3i pointB;
     private RenderObject pointerRenderObject;
     private Renderable selectionBoxRenderable;
-    private boolean currentlyDrawingBox;
     private final AtomicEditRenderer renderer;
     private EntityEditorGui gui;
     private final EditorPointer editorPointer;
     private volatile boolean editorWidgetOpen;
     
     public EntityEditor(AtomicEditRenderer renderer, EditorPointer editorPointer){
-        pointA = null;
-        pointB = null;
         this.renderer = renderer;
-        this.currentlyDrawingBox = false;
         this.editorPointer = editorPointer;
         this.editorWidgetOpen = false;
     }
@@ -72,6 +66,8 @@ public class EntityEditor implements Editor {
             renderer.getRenderableStage().removeRenderable(selectionBoxRenderable);
             this.selectionBoxRenderable = null;
         }
+        Vector3i pointA = this.editorPointer.getPointA();
+        Vector3i pointB = this.editorPointer.getPointB();
         if(pointA != null){
             Vector3i secondVec = pointB != null ? pointB : this.editorPointer.getSelectorPoint();
             this.selectionBoxRenderable = EditorUtils.createSelectionBoxRenderable(pointA, secondVec);
@@ -91,16 +87,7 @@ public class EntityEditor implements Editor {
     
     private void mainClick(){
         synchronized(editorPointer){
-            if(pointA != null && pointB != null){ //already have full box
-                pointA = null; //clear existing box
-                pointB = null;
-            }
-            if(!currentlyDrawingBox){
-                pointA = editorPointer.getSelectorPoint();
-            }else{
-                pointB = editorPointer.getSelectorPoint();
-            }
-            currentlyDrawingBox = !currentlyDrawingBox;
+            editorPointer.clickUpdate();
         }
     }
     
@@ -113,6 +100,8 @@ public class EntityEditor implements Editor {
         if (this.editorWidgetOpen) {
             return null;
         }
+        Vector3i pointA = this.editorPointer.getPointA();
+        Vector3i pointB = this.editorPointer.getPointB();
         if(pointA == null || pointB == null){
             return null; //Cannot do operation with no volume
         }
@@ -186,6 +175,8 @@ public class EntityEditor implements Editor {
         if (this.editorWidgetOpen) {
             return new OperationResult(false, "Should not do operation when widget is open.");
         }
+        Vector3i pointA = this.editorPointer.getPointA();
+        Vector3i pointB = this.editorPointer.getPointB();
         if(pointA == null || pointB == null){
             return new OperationResult(false, "Cannot do operation with no volume.");
         }

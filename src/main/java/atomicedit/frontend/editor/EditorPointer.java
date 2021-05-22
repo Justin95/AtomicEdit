@@ -20,10 +20,18 @@ public class EditorPointer {
     private Vector3f prevCameraRot;
     private float selectorDistanceFromCamera;
     
+    //box selection data
+    private Vector3i pointA;
+    private Vector3i pointB;
+    private boolean currentlyDrawingBox;
+    
     public EditorPointer(){
         this.selectorDistanceFromCamera = 10;
         this.prevCameraPos = new Vector3f(0, 0, 0);
         this.prevCameraRot = new Vector3f(0, 0, 0);
+        this.pointA = null;
+        this.pointB = null;
+        this.currentlyDrawingBox = false;
     }
     
     /**
@@ -63,6 +71,43 @@ public class EditorPointer {
             Logger.warning("Cannot get selector point before setting it.");
         }
         return this.selectorPoint; //don't need to lock on selector point. if it gets updated at the same time we can work with old or new point
+    }
+    
+    public void clickUpdate() {
+        if(pointA != null && pointB != null){ //already have full box
+            pointA = null; //clear existing box
+            pointB = null;
+        }
+        if(!currentlyDrawingBox){
+            pointA = this.getSelectorPoint();
+        }else{
+            pointB = this.getSelectorPoint();
+        }
+        currentlyDrawingBox = !currentlyDrawingBox;
+    }
+    
+    public boolean getCurrentlyDrawingBox() {
+        return this.currentlyDrawingBox;
+    }
+    
+    public void setCurrentlyDrawingBox(boolean currDrawing) {
+        this.currentlyDrawingBox = currDrawing;
+    }
+
+    public Vector3i getPointA() {
+        return pointA;
+    }
+
+    public void setPointA(Vector3i pointA) {
+        this.pointA = pointA;
+    }
+
+    public Vector3i getPointB() {
+        return pointB;
+    }
+
+    public void setPointB(Vector3i pointB) {
+        this.pointB = pointB;
     }
     
 }

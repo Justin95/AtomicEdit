@@ -30,11 +30,8 @@ public class SchematicEditor implements Editor {
     private boolean useBrushPlacement;
     
     private final BackendController backendController;
-    private Vector3i pointA;
-    private Vector3i pointB;
     private RenderObject pointerRenderObject;
     private Renderable selectionBoxRenderable;
-    private boolean currentlyDrawingBox;
     private final AtomicEditRenderer renderer;
     private final EditorPointer editorPointer;
     private SchematicEditorGui gui;
@@ -48,11 +45,8 @@ public class SchematicEditor implements Editor {
     private Vector3i repeatOffset;
     
     public SchematicEditor(AtomicEditRenderer renderer, EditorPointer editorPointer){
-        pointA = null;
-        pointB = null;
         this.backendController = AtomicEdit.getBackendController();
         this.renderer = renderer;
-        this.currentlyDrawingBox = false;
         this.editorPointer = editorPointer;
         this.useBrushPlacement = false;
         this.repeatTimes = 0;
@@ -96,6 +90,8 @@ public class SchematicEditor implements Editor {
                     renderer.getRenderableStage().removeRenderable(selectionBoxRenderable);
                     this.selectionBoxRenderable = null;
                 }
+                final Vector3i pointA = this.editorPointer.getPointA();
+                final Vector3i pointB = this.editorPointer.getPointB();
                 if(pointA != null){
                     Vector3i secondVec = pointB != null ? pointB : this.editorPointer.getSelectorPoint();
                     this.selectionBoxRenderable = EditorUtils.createSelectionBoxRenderable(pointA, secondVec);
@@ -151,16 +147,7 @@ public class SchematicEditor implements Editor {
     private void mainClick(){
         if (this.status == EditorStatus.SELECT) {
             synchronized (editorPointer) {
-                if(pointA != null && pointB != null){ //already have full box
-                    pointA = null; //clear existing box
-                    pointB = null;
-                }
-                if(!currentlyDrawingBox){
-                    pointA = editorPointer.getSelectorPoint();
-                }else{
-                    pointB = editorPointer.getSelectorPoint();
-                }
-                currentlyDrawingBox = !currentlyDrawingBox;
+                this.editorPointer.clickUpdate();
             }
         } else if (this.status == EditorStatus.INITIAL_PLACE) {
             if (useBrushPlacement) {
@@ -202,7 +189,9 @@ public class SchematicEditor implements Editor {
         }
         WorldVolume volume;
         synchronized (editorPointer) {
-            if (this.pointA == null || this.pointB == null) {
+            final Vector3i pointA = this.editorPointer.getPointA();
+            final Vector3i pointB = this.editorPointer.getPointB();
+            if (pointA == null || pointB == null) {
                 return;
             }
             volume = WorldVolume.getInstance(pointA, pointB);
