@@ -70,7 +70,7 @@ public class BlockSelectorComponent extends Label {
         /**
          * Max options in the scrollable panel at a time.
          */
-        private static final int MAX_OPTIONS = 35;
+        private static final int MAX_OPTIONS = 50;
         
         private TextInput textBox;
         private ScrollablePanel blockOptionsPanel;
@@ -92,7 +92,6 @@ public class BlockSelectorComponent extends Label {
             this.blockOptionsPanel = new ScrollablePanel(40, 80, WIDTH - 80, HEIGHT - 160);
             this.blockOptionsPanel.getContainer().getStyle().getBackground().setColor(.8f, .8f, .8f, 1);
             this.blockOptionsPanel.getContainer().getStyle().setDisplay(Style.DisplayType.FLEX);
-            this.blockOptionsPanel.getContainer().setSize(WIDTH - 90, HEIGHT - 170);
             this.blockOptionsPanel.getContainer().getStyle().setMinimumSize(WIDTH - 90, HEIGHT - 170);
             this.blockOptionsPanel.getContainer().getStyle().getFlexStyle().setJustifyContent(FlexStyle.JustifyContent.FLEX_START);
             this.blockOptionsPanel.getContainer().getStyle().getFlexStyle().setAlignContent(FlexStyle.AlignContent.CENTER);
@@ -115,6 +114,7 @@ public class BlockSelectorComponent extends Label {
                 }
             });
             this.updatePanelOptions(searchText);
+            this.blockOptionsPanel.getContainer().setSize(WIDTH - 90, blockOptions.size() * 20);
             panel.add(textBox);
             panel.add(selectButton);
             panel.add(blockOptionsPanel);

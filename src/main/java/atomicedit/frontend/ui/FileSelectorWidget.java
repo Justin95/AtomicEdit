@@ -137,6 +137,7 @@ public class FileSelectorWidget extends Widget {
                 listedFiles.add(fileOpt);
                 this.getContainer().add(fileOpt);
             }
+            this.getContainer().setSize(500 - 10, listedFiles.size() * 20 + 10);
         }
         
     }
