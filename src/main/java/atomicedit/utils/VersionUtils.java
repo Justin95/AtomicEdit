@@ -5,12 +5,13 @@ import atomicedit.logging.Logger;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import java.net.URL;
+import java.util.stream.Collectors;
 
 /**
  * Utility code for determining if an updated version of AtomicEdit is available.
@@ -43,28 +44,31 @@ public class VersionUtils {
     
     private static String checkForNewestVersion() {
         //https://api.github.com/repos/Justin95/AtomicEdit/releases/34093177
-        //don't need a client pool or anything fancy, we only make one request per program exec
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
-        Request request = new Request.Builder()
-            .url(CHECK_RELEASES_URL)
-            .method("GET", null)
-            .addHeader("Accept", "application/vnd.github.v3+json")
-            .build();
         String responseJsonStr;
-        try (Response response = client.newCall(request).execute()) {
-            if(response == null || !response.isSuccessful()) {
-                Logger.warning("Request to " + CHECK_RELEASES_URL + " failed.");
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(CHECK_RELEASES_URL).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
+            connection.setConnectTimeout(2000);
+            connection.setReadTimeout(2000);
+            connection.setInstanceFollowRedirects(false);
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                Logger.error("Bad response checking for new version at " + CHECK_RELEASES_URL);
                 return null;
             }
-            ResponseBody body = response.body();
-            if (body == null) {
-                Logger.warning("Request to " + CHECK_RELEASES_URL + " failed. Null response body.");
-                return null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                responseJsonStr = reader.lines().collect(Collectors.joining("\n"));
             }
-            responseJsonStr = body.string();
-        } catch (IOException e) {
-            Logger.warning("Request to " + CHECK_RELEASES_URL + " failed.", e);
+        } catch (Exception e) {
+            Logger.error("Could not look for newer AtomicEdit version on Github at " + CHECK_RELEASES_URL, e);
             return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
         JsonObject versionJson = new JsonParser().parse(responseJsonStr).getAsJsonObject();
         if (!versionJson.has("tag_name")) {

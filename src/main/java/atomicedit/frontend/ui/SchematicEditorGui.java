@@ -1,13 +1,20 @@
 
 package atomicedit.frontend.ui;
 
+import atomicedit.backend.schematic.AeSchematicFormatV1;
+import atomicedit.backend.schematic.Schematic;
 import atomicedit.frontend.editor.SchematicEditor;
 import atomicedit.frontend.editor.SchematicEditor.EditorStatus;
+import atomicedit.logging.Logger;
+import atomicedit.settings.AtomicEditConstants;
 import atomicedit.utils.FileUtils;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.swing.JFileChooser;
 import org.joml.Vector2f;
 import org.joml.Vector3i;
 import org.liquidengine.legui.component.Button;
@@ -33,6 +40,8 @@ public class SchematicEditorGui {
     private static final ImageIcon ROTATE_LEFT_ICON = FileUtils.loadIcon("icons/rotate_left.png");
     private static final ImageIcon ROTATE_RIGHT_ICON = FileUtils.loadIcon("icons/rotate_right.png");
     private static final ImageIcon Y_FLIP_ICON = FileUtils.loadIcon("icons/flip.png");
+    private static final ReentrantLock SAVE_LOCK = new ReentrantLock();
+    private static final ReentrantLock LOAD_LOCK = new ReentrantLock();
     
     static {
         ROTATE_LEFT_ICON.setSize(new Vector2f(30, 30));
@@ -45,9 +54,11 @@ public class SchematicEditorGui {
     private Panel schematicPanel;
     private final Map<EditorStatus, List<Component>> statusToComponents;
     private CheckBox includeAirCheckBox;
+    private Component root;
     
-    public SchematicEditorGui(SchematicEditor editor) {
+    public SchematicEditorGui(SchematicEditor editor, Component root) {
         this.editor = editor;
+        this.root = root;
         this.status = EditorStatus.SELECT;
         this.statusToComponents = new EnumMap<>(EditorStatus.class);
         for (EditorStatus eStatus : EditorStatus.values()) {
@@ -96,7 +107,23 @@ public class SchematicEditorGui {
         Button loadButton = new Button();
         loadButton.getListenerMap().addListener(MouseClickEvent.class, (event) -> {
             if(event.getAction() == MouseClickEvent.MouseClickAction.CLICK){
-                //TODO add schematic loading
+                if (LOAD_LOCK.tryLock()) {
+                    FileSelectorWidget selectorWidget = new FileSelectorWidget(
+                        "Load Schematic",
+                        AtomicEditConstants.SCHEMATIC_DIR_PATH,
+                        (File file) -> !file.isDirectory() && file.getName().endsWith(SchematicEditor.SCHEMATIC_EXT),
+                        (File schemFile) -> {
+                            try {
+                                editor.loadSchematic(schemFile);
+                            } catch (Exception e) {
+                                Logger.error("Exception trying to load schematic.", e);
+                            } finally {
+                                LOAD_LOCK.unlock();
+                            }
+                        }
+                    );
+                    this.root.add(selectorWidget);
+                }
             }
         });
         loadButton.getTextState().setText("Load Schematic");
@@ -151,8 +178,31 @@ public class SchematicEditorGui {
         //save button
         Button saveButton = new Button();
         saveButton.getListenerMap().addListener(MouseClickEvent.class, (event) -> {
-            if(event.getAction() == MouseClickEvent.MouseClickAction.CLICK){
-                //TODO
+            if(event.getAction() == MouseClickEvent.MouseClickAction.CLICK) {
+                if (!editor.hasSchematic()) {
+                    return;
+                }
+                if (SAVE_LOCK.tryLock()) {
+                    SaveFileWidget saverWidget = new SaveFileWidget(
+                        "Save Schematic",
+                        AtomicEditConstants.SCHEMATIC_DIR_PATH,
+                        SchematicEditor.SCHEMATIC_EXT,
+                        (File file) -> !file.isDirectory(),
+                        (File schemFile) -> {
+                            try {
+                                if (!schemFile.getName().endsWith(SchematicEditor.SCHEMATIC_EXT)) {
+                                    schemFile = new File(schemFile.getAbsolutePath() + SchematicEditor.SCHEMATIC_EXT);
+                                }
+                                editor.saveSchematic(schemFile);
+                            } catch (Exception e) {
+                                Logger.error("Exception trying to save schematic.", e);
+                            } finally {
+                                SAVE_LOCK.unlock();
+                            }
+                        }
+                    );
+                    this.root.add(saverWidget);
+                }
             }
         });
         saveButton.getTextState().setText("Save Schematic");

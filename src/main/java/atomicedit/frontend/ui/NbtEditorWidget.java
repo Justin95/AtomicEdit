@@ -7,7 +7,6 @@ import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
 import atomicedit.utils.FileUtils;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.joml.Vector2f;
 import org.joml.Vector4f;

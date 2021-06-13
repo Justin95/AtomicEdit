@@ -12,5 +12,6 @@ public class AtomicEditConstants {
     public static final String SETTINGS_FILEPATH = ATOMIC_EDIT_INSTALL_PATH + "/atomicEditSettings.json";
     public static final String LOGGING_SETTINGS_FILEPATH = ATOMIC_EDIT_INSTALL_PATH + "/loggingSettings.json";
     public static final String DEFAULT_LOG_FILE_PATH = ATOMIC_EDIT_INSTALL_PATH + "/AtomicEditLastLog.log";
+    public static final String SCHEMATIC_DIR_PATH = ATOMIC_EDIT_INSTALL_PATH + "/schematics";
     
 }

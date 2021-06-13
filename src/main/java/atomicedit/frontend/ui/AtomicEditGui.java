@@ -106,10 +106,12 @@ public class AtomicEditGui {
             if (event.getAction() == MouseClickAction.CLICK) {
                 if (WORLD_SELECT_LOCK.tryLock()) {
                     try {
-                        WorldFileSelector selector = new WorldFileSelector(
-                            AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"
-                        );
-                        selector.setCallback(
+                        FileSelectorWidget selector = new FileSelectorWidget(
+                            "Select Save File",
+                            AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves",
+                            (File file) -> {
+                                return file.isDirectory(); //could look for a level.dat too
+                            },
                             (File saveFile) -> {
                                 try {
                                     if (saveFile != null) {
@@ -118,16 +120,13 @@ public class AtomicEditGui {
                                         backendController.setWorld(worldFilePath);
                                     }
                                 } finally { //exceptions here are unexpected but we have to unlock
-                                    root.remove(selector);
-                                    WORLD_SELECT_LOCK.unlock(); 
+                                    WORLD_SELECT_LOCK.unlock();
                                 }
                             }
                         );
                         root.add(selector);
                     } catch(Exception e) {
                         Logger.error("Exception trying to select a world", e);
-                    } finally {
-                        //WORLD_SELECT_LOCK.unlock();
                     }
                 }
                 

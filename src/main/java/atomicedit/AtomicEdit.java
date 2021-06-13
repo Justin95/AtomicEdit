@@ -31,7 +31,7 @@ public class AtomicEdit {
     private AtomicEditRenderer renderer;
     private final GcThread gcThread;
     
-    private AtomicEdit(){
+    private AtomicEdit() {
         initializeSettings();
         backendController = new BackendController();
         renderer = new AtomicEditRenderer();

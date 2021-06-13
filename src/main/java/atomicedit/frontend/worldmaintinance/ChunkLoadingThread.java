@@ -53,8 +53,12 @@ public class ChunkLoadingThread extends Thread {
         BackendController backendController = AtomicEdit.getBackendController();
         while(keepRunning){
             Camera camera = renderer.getCamera();
-            if(!backendController.hasWorld()) continue;
-            if(camera == null) continue;
+            if(!backendController.hasWorld()) {
+                continue;
+            }
+            if(camera == null) {
+                continue;
+            }
             ChunkCoord cameraCoord = ChunkCoord.getInstanceFromWorldPos(camera.getPosition().x, camera.getPosition().z);
             ChunkCoord maxCoord = ChunkCoord.getInstance(cameraCoord.x + renderDistInChunks, cameraCoord.z + renderDistInChunks);
             ChunkCoord minCoord = ChunkCoord.getInstance(cameraCoord.x - renderDistInChunks, cameraCoord.z - renderDistInChunks);

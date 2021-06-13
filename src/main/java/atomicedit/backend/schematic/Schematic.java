@@ -22,6 +22,7 @@ import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +248,20 @@ public class Schematic {
 
     public Collection<BlockEntity> getBlockEntities() {
         return this.blockEntities;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("Schematic:\n");
+        str.append("X Length: ").append(volume.getEnclosingBox().getXLength()).append("\n");
+        str.append("Y Length: ").append(volume.getEnclosingBox().getYLength()).append("\n");
+        str.append("Z Length: ").append(volume.getEnclosingBox().getZLength()).append("\n");
+        str.append("Bit Mask: ").append(volume.getIncludedSet()).append("\n");
+        str.append("Blocks: ").append(Arrays.toString(blocks)).append("\n");
+        str.append("Num Entities: ").append(entities.size()).append("\n");
+        str.append("Num Block Entities: ").append(blockEntities.size()).append("\n");
+        return str.toString();
     }
     
 }
