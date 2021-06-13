@@ -43,7 +43,7 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
     
     @Override
     public void addBlockRenderData(int x, int y, int z, BlockVolumeDataProvider section, FloatList vertexData, IntList indicies, boolean includeTranslucent){
-        short blockId = section.getBlockAt(x, y, z);
+        int blockId = section.getBlockAt(x, y, z);
         BlockState blockState = GlobalBlockStateMap.getBlockType(blockId);
         List<BlockStateModel> blockStateModels = BlockStateModelLookup.getBlockStateModel(blockState);
         for(int i = 0; i < blockStateModels.size(); i++){
@@ -65,12 +65,12 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
                     if(!modelBox.hasFace(face) || (isFullBlock && isFaceUnviewable(adjDir, section, blockId, x, y, z))){
                         continue;
                     }
-                    short blockLight;
+                    int blockLight;
                     if(isFullBlock){
                         blockLight = getAdjTotalLight(adjDir, x, y, z, section);
                     }else{
-                        short adjLight = getAdjTotalLight(adjDir, x, y, z, section);
-                        short atLight = section.getTotalLightAt(x, y, z);
+                        int adjLight = getAdjTotalLight(adjDir, x, y, z, section);
+                        int atLight = section.getTotalLightAt(x, y, z);
                         blockLight = adjLight > atLight ? adjLight : atLight;
                     }
                     float light = 0.5f + (blockLight / (15f * 2)); //scale 0-15 light levels between half light and full light
@@ -119,12 +119,12 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
     }
     
     
-    private static short getAdjTotalLight(Vector3ic adjDir, int x, int y, int z, BlockVolumeDataProvider section){
+    private static int getAdjTotalLight(Vector3ic adjDir, int x, int y, int z, BlockVolumeDataProvider section){
         return section.getTotalLightAt(x + adjDir.x(), y + adjDir.y(), z + adjDir.z());
     }
     
     /*
-    private static boolean shouldDrawFaceIfFullBlock(Vector3i adjDir, ChunkSectionPlus section, short blockId, int x, int y, int z){
+    private static boolean shouldDrawFaceIfFullBlock(Vector3i adjDir, ChunkSectionPlus section, int blockId, int x, int y, int z){
         return section.getBlockAt(x + adjDir.x, y + adjDir.y, z + adjDir.z) != blockId; //check is adjacent block is the same
     }
     */
@@ -132,7 +132,7 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
      * Determines if a full block is completely surrounded by identical blocks.
      * @return 
      */
-    private boolean isUnseeable(BlockVolumeDataProvider section, short blockId, int x, int y, int z){
+    private boolean isUnseeable(BlockVolumeDataProvider section, int blockId, int x, int y, int z){
         for(int k = 0; k < MODEL_FACES.length; k++){
             ModelBoxFace face = MODEL_FACES[k];
             if(!isFaceUnviewable(face.getAdjacentDirection(), section, blockId, x, y, z)){
@@ -142,13 +142,13 @@ public class BlockModelCreator1_13Logic implements BlockModelCreatorLogic {
         return true;
     }
     
-    private boolean isFaceUnviewable(Vector3ic adjDir, BlockVolumeDataProvider section, short blockId, int x, int y, int z){
-        short adjBlockId = section.getBlockAt(x + adjDir.x(), y + adjDir.y(), z + adjDir.z());
+    private boolean isFaceUnviewable(Vector3ic adjDir, BlockVolumeDataProvider section, int blockId, int x, int y, int z){
+        int adjBlockId = section.getBlockAt(x + adjDir.x(), y + adjDir.y(), z + adjDir.z());
         return adjBlockId == blockId //check is adjacent block is the same
             || (!showHiddenFaces && isFullSolidBlock(adjBlockId) && isFullSolidBlock(blockId)); 
     }
     
-    private boolean isFullSolidBlock(short blockId) {
+    private boolean isFullSolidBlock(int blockId) {
         BlockState blockState = GlobalBlockStateMap.getBlockType(blockId);
         List<BlockStateModel> blockStateModels = BlockStateModelLookup.getBlockStateModel(blockState);
         for (BlockStateModel model : blockStateModels) {

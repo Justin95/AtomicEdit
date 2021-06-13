@@ -34,18 +34,20 @@ public class ChunkSectionPlus implements BlockVolumeDataProvider {
         this.yCoord = y;
         this.zCoord = z;
     }
-
-    public short getBlockAt(int x, int y, int z){
-        return getShortAt(x, y, z, ChunkSectionPlus::getBlockAt);
+    
+    @Override
+    public int getBlockAt(int x, int y, int z){
+        return getIntAt(x, y, z, ChunkSectionPlus::getBlockAt);
     }
     
-    public short getTotalLightAt(int x, int y, int z){
-        short blockLight = getShortAt(x, y, z, ChunkSectionPlus::getBlockLightAt);
-        short skyLight = getShortAt(x, y, z, ChunkSectionPlus::getSkyLightAt);
+    @Override
+    public int getTotalLightAt(int x, int y, int z){
+        int blockLight = getIntAt(x, y, z, ChunkSectionPlus::getBlockLightAt);
+        int skyLight = getIntAt(x, y, z, ChunkSectionPlus::getSkyLightAt);
         return blockLight > skyLight ? blockLight : skyLight;
     }
     
-    private short getShortAt(int x, int y, int z, GetShortOp getOp){
+    private int getIntAt(int x, int y, int z, GetIntegerOp getOp){
         ChunkSection selectedSection = centerSection;
         int selectionX = x;
         int selectionY = y;
@@ -69,10 +71,10 @@ public class ChunkSectionPlus implements BlockVolumeDataProvider {
             selectionZ -= ChunkSection.SIDE_LENGTH;
             selectedSection = secPlusZ;
         }
-        return getOp.getShortOp(selectionX, selectionY, selectionZ, selectedSection);
+        return getOp.getIntegerOp(selectionX, selectionY, selectionZ, selectedSection);
     }
     
-    private static short getBlockLightAt(int x, int y, int z, ChunkSection selectedSection){
+    private static int getBlockLightAt(int x, int y, int z, ChunkSection selectedSection){
         if(selectedSection == null){
             return 0;
         }
@@ -80,7 +82,7 @@ public class ChunkSectionPlus implements BlockVolumeDataProvider {
         return getLightAt(x, y, z, light);
     }
     
-    private static short getSkyLightAt(int x, int y, int z, ChunkSection selectedSection){
+    private static int getSkyLightAt(int x, int y, int z, ChunkSection selectedSection){
         if(selectedSection == null){
             return 15;
         }
@@ -88,7 +90,7 @@ public class ChunkSectionPlus implements BlockVolumeDataProvider {
         return getLightAt(x, y, z, light);
     }
     
-    private static short getLightAt(int x, int y, int z, byte[] light){
+    private static int getLightAt(int x, int y, int z, byte[] light){
         int totalSkyLightIndex = GeneralUtils.getIndexYZX(x, y, z, ChunkSection.SIDE_LENGTH);
         int index = totalSkyLightIndex / 2;
         int offset = totalSkyLightIndex % 2;
@@ -96,15 +98,15 @@ public class ChunkSectionPlus implements BlockVolumeDataProvider {
         return lightVal;
     }
     
-    private static short getBlockAt(int x, int y, int z, ChunkSection selectedSection){
+    private static int getBlockAt(int x, int y, int z, ChunkSection selectedSection){
         if(selectedSection == null){
             return 0; //AIR in empty sections
         }
         return selectedSection.getBlockIds()[GeneralUtils.getIndexYZX(x, y, z, ChunkSection.SIDE_LENGTH)];
     }
     
-    private static interface GetShortOp{
-        short getShortOp(int x, int y, int z, ChunkSection section);
+    private static interface GetIntegerOp{
+        int getIntegerOp(int x, int y, int z, ChunkSection section);
     }
     
 }

@@ -12,8 +12,8 @@ import atomicedit.volumes.Volume;
 public class FillBlockProvider implements BlockProvider{
     
     
-    private short blockId;
-    private Volume volume;
+    private final int blockId;
+    private final Volume volume;
     
     
     public FillBlockProvider(Volume volume, BlockState blockType){
@@ -27,7 +27,7 @@ public class FillBlockProvider implements BlockProvider{
     }
 
     @Override
-    public short getBlockAt(int x, int y, int z) {
+    public int getBlockAt(int x, int y, int z) {
         return this.blockId;
     }
     

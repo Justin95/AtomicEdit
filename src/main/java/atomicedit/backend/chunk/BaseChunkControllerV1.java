@@ -87,9 +87,9 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         if (chunkSectionCache[coord.getSubChunkIndex()] == null){
             readChunkSectionIntoCache(coord.getSubChunkIndex());
         }
-        short[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
+        int[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
         int index = GeneralUtils.getIndexYZX(coord.getChunkLocalX(), coord.getSubChunkLocalY(), coord.getChunkLocalZ(), ChunkSection.SIDE_LENGTH);
-        short globalId = blockIds[index];
+        int globalId = blockIds[index];
         return GlobalBlockStateMap.getBlockType(globalId);
     }
     
@@ -98,7 +98,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         if(chunkSectionCache[coord.getSubChunkIndex()] == null){
             readChunkSectionIntoCache(coord.getSubChunkIndex());
         }
-        short[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
+        int[] blockIds = chunkSectionCache[coord.getSubChunkIndex()].getBlockIds();
         int index = GeneralUtils.getIndexYZX(coord.getChunkLocalX(), coord.getSubChunkLocalY(), coord.getChunkLocalZ(), ChunkSection.SIDE_LENGTH);
         blockIds[index] = GlobalBlockStateMap.getBlockId(block);
         declareCacheIsDirty();
@@ -116,12 +116,12 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public short[] getBlocks(int subChunkIndex) throws MalformedNbtTagException{
+    public int[] getBlocks(int subChunkIndex) throws MalformedNbtTagException{
         return getChunkSection(subChunkIndex).getBlockIds();
     }
     
     @Override
-    public void setBlocks(int subChunkIndex, short[] blocks) throws MalformedNbtTagException{
+    public void setBlocks(int subChunkIndex, int[] blocks) throws MalformedNbtTagException{
         if(subChunkIndex >= this.chunkHeightInSections()) {
             throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
         }
@@ -259,7 +259,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         
         int[] blockValues = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
         for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
-            short globalBlockId = chunkSection.getBlockIds()[i];
+            int globalBlockId = chunkSection.getBlockIds()[i];
             BlockState blockState = GlobalBlockStateMap.getBlockType(globalBlockId);
             blockValues[i] = blockStates.indexOf(blockState);
         }
@@ -273,7 +273,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     private List<BlockState> getContainedBlockStates(ChunkSection chunkSection){
         List<BlockState> blockStates = new ArrayList<>();
         blockStates.add(BlockState.AIR); //air is always in the block state list
-        for(short blockId : chunkSection.getBlockIds()){
+        for(int blockId : chunkSection.getBlockIds()){
             BlockState blockState = GlobalBlockStateMap.getBlockType(blockId);
             if(blockStates.contains(blockState)){
                 continue;
@@ -284,7 +284,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     private ChunkSection readChunkSection(NbtCompoundTag sectionTag, ChunkSectionCoord chunkSectionCoord) throws MalformedNbtTagException{
-        short[] blocks = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
+        int[] blocks = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
         if(sectionTag.contains("Palette")) {
             List<NbtCompoundTag> blockStateNbts = sectionTag.getListTag("Palette").getCompoundTags();
             BlockState[] blockTypes = new BlockState[blockStateNbts.size()];
@@ -346,7 +346,7 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     private ChunkSection makeBlankChunkSection(ChunkSectionCoord coord){
-        short[] blocks = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
+        int[] blocks = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
         if(GlobalBlockStateMap.getBlockId(BlockState.AIR) != 0){ //this condition SHOULD always be false but just incase
             Arrays.fill(blocks, GlobalBlockStateMap.getBlockId(BlockState.AIR));
         }

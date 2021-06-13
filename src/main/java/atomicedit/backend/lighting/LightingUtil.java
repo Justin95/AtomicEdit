@@ -161,7 +161,7 @@ public class LightingUtil {
             int numSections = chunkController.chunkHeightInSections();
             for (int sectionIndex = numSections - 1; sectionIndex >= 0; sectionIndex--) {
                 ChunkSectionCoord sectionCoord = new ChunkSectionCoord(chunkCoord.x, sectionIndex, chunkCoord.z);
-                short[] blocks = chunkController.getBlocks(sectionIndex);
+                int[] blocks = chunkController.getBlocks(sectionIndex);
                 byte[] blockLightData = chunkController.getBlockLighting(sectionIndex);
                 byte[] skyLightData = chunkController.getSkyLighting(sectionIndex);
                 //clear all existing lighting data in chunks being relit

@@ -7,8 +7,8 @@ package atomicedit.frontend.render.blockmodelcreation;
  */
 public interface BlockVolumeDataProvider {
     
-    short getBlockAt(int x, int y, int z);
+    int getBlockAt(int x, int y, int z);
     
-    short getTotalLightAt(int x, int y, int z);
+    int getTotalLightAt(int x, int y, int z);
     
 }

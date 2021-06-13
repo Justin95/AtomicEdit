@@ -124,10 +124,10 @@ public class ChunkUtils {
     
     private static class ChunkSectionBlocks {
         public final int sectionIndex;
-        public final short[] blocks;
+        public final int[] blocks;
         public final ChunkController controller;
         
-        public ChunkSectionBlocks(ChunkController controller, short[] blocks, int sectionIndex){
+        public ChunkSectionBlocks(ChunkController controller, int[] blocks, int sectionIndex){
             this.blocks = blocks;
             this.controller = controller;
             this.sectionIndex = sectionIndex;
@@ -232,7 +232,7 @@ public class ChunkUtils {
         return controllerMap;
     }
     
-    public static short[] readBlocksFromChunks(Collection<ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+    public static int[] readBlocksFromChunks(Collection<ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
         BlockCoord smallestPoint = readVolume.getSmallestPoint();
         Box enclosingBox = readVolume.getEnclosingBox();
         BlockCoord largestPoint = new BlockCoord(
@@ -249,7 +249,7 @@ public class ChunkUtils {
         int xOffset = smallestPoint.getChunkLocalX();
         int yOffset = smallestPoint.getSubChunkLocalY();
         int zOffset = smallestPoint.getChunkLocalZ();
-        short[] blocks = new short[enclosingBox.getNumBlocksContained()]; //blocks not in volume are undefined, left as 0 in this case
+        int[] blocks = new int[enclosingBox.getNumBlocksContained()]; //blocks not in volume are undefined, left as 0 in this case
         readVolume.doForXyz((x, y, z) -> {
             int chunkSectionIndex = GeneralUtils.getIndexYZX((x + xOffset) / ChunkSection.SIDE_LENGTH,
                                                              (y + yOffset) / ChunkSection.SIDE_LENGTH,
@@ -268,7 +268,7 @@ public class ChunkUtils {
         return blocks;
     }
     
-    public static short[] readBlocksFromChunks(Map<ChunkCoord, ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
+    public static int[] readBlocksFromChunks(Map<ChunkCoord, ChunkController> controllers, WorldVolume readVolume) throws MalformedNbtTagException{
         return readBlocksFromChunks(controllers.values(), readVolume);
     }
     

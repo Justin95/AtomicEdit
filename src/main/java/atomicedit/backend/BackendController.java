@@ -4,7 +4,6 @@ package atomicedit.backend;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.dimension.Dimension;
-import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
@@ -93,11 +92,11 @@ public class BackendController {
         Schematic.putSchematicIntoWorld(world, world.getActiveDimension(), schematic, smallestCoord);
     }
     
-    public BlockState getBlockType(short blockRuntimeId){
-        return GlobalBlockStateMap.getBlockType(blockRuntimeId);
+    public BlockState getBlockType(int blockId){
+        return GlobalBlockStateMap.getBlockType(blockId);
     }
     
-    public short getBlockId(BlockState blockType){
+    public int getBlockId(BlockState blockType){
         return GlobalBlockStateMap.getBlockId(blockType);
     }
     
