@@ -4,6 +4,11 @@ package atomicedit.frontend.editor;
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockCoord;
+import atomicedit.backend.nbt.MalformedNbtTagException;
+import atomicedit.backend.nbt.NbtCompoundTag;
+import atomicedit.backend.nbt.NbtTag;
+import atomicedit.backend.nbt.NbtTypes;
+import atomicedit.backend.schematic.AeSchematicFormatV1;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.RenderObject;
@@ -13,8 +18,15 @@ import atomicedit.logging.Logger;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.nbt.PlaceSchematicOperation;
 import atomicedit.volumes.WorldVolume;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.liquidengine.legui.component.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -24,6 +36,7 @@ import org.lwjgl.glfw.GLFW;
 public class SchematicEditor implements Editor {
     
     public static final int MAX_REPEAT_TIMES = 512;
+    public static final String SCHEMATIC_EXT = ".schematic";
     
     //status
     private EditorStatus status;
@@ -58,10 +71,11 @@ public class SchematicEditor implements Editor {
     
     @Override
     public void initialize() {
-        this.gui = new SchematicEditorGui(this);
+        Component root = renderer.getFrame().getContainer();
+        this.gui = new SchematicEditorGui(this, root);
         this.pointerRenderObject = EditorUtils.createEditorPointerRenderObject(editorPointer.getSelectorPoint());
         setStatus(EditorStatus.SELECT);
-        renderer.getFrame().getContainer().add(gui.getSchematicPanel());
+        root.add(gui.getSchematicPanel());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
     }
     
@@ -187,6 +201,9 @@ public class SchematicEditor implements Editor {
         if (this.status != EditorStatus.SELECT) {
             return;
         }
+        if (!AtomicEdit.getBackendController().hasWorld()) {
+            return; //cannot pickup schematic if no world is loaded
+        }
         WorldVolume volume;
         synchronized (editorPointer) {
             final Vector3i pointA = this.editorPointer.getPointA();
@@ -209,15 +226,64 @@ public class SchematicEditor implements Editor {
             editorPointer.getSelectorPoint().y - volume.getEnclosingBox().getYLength() / 2,
             editorPointer.getSelectorPoint().z - volume.getEnclosingBox().getZLength() / 2
         );
-        this.heldSchematic = schematic;
-        this.schematicRenderable = EditorUtils.createSchematicRenderable(schematic);
-        this.rightRotations = 0;
-        this.renderer.getRenderableStage().addRenderable(schematicRenderable);
+        setHeldSchematic(schematic);
         setStatus(EditorStatus.INITIAL_PLACE);
     }
     
     public void clearSchematic() {
         setStatus(EditorStatus.SELECT);
+    }
+    
+    public boolean hasSchematic() {
+        return this.heldSchematic != null;
+    }
+    
+    public void saveSchematic(File schematicFile) {
+        if (schematicFile == null || schematicFile.isDirectory()) {
+            return;
+        }
+        if (this.heldSchematic == null) {
+            return;
+        }
+        NbtTag schematicTag = Schematic.writeSchematicToNbt(AeSchematicFormatV1.getInstance(), heldSchematic);
+        try (DataOutputStream fileOut = new DataOutputStream(new FileOutputStream(schematicFile))) {
+            NbtTag.writeTag(fileOut, schematicTag);
+            Logger.info("Successfully wrote schematic file: " + schematicFile.getAbsolutePath());
+        } catch (IOException e) {
+            Logger.error("Error writing schematic file: " + schematicFile.getAbsolutePath(), e);
+        }
+    }
+    
+    public void loadSchematic(File schematicFile) {
+        if (schematicFile == null || schematicFile.isDirectory()) {
+            return;
+        }
+        NbtCompoundTag schematicTag;
+        try (DataInputStream input = new DataInputStream(new FileInputStream(schematicFile))) {
+            schematicTag = NbtTypes.getAsCompoundTag(NbtTag.readNbt(input));
+        } catch (IOException e) {
+            Logger.error("Could not read schematic: " + schematicFile.getAbsolutePath(), e);
+            return;
+        } catch (MalformedNbtTagException e) {
+            Logger.error("Could not parse NBT in file: " + schematicFile.getAbsolutePath(), e);
+            return;
+        }
+        Schematic schematic;
+        try {
+            schematic = Schematic.interpretSchematic(schematicTag);
+        } catch (MalformedNbtTagException e) {
+            Logger.error("Could not parse NBT as schematic.", e);
+            return;
+        }
+        setHeldSchematic(schematic);
+        setStatus(EditorStatus.INITIAL_PLACE);
+    }
+    
+    private void setHeldSchematic(Schematic schematic) {
+        this.heldSchematic = schematic;
+        this.schematicRenderable = EditorUtils.createSchematicRenderable(schematic);
+        this.rightRotations = 0;
+        this.renderer.getRenderableStage().addRenderable(schematicRenderable);
     }
     
     public void rotateRight() {
@@ -261,6 +327,9 @@ public class SchematicEditor implements Editor {
     }
     
     public void placeSchematic() {
+        if (!AtomicEdit.getBackendController().hasWorld()) {
+            return; //cannot place schematic if no world is loaded
+        }
         Schematic schematic = updateSchematicWithRotation(heldSchematic, rightRotations, false);
         BlockCoord placementCoord = new BlockCoord(schemPlacementMinPos.x, schemPlacementMinPos.y, schemPlacementMinPos.z);
         PlaceSchematicOperation op = PlaceSchematicOperation.getInstance(schematic, placementCoord, repeatTimes, repeatOffset);

@@ -25,6 +25,7 @@ import atomicedit.logging.Logger;
 import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -161,7 +162,10 @@ public class AeSchematicFormatV1 implements SchematicFileFormat {
                     throw new MalformedNbtTagException("'Blocks' tag of wrong length: " + rawBlocksB.length + " should be: " + blocks.length);
                 }
                 for (int i = 0; i < rawBlocksB.length; i++) {
-                    blocks[i] = rawBlocksB[i];
+                    if (rawBlocksB[i] > schemIdToInternalId.length || rawBlocksB[i] < 0) {
+                        throw new MalformedNbtTagException("Schematic Block Id out of bounds: " + rawBlocksB[i]);
+                    }
+                    blocks[i] = schemIdToInternalId[rawBlocksB[i]];
                 }
                 break;
             case TAG_INT_ARRAY:
@@ -173,7 +177,10 @@ public class AeSchematicFormatV1 implements SchematicFileFormat {
                     if (rawBlocksI[i] > Short.MAX_VALUE) {
                         throw new MalformedNbtTagException("Value in 'Blocks' is invalid: " + rawBlocksI[i]);
                     }
-                    blocks[i] = (short)rawBlocksI[i];
+                    if (rawBlocksI[i] > schemIdToInternalId.length || rawBlocksI[i] < 0) {
+                        throw new MalformedNbtTagException("Schematic Block Id out of bounds: " + rawBlocksI[i]);
+                    }
+                    blocks[i] = schemIdToInternalId[rawBlocksI[i]];
                 }
                 break;
             default:
@@ -229,7 +236,7 @@ public class AeSchematicFormatV1 implements SchematicFileFormat {
             }
             includedSet = new BitArray(blocks.length, rawIncludedSet);
         } else {
-            includedSet = new BitArray(blocks.length);
+            includedSet = new BitArray(blocks.length, true);
         }
         Box enclosingBox = new Box(xLen, yLen, zLen);
         Volume volume = new Volume(enclosingBox, includedSet);

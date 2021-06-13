@@ -33,6 +33,11 @@ public abstract class NbtTag {
         return input.readUTF();
     }
     
+    public static NbtTag readNbt(DataInputStream input) throws IOException, MalformedNbtTagException{
+        byte tagId = input.readByte();
+        return NbtTypes.getTypeFromId(tagId).instantiate(input, true);
+    }
+    
     public static void writeTag(DataOutputStream writer, NbtTag tag) throws IOException {
         //Logger.info("Writing nbt tag:\n" + tag.toString()); //this is a great log message for debugging
         writer.writeByte(tag.getType().ordinal());

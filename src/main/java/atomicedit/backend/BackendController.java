@@ -81,7 +81,7 @@ public class BackendController {
         }
     }
     
-    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords, Dimension dimension) throws MalformedNbtTagException {
+    public Map<ChunkCoord, ChunkReader> getReadOnlyChunks(Collection<ChunkCoord> chunkCoords, Dimension dimension) {
         return this.world.getLoadedChunkStage(dimension).getReadOnlyChunks(chunkCoords);
     }
     

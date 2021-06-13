@@ -38,8 +38,8 @@ public enum SchematicFileFormats {
      * @throws MalformedNbtTagException
      */
     public static SchematicFileFormat determineFileFormat(NbtCompoundTag schematicTag) throws MalformedNbtTagException {
-        if (schematicTag.contains("version")) {
-            String version = schematicTag.getStringTag("version").getPayload();
+        if (schematicTag.contains("Version")) {
+            String version = schematicTag.getStringTag("Version").getPayload();
             if ("v2.0".equals(version)) {
                 return AE_SCHEMATIC_FORMAT.getFormat();
             } else {

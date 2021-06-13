@@ -6,7 +6,6 @@ import atomicedit.backend.GlobalBlockStateMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import org.joml.Vector4f;
 import org.liquidengine.legui.component.Button;
 import org.liquidengine.legui.component.Component;
 import org.liquidengine.legui.component.Label;
@@ -16,7 +15,6 @@ import org.liquidengine.legui.component.Widget;
 import org.liquidengine.legui.event.MouseClickEvent;
 import org.liquidengine.legui.listener.MouseClickEventListener;
 import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.border.SimpleLineBorder;
 import org.liquidengine.legui.style.flex.FlexStyle;
 
 /**
@@ -72,7 +70,7 @@ public class BlockSelectorComponent extends Label {
         /**
          * Max options in the scrollable panel at a time.
          */
-        private static final int MAX_OPTIONS = 30;
+        private static final int MAX_OPTIONS = 35;
         
         private TextInput textBox;
         private ScrollablePanel blockOptionsPanel;
@@ -92,6 +90,7 @@ public class BlockSelectorComponent extends Label {
             this.selectedBlock = initValue;
             this.blockOptions = new ArrayList<>();
             this.blockOptionsPanel = new ScrollablePanel(40, 80, WIDTH - 80, HEIGHT - 160);
+            this.blockOptionsPanel.getContainer().getStyle().getBackground().setColor(.8f, .8f, .8f, 1);
             this.blockOptionsPanel.getContainer().getStyle().setDisplay(Style.DisplayType.FLEX);
             this.blockOptionsPanel.getContainer().setSize(WIDTH - 90, HEIGHT - 170);
             this.blockOptionsPanel.getContainer().getStyle().setMinimumSize(WIDTH - 90, HEIGHT - 170);
@@ -138,7 +137,7 @@ public class BlockSelectorComponent extends Label {
                     break;
                 }
                 BlockOptionLabel option = new BlockOptionLabel(this, blockState);
-                option.getStyle().setMargin(5);
+                option.getStyle().setMargin(0);
                 this.blockOptions.add(option);
             }
             this.blockOptionsPanel.getContainer().addAll(blockOptions);
@@ -156,14 +155,12 @@ public class BlockSelectorComponent extends Label {
             this.getStyle().setPosition(Style.PositionType.RELATIVE);
             this.value = value;
             this.getStyle().getBackground().setColor(.8f, .8f, .8f, 1);
-            this.getStyle().setBorder(new SimpleLineBorder(new Vector4f(1, 0, 0, 1), 3));
-            this.getStyle().getBorder().setEnabled(false);
             this.getListenerMap().addListener(MouseClickEvent.class, (MouseClickEventListener) (event) -> {
-                if (event.getAction() == MouseClickEvent.MouseClickAction.CLICK) {
+                if (event.getAction() == MouseClickEvent.MouseClickAction.PRESS) {
                     for (BlockOptionLabel blockOption : widget.blockOptions) {
-                        blockOption.getStyle().getBorder().setEnabled(false);
+                        blockOption.getStyle().getBackground().setColor(.8f, .8f, .8f, 1);
                     }
-                    this.getStyle().getBorder().setEnabled(true);
+                    this.getStyle().getBackground().setColor(.5f, .5f, .5f, 1);
                     widget.selectedBlock = value;
                 }
             });

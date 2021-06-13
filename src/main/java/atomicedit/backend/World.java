@@ -128,14 +128,9 @@ public class World {
     
     public OperationResult doOperation(Operation op){
         OperationResult result = op.doSynchronizedOperation(this);
-        Map<ChunkCoord, ChunkController> operationChunks;
-        try{
-            operationChunks = getLoadedChunkStage(op.getOperationDimension()).getMutableChunks(op.getChunkCoordsInOperation());
-        }catch(MalformedNbtTagException e){
-            return new OperationResult(false, e);
-        }
+        Map<ChunkCoord, ChunkController> operationChunks = getLoadedChunkStage(op.getOperationDimension()).getMutableChunks(op.getChunkCoordsInOperation());
         operationChunks.forEach((ChunkCoord coord, ChunkController chunkController) -> {
-            if(chunkController.getChunk().needsSaving()){
+            if(chunkController != null && chunkController.getChunk().needsSaving()){
                 this.dimToUnsavedChunkMap.get(op.getOperationDimension()).put(coord, chunkController);
             }
         });
@@ -153,14 +148,9 @@ public class World {
         }
         Operation lastOp = operationHistory.pop();
         OperationResult result = lastOp.undoSynchronizedOperation(this);
-        Map<ChunkCoord, ChunkController> operationChunks;
-        try{
-            operationChunks = getLoadedChunkStage(lastOp.getOperationDimension()).getMutableChunks(lastOp.getChunkCoordsInOperation());
-        }catch(MalformedNbtTagException e){
-            return new OperationResult(false, e);
-        }
+        Map<ChunkCoord, ChunkController> operationChunks = getLoadedChunkStage(lastOp.getOperationDimension()).getMutableChunks(lastOp.getChunkCoordsInOperation());
         operationChunks.forEach((ChunkCoord coord, ChunkController chunkController) -> {
-            if(chunkController.getChunk().needsSaving()){
+            if(chunkController != null && chunkController.getChunk().needsSaving()){
                 this.dimToUnsavedChunkMap.get(lastOp.getOperationDimension()).put(coord, chunkController);
             }
         });
@@ -177,14 +167,9 @@ public class World {
         }
         Operation lastOp = undoHistory.pop();
         OperationResult result = lastOp.doSynchronizedOperation(this);
-        Map<ChunkCoord, ChunkController> operationChunks;
-        try{
-            operationChunks = getLoadedChunkStage(lastOp.getOperationDimension()).getMutableChunks(lastOp.getChunkCoordsInOperation());
-        }catch(MalformedNbtTagException e){
-            return new OperationResult(false, e);
-        }
+        Map<ChunkCoord, ChunkController> operationChunks = getLoadedChunkStage(lastOp.getOperationDimension()).getMutableChunks(lastOp.getChunkCoordsInOperation());
         operationChunks.forEach((ChunkCoord coord, ChunkController chunkController) -> {
-            if(chunkController.getChunk().needsSaving()){
+            if(chunkController != null && chunkController.getChunk().needsSaving()){
                 this.dimToUnsavedChunkMap.get(lastOp.getOperationDimension()).put(coord, chunkController);
             }
         });
