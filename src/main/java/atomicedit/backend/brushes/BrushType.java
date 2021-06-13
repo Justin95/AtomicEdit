@@ -10,15 +10,20 @@ import java.util.List;
  */
 public enum BrushType {
     ELIPSE(
-            "Elipse",
-            ElipseBrush.PARAM_DESCRIPTORS,
-            ElipseBrush::getInstance
+        "Elipse",
+        ElipseBrush.PARAM_DESCRIPTORS,
+        ElipseBrush::getInstance
     ),
     DIAMOND(
-            "Diamond",
-            DiamondBrush.PARAM_DESCRIPTORS,
-            DiamondBrush::getInstance
+        "Diamond",
+        DiamondBrush.PARAM_DESCRIPTORS,
+        DiamondBrush::getInstance
     ),
+    SHELL(
+        "Shell",
+        ShellBrush.PARAM_DESCRIPTORS,
+        ShellBrush::getInstance
+    ), 
     ;
     
     public final String displayName;
