@@ -16,11 +16,11 @@ public class ChunkSection {
     public final ChunkSectionCoord coord;
     private boolean dirty;
     private boolean needsRelight;
-    private short[] blocks; //block ids 0 to SHORT_MAX
+    private int[] blocks; //block ids 0 to SHORT_MAX
     private byte[] blockLight;
     private byte[] skyLight;
     
-    public ChunkSection(ChunkSectionCoord coord, short[] blocks, byte[] blockLight, byte[] skyLight){
+    public ChunkSection(ChunkSectionCoord coord, int[] blocks, byte[] blockLight, byte[] skyLight){
         if(blocks.length != NUM_BLOCKS_IN_CHUNK_SECTION) throw new IllegalArgumentException("Tried to make a chunk section with wrong number of blocks");
         if(blockLight.length != NUM_BLOCKS_IN_CHUNK_SECTION / 2) throw new IllegalArgumentException("Tried to make a chunk section with wrong length of block light data");
         if(skyLight.length != NUM_BLOCKS_IN_CHUNK_SECTION / 2) throw new IllegalArgumentException("Tried to make a chunk section with wrong length of sky light data");
@@ -48,7 +48,7 @@ public class ChunkSection {
         this.needsRelight = needsRelight;
     }
     
-    public short[] getBlockIds(){
+    public int[] getBlockIds(){
         return this.blocks;
     }
     

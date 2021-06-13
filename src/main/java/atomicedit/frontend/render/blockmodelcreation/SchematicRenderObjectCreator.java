@@ -50,7 +50,7 @@ public class SchematicRenderObjectCreator {
         }
 
         @Override
-        public short getBlockAt(int x, int y, int z) {
+        public int getBlockAt(int x, int y, int z) {
             Box box = schematic.volume.getEnclosingBox();
             if (x < 0 || x >= box.getXLength() || y < 0 || y >= box.getYLength() || z < 0 || z >= box.getZLength()) {
                 return 0; //AIR
@@ -60,7 +60,7 @@ public class SchematicRenderObjectCreator {
         }
 
         @Override
-        public short getTotalLightAt(int x, int y, int z) {
+        public int getTotalLightAt(int x, int y, int z) {
             return 15; //schematics are viewed in full brightness
         }
         

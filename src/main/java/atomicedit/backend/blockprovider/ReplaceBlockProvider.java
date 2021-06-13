@@ -14,8 +14,8 @@ import atomicedit.volumes.WorldVolume;
  */
 public class ReplaceBlockProvider implements BlockProvider {
     
-    private final short fromBlockId;
-    private final short toBlockId;
+    private final int fromBlockId;
+    private final int toBlockId;
     private final WorldVolume volume;
     /**
      * A copy of the world in the volume represented by this block provider.
@@ -37,10 +37,10 @@ public class ReplaceBlockProvider implements BlockProvider {
     }
 
     @Override
-    public short getBlockAt(int x, int y, int z) {
-        short[] blocks = worldInVolume.getBlocks();
+    public int getBlockAt(int x, int y, int z) {
+        int[] blocks = worldInVolume.getBlocks();
         int blocksIndex = GeneralUtils.getIndexYZX(x, y, z, volume.getEnclosingBox().getXLength(), volume.getEnclosingBox().getZLength());
-        short blockAt = blocks[blocksIndex];
+        int blockAt = blocks[blocksIndex];
         return blockAt == fromBlockId ? toBlockId : blockAt;
     }
     

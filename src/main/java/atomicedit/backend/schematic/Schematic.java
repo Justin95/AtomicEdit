@@ -37,11 +37,11 @@ import org.joml.Vector3i;
 public class Schematic {
 
     public final Volume volume;
-    private short[] blocks; //blocks stored in y,z,x order, any blocks not in the volume are undefined
+    private int[] blocks; //blocks stored in y,z,x order, any blocks not in the volume are undefined
     private Collection<Entity> entities;
     private Collection<BlockEntity> blockEntities;
 
-    Schematic(Volume volume, short[] blocks, Collection<Entity> entities, Collection<BlockEntity> blockEntities) {
+    Schematic(Volume volume, int[] blocks, Collection<Entity> entities, Collection<BlockEntity> blockEntities) {
         if (volume.getEnclosingBox().getNumBlocksContained() != blocks.length) {
             throw new IllegalArgumentException("Number of blocks and volume size differ");
         }
@@ -71,7 +71,7 @@ public class Schematic {
         boolean includeBlockEntities
     ) throws Exception {
         Map<ChunkCoord, ChunkController> controllers = world.getLoadedChunkStage(dim).getMutableChunks(volume.getContainedChunkCoords());
-        short[] blocks = ChunkUtils.readBlocksFromChunks(controllers, volume);
+        int[] blocks = ChunkUtils.readBlocksFromChunks(controllers, volume);
         Collection<Entity> entities = includeEntities ? ChunkUtils.readEntitiesFromChunkControllers(controllers.values(), volume) : null;
         entities = EntityUtils.translateEntityCoordsToVolume(entities, volume);
         Collection<BlockEntity> blockEntities = includeBlockEntities ? ChunkUtils.readBlockEntitiesFromChunkControllers(controllers.values(), volume) : null;
@@ -100,7 +100,7 @@ public class Schematic {
         );
         //create new blocks
         Box newBox = newVolume.getEnclosingBox();
-        short[] newBlocks = new short[original.blocks.length];
+        int[] newBlocks = new int[original.blocks.length];
         BitArray includedSet = new BitArray(newBox.getNumBlocksContained());
         final int origXLen = origBox.getXLength();
         final int origYLen = origBox.getYLength();
@@ -213,8 +213,8 @@ public class Schematic {
         }
     }
     
-    private static short rotateBlock(short block, int rightRotations, boolean yFlip) {
-        short rotBlock = GlobalBlockStateMap.getRotatedBlockId(block, rightRotations);
+    private static int rotateBlock(int block, int rightRotations, boolean yFlip) {
+        int rotBlock = GlobalBlockStateMap.getRotatedBlockId(block, rightRotations);
         return yFlip ? GlobalBlockStateMap.getFlippedBlockId(block) : rotBlock;
     }
     
@@ -238,7 +238,7 @@ public class Schematic {
         return this.volume;
     }
 
-    public short[] getBlocks() {
+    public int[] getBlocks() {
         return this.blocks;
     }
 

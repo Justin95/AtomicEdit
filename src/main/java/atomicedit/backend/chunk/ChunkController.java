@@ -31,7 +31,7 @@ public abstract class ChunkController implements ChunkReader {
     
     public abstract void setBlockAt(BlockCoord coord, BlockState block) throws MalformedNbtTagException;
     
-    public abstract void setBlocks(int subChunkIndex, short[] blocks) throws MalformedNbtTagException;
+    public abstract void setBlocks(int subChunkIndex, int[] blocks) throws MalformedNbtTagException;
     
     public abstract void addEntity(Entity entity) throws MalformedNbtTagException;
     

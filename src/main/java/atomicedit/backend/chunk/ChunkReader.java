@@ -24,7 +24,7 @@ public interface ChunkReader {
     
     public BlockState getBlockAt(BlockCoord coord) throws MalformedNbtTagException;
     
-    public short[] getBlocks(int subChunkIndex) throws MalformedNbtTagException;
+    public int[] getBlocks(int subChunkIndex) throws MalformedNbtTagException;
     
     public ChunkSection getChunkSection(int subChunkIndex) throws MalformedNbtTagException;
     

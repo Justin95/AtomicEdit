@@ -34,7 +34,7 @@ import org.joml.Vector4f;
  */
 public class ChunkRenderObjectCreator {
     
-    private static final short[] EMPTY_BLOCK_ARRAY = new short[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
+    private static final int[] EMPTY_BLOCK_ARRAY = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
     private static final Vector4f BLOCK_ENTITY_COLOR = new Vector4f(.8f, .5f, .20f, .5f); //RGBA
     private static final Vector4f ENTITY_COLOR = new Vector4f(.8f, .20f, .20f, .5f); //RGBA
     

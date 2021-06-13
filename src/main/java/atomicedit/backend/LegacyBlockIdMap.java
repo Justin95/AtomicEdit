@@ -15,7 +15,7 @@ public class LegacyBlockIdMap {
     
     private static final String LEGACY_IDS_FILE_PATH = "/data/legacy_block_ids.json";
     
-    private static short[] legacyIdToInternalId;
+    private static int[] legacyIdToInternalId;
     private static boolean initialized = false;
     
     public static void initialize() {
@@ -36,7 +36,7 @@ public class LegacyBlockIdMap {
         }
     }
     
-    public static short getBlockIdFromLegacyId(short legacyId, short variantNibble) {
+    public static int getBlockIdFromLegacyId(int legacyId, short variantNibble) {
         throw new UnsupportedOperationException("TODO");
     }
     

@@ -25,7 +25,6 @@ import atomicedit.logging.Logger;
 import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -121,7 +120,7 @@ public class AeSchematicFormatV1 implements SchematicFileFormat {
             throw new MalformedNbtTagException("'Palette' tag in schematic is not of type list.");
         }
         NbtListTag paletteTag = rawSchematicTag.getListTag("Palette");
-        short[] schemIdToInternalId = new short[paletteTag.getPayloadSize()];
+        int[] schemIdToInternalId = new int[paletteTag.getPayloadSize()];
         for (int i = 0; i < paletteTag.getPayloadSize(); i++) {
             NbtTag tag = paletteTag.getPayload().get(i);
             if (tag.getType() != NbtTypes.TAG_COMPOUND) {
@@ -154,7 +153,7 @@ public class AeSchematicFormatV1 implements SchematicFileFormat {
         }
         
         //read blocks
-        short[] blocks = new short[xLen * yLen * zLen];
+        int[] blocks = new int[xLen * yLen * zLen];
         switch (rawSchematicTag.getTag("Blocks").getType()) {
             case TAG_BYTE_ARRAY:
                 byte[] rawBlocksB = rawSchematicTag.getByteArrayTag("Blocks").getPayload();
@@ -174,9 +173,6 @@ public class AeSchematicFormatV1 implements SchematicFileFormat {
                     throw new MalformedNbtTagException("'Blocks' tag of wrong length: " + rawBlocksI.length + " should be: " + blocks.length);
                 }
                 for (int i = 0; i < rawBlocksI.length; i++) {
-                    if (rawBlocksI[i] > Short.MAX_VALUE) {
-                        throw new MalformedNbtTagException("Value in 'Blocks' is invalid: " + rawBlocksI[i]);
-                    }
                     if (rawBlocksI[i] > schemIdToInternalId.length || rawBlocksI[i] < 0) {
                         throw new MalformedNbtTagException("Schematic Block Id out of bounds: " + rawBlocksI[i]);
                     }
@@ -259,27 +255,27 @@ public class AeSchematicFormatV1 implements SchematicFileFormat {
                 break;
             }
         }
-        final short[] blocks = schematic.getBlocks();
-        Set<Short> uniqueBlockIds = new HashSet<>();
+        final int[] blocks = schematic.getBlocks();
+        Set<Integer> uniqueBlockIds = new HashSet<>();
         for (int i = 0; i < blocks.length; i++) {
             if (!uniqueBlockIds.contains(blocks[i])) {
                 uniqueBlockIds.add(blocks[i]);
             }
         }
-        short[] internalIdToSchematicId = new short[GlobalBlockStateMap.getNumBlockStates()];
+        int[] internalIdToSchematicId = new int[GlobalBlockStateMap.getNumBlockStates()];
         List<BlockState> palette = new ArrayList<>(uniqueBlockIds.size() + 1);
         palette.add(BlockState.AIR); //make AIR the 0 id in every schematic
-        internalIdToSchematicId[0] = (short)0;
-        for (Short blockId : uniqueBlockIds) {
+        internalIdToSchematicId[0] = 0;
+        for (Integer blockId : uniqueBlockIds) {
             if (blockId == 0) {
                 continue; //already included air
             }
             //the index is the internal id, the value at that index is the palette id
-            internalIdToSchematicId[blockId] = (short)palette.size();
+            internalIdToSchematicId[blockId] = palette.size();
             palette.add(GlobalBlockStateMap.getBlockType(blockId));
         }
         
-        final short[] schemBlocks = new short[blocks.length];
+        final int[] schemBlocks = new int[blocks.length];
         for (int i = 0; i < blocks.length; i++) {
             schemBlocks[i] = internalIdToSchematicId[blocks[i]];
         }

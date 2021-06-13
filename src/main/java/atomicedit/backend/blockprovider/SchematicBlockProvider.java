@@ -13,7 +13,7 @@ import atomicedit.volumes.Volume;
  */
 public class SchematicBlockProvider implements BlockProvider{
     
-    private final short[] blocks;
+    private final int[] blocks;
     private final Volume volume;
     
     
@@ -28,7 +28,7 @@ public class SchematicBlockProvider implements BlockProvider{
     }
 
     @Override
-    public short getBlockAt(int x, int y, int z) {
+    public int getBlockAt(int x, int y, int z) {
         if(!volume.containsXYZ(x, y, z)){
             throw new IllegalArgumentException("Volume does not contain (" + x + ", " + y + ", " + z + ")");
         }

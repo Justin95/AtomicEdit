@@ -14,8 +14,8 @@ import atomicedit.volumes.WorldVolume;
  */
 public class ErosionBlockProvider implements BlockProvider {
     
-    private final short erodeNextToBlockId;
-    private final short erodeToBlockId;
+    private final int erodeNextToBlockId;
+    private final int erodeToBlockId;
     private final WorldVolume volume;
     /**
      * A copy of the world in the volume represented by this block provider.
@@ -39,10 +39,10 @@ public class ErosionBlockProvider implements BlockProvider {
     }
 
     @Override
-    public short getBlockAt(int x, int y, int z) {
-        short[] blocks = worldInVolume.getBlocks();
+    public int getBlockAt(int x, int y, int z) {
+        int[] blocks = worldInVolume.getBlocks();
         int blocksIndex = GeneralUtils.getIndexYZX(x, y, z, volume.getEnclosingBox().getXLength(), volume.getEnclosingBox().getZLength());
-        short blockAt = blocks[blocksIndex];
+        int blockAt = blocks[blocksIndex];
         if (blockAt != this.erodeToBlockId) {
             int adjacent = countAdjacent(blocks, x, y, z); //between [0, 6]
             return Math.random() * 100 <= chances[adjacent] ? erodeToBlockId : blockAt;
@@ -50,7 +50,7 @@ public class ErosionBlockProvider implements BlockProvider {
         return blockAt;
     }
     
-    private int countAdjacent(short[] blocks, int x, int y, int z) {
+    private int countAdjacent(int[] blocks, int x, int y, int z) {
         int adjacent = 0;
         if (volume.containsXYZ(x + 1, y, z)) {
              int blocksIndex = GeneralUtils.getIndexYZX(x + 1, y, z, volume.getEnclosingBox().getXLength(), volume.getEnclosingBox().getZLength());

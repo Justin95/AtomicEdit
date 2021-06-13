@@ -13,11 +13,11 @@ import java.util.Map;
  */
 public class GlobalBlockStateMap {
     
-    private static final Map<BlockState, Short> blockToIdMap = new HashMap<>();
+    private static final Map<BlockState, Integer> blockToIdMap = new HashMap<>();
     private static final ArrayList<BlockState> idToBlockTypeMap = new ArrayList<>();
-    private static final Map<Short, Short[]> idToRotatedBlockIdMap = new HashMap<>();
-    private static final Map<Short, Short> idToFlippedBlockIdMap = new HashMap<>();
-    private static volatile short idCounter = 0;
+    private static final Map<Integer, Integer[]> idToRotatedBlockIdMap = new HashMap<>();
+    private static final Map<Integer, Integer> idToFlippedBlockIdMap = new HashMap<>();
+    private static volatile int idCounter = 0;
     
     public static void addBlockType(BlockState blockType){
         if(idToBlockTypeMap.contains(blockType)){
@@ -31,7 +31,7 @@ public class GlobalBlockStateMap {
         }
         blockToIdMap.put(blockType, idCounter);
         idCounter++;
-        if (idCounter == Short.MAX_VALUE) {
+        if (idCounter == Integer.MAX_VALUE) {
             Logger.critical("Too many loaded block types: " + idCounter);
             throw new IllegalStateException("Too many loaded block types!");
         }
@@ -41,11 +41,11 @@ public class GlobalBlockStateMap {
         return idToBlockTypeMap.contains(blockType);
     }
     
-    public static short getBlockId(BlockState blockType){
+    public static int getBlockId(BlockState blockType){
         return blockToIdMap.get(blockType);
     }
     
-    public static BlockState getBlockType(short id){
+    public static BlockState getBlockType(int id){
         if (id < 0 || id >= idCounter) {
             throw new IllegalArgumentException("Bad id used in looking up mapping: " + id);
         }
@@ -58,15 +58,15 @@ public class GlobalBlockStateMap {
         }
     }
     
-    public static short getRotatedBlockId(short blockId, int rightRots) {
+    public static int getRotatedBlockId(int blockId, int rightRots) {
         rightRots %= 4;
         if (rightRots == 0) {
             return blockId;
         }
-        Short[] rotatedIds = idToRotatedBlockIdMap.get(blockId);
+        Integer[] rotatedIds = idToRotatedBlockIdMap.get(blockId);
         if (rotatedIds == null) {
             BlockState blockState = idToBlockTypeMap.get(blockId);
-            rotatedIds = new Short[] {
+            rotatedIds = new Integer[] {
                 blockToIdMap.get(BlockStateRotationUtil.guessRotatedBlockState(blockState, 1)),
                 blockToIdMap.get(BlockStateRotationUtil.guessRotatedBlockState(blockState, 2)),
                 blockToIdMap.get(BlockStateRotationUtil.guessRotatedBlockState(blockState, 3))
@@ -84,8 +84,8 @@ public class GlobalBlockStateMap {
      * @param blockId
      * @return 
      */
-    public static short getFlippedBlockId(short blockId) {
-        Short flippedId = idToFlippedBlockIdMap.get(blockId);
+    public static int getFlippedBlockId(int blockId) {
+        Integer flippedId = idToFlippedBlockIdMap.get(blockId);
         if (flippedId == null) {
             BlockState blockState = idToBlockTypeMap.get(blockId);
             BlockState flippedState = BlockStateRotationUtil.guessFlippedBlockState(blockState);
