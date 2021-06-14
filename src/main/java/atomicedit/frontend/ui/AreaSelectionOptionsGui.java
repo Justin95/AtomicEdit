@@ -37,8 +37,6 @@ public class AreaSelectionOptionsGui {
     
     private static final float GUI_WIDTH = 350;
     private static final float GUI_HEIGHT = 800;
-    private static final float GUI_X = 0;
-    private static final float GUI_Y = 45; //use 'top bar UI element' height
     private static final String DO_OP_TEXT = "Do Operation";
     
     private final AreaSelectionEditor editor;
@@ -83,6 +81,7 @@ public class AreaSelectionOptionsGui {
         opSelectBox.getSelectBoxChangeSelectionEvents().add((EventListener<SelectBoxChangeSelectionEvent<OperationType>>)(event) -> {
             updateOpType(event.getNewValue());
         });
+        opSelectBox.setVisibleCount(10);
         opSelectBox.setTabFocusable(false);
         opSelectBox.getStyle().setPosition(Style.PositionType.RELATIVE);
         opSelectBox.getStyle().setMaxWidth(200);

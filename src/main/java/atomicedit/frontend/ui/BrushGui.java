@@ -80,6 +80,7 @@ public class BrushGui {
         selectBox.getSelectBoxChangeSelectionEvents().add((EventListener<SelectBoxChangeSelectionEvent<BrushType>>)(event) -> {
             updateBrushType(event.getNewValue());
         });
+        selectBox.setVisibleCount(10);
         selectBox.setTabFocusable(false);
         selectBox.getStyle().setPosition(Style.PositionType.RELATIVE);
         selectBox.getStyle().setMaxWidth(200);
