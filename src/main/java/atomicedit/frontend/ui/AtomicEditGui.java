@@ -228,6 +228,7 @@ public class AtomicEditGui {
         for (Dimension dim : Dimension.getDimensions()) {
             dimensionSelectBox.addElement(dim);
         }
+        dimensionSelectBox.setVisibleCount(10);
         dimensionSelectBox.setSelected(0, true);
         dimensionSelectBox.getSelectBoxChangeSelectionEvents().add((EventListener<SelectBoxChangeSelectionEvent<Dimension>>)(event) -> {
             backendController.setActiveDimension(event.getNewValue());

@@ -938,6 +938,7 @@ public class NbtEditorWidget extends Widget {
                     }
                     this.nbtTypeSelector.addElement(nbtType);
                 }
+                this.nbtTypeSelector.setVisibleCount(12);
                 this.nbtTypeSelector.setSelected(0, true);
                 this.nbtTypeSelector.setTabFocusable(false);
                 this.nbtTypeSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
