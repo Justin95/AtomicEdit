@@ -24,6 +24,10 @@ public class WorldVolume extends Volume {
         this(volume.getEnclosingBox(), volume.getIncludedSet(), smallestPoint);
     }
     
+    public WorldVolume(WorldVolume other) {
+        this(other.getEnclosingBox(), other.getIncludedSet().copy(), other.smallestPoint);
+    }
+    
     public static WorldVolume getInstance(Vector3i pointA, Vector3i pointB) {
         Volume volume = Volume.getInstance(pointA, pointB);
         BlockCoord smallestCoord = new BlockCoord(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));

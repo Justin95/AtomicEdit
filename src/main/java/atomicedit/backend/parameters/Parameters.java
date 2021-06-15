@@ -62,6 +62,26 @@ public class Parameters {
         return (Integer)value;
     }
     
+    public Boolean getParamAsBoolean(ParameterDescriptor key){
+        if(key.parameterType != ParameterType.BOOLEAN){
+            Logger.error("Tried to get operation parameter '" + key.name + "' as a Boolean but it isn't a Boolean");
+            throw new IllegalArgumentException("Tried to get operation parameter as wrong type");
+        }
+        if(!paramToValue.containsKey(key)){
+            Logger.error("Parameters did not contain key: " + key.name);
+            return null;
+        }
+        Object value = paramToValue.get(key);
+        if(value == null){
+            return null;
+        }
+        if(!(value instanceof Boolean)){
+            Logger.error("Parameter was not a Boolean, it was " + value.getClass());
+            throw new RuntimeException("Parameter was not a Boolean");
+        }
+        return (Boolean)value;
+    }
+    
     public Float getParamAsFloat(ParameterDescriptor key){
         if(key.parameterType != ParameterType.FLOAT){
             Logger.error("Tried to get operation parameter '" + key.name + "' as a Float but it isn't a Float");

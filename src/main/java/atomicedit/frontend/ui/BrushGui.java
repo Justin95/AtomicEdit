@@ -3,12 +3,14 @@ package atomicedit.frontend.ui;
 
 import atomicedit.backend.BlockState;
 import atomicedit.backend.brushes.BrushType;
+import atomicedit.backend.parameters.BooleanParameterDescriptor;
 import atomicedit.backend.parameters.FloatParameterDescriptor;
 import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.backend.parameters.ParameterDescriptor;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.frontend.editor.BrushEditor;
 import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
+import atomicedit.frontend.ui.atomicedit_legui.BooleanSelectorComponent;
 import atomicedit.frontend.ui.atomicedit_legui.DoubleSelectorComponent;
 import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
 import atomicedit.operations.OperationType;
@@ -306,6 +308,18 @@ public class BrushGui {
                     floatSelector.getStyle().getFlexStyle().setFlexGrow(1);
                     floatSelector.getStyle().getFlexStyle().setFlexShrink(1);
                     paramPanel.add(floatSelector);
+                    break;
+                case BOOLEAN:
+                    BooleanParameterDescriptor booleanDesc = (BooleanParameterDescriptor)paramDesc;
+                    BooleanSelectorComponent booleanSelector = new BooleanSelectorComponent(booleanDesc.defaultValue);
+                    booleanSelector.setValueChangeCallback((boolean newValue) -> {
+                        this.opParameters.setParam(paramDesc, (boolean)newValue);
+                    });
+                    //booleanSelector.getStyle().setMinimumSize(100, 30);
+                    booleanSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    booleanSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    booleanSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(booleanSelector);
                     break;
                 case BLOCK_SELECTOR:
                     BlockSelectorComponent blockSelector = new BlockSelectorComponent((BlockState)paramDesc.defaultValue);

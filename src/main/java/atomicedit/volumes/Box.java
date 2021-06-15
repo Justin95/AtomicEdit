@@ -92,11 +92,13 @@ public class Box {
      * Iterates in YZX order.
      * @param action 
      */
-    public void doForXyz(ActionForXYZ action){
+    public void doForXyz(ActionForXYZ action) {
+        int index = 0;
         for(int y = 0; y < yLength; y++){
             for(int z = 0; z < zLength; z++){
                 for(int x = 0; x < xLength; x++){
-                    action.action(x, y, z);
+                    action.action(x, y, z, index);
+                    index++;
                 }
             }
         }

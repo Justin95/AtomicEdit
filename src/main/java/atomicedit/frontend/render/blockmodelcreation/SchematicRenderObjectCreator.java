@@ -20,13 +20,13 @@ public class SchematicRenderObjectCreator {
         BlockModelCreator modelCreator = BlockModelCreator.getInstance();
         FloatList verticies = new FloatList();
         IntList indicies = new IntList();
-        schematic.volume.doForXyz((x, y, z) -> {
+        schematic.volume.doForXyz((x, y, z, index) -> {
             if (schematicDataProvider.getBlockAt(x, y, z) == 0) {
                 return;
             }
             modelCreator.addBlockRenderData(x, y, z, schematicDataProvider, verticies, indicies, false);
         });
-        schematic.volume.doForXyz((x, y, z) -> {
+        schematic.volume.doForXyz((x, y, z, index) -> {
             if (schematicDataProvider.getBlockAt(x, y, z) == 0) {
                 return;
             }

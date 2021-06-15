@@ -133,8 +133,7 @@ public class NoiseOperation extends Operation {
         BitArray includedSet = new BitArray(box.getNumBlocksContained());
         BlockCoord smallestPoint = operationVolume.getSmallestPoint();
         int[] blockDistances = calcDistances(operationVolume);
-        operationVolume.doForXyz((x, y, z) -> {
-            int index = GeneralUtils.getIndexYZX(x, y, z, box.getXLength(), box.getZLength());
+        operationVolume.doForXyz((x, y, z, index) -> {
             //also consider Noise.gradientCoherentNoise3D
             double noiseValue = 0;
             for (int i = 0; i < NUM_OCTAVES; i++) {
@@ -158,11 +157,10 @@ public class NoiseOperation extends Operation {
         int[] dists = new int[box.getNumBlocksContained()];
         Arrays.fill(dists, Integer.MAX_VALUE);
         Queue<Integer> indexQueue = new PriorityQueue<>();
-        volume.doForXyz((x, y, z) -> {
+        volume.doForXyz((x, y, z, index) -> {
             if (isInterior(x, y, z, volume)) {
                 return;
             }
-            int index = GeneralUtils.getIndexYZX(x, y, z, box.getXLength(), box.getZLength());
             dists[index] = 1;
             indexQueue.add(index);
         });

@@ -250,7 +250,7 @@ public class ChunkUtils {
         int yOffset = smallestPoint.getSubChunkLocalY();
         int zOffset = smallestPoint.getChunkLocalZ();
         int[] blocks = new int[enclosingBox.getNumBlocksContained()]; //blocks not in volume are undefined, left as 0 in this case
-        readVolume.doForXyz((x, y, z) -> {
+        readVolume.doForXyz((x, y, z, blockIndex) -> {
             int chunkSectionIndex = GeneralUtils.getIndexYZX((x + xOffset) / ChunkSection.SIDE_LENGTH,
                                                              (y + yOffset) / ChunkSection.SIDE_LENGTH,
                                                              (z + zOffset) / ChunkSection.SIDE_LENGTH,
@@ -260,9 +260,8 @@ public class ChunkUtils {
                                                           (y + yOffset) % ChunkSection.SIDE_LENGTH,
                                                           (z + zOffset) % ChunkSection.SIDE_LENGTH,
                                                           ChunkSection.SIDE_LENGTH);
-            int blocksIndex = GeneralUtils.getIndexYZX(x, y, z, enclosingBox.getXLength(), enclosingBox.getZLength());
             if (chunkSectionBlocks[chunkSectionIndex] != null) {
-                blocks[blocksIndex] = chunkSectionBlocks[chunkSectionIndex].blocks[indexInSection];
+                blocks[blockIndex] = chunkSectionBlocks[chunkSectionIndex].blocks[indexInSection];
             }
         });
         return blocks;

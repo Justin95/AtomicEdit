@@ -31,7 +31,7 @@ public class VolumeRenderingUtil {
         FloatList boxVertexData = new FloatList();
         IntList boxIndicies = new IntList();
         IntList linesIndicies = new IntList();
-        volume.getEnclosingBox().doForXyz((x, y, z) -> {
+        volume.getEnclosingBox().doForXyz((x, y, z, index) -> {
             if (!volume.containsXYZ(x, y, z)) {
                 return;
             }

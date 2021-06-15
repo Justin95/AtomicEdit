@@ -10,6 +10,7 @@ public enum ParameterType {
     STRING(),
     INT(),
     FLOAT(),
+    BOOLEAN(),
     BLOCK_SELECTOR()
     ;
     
