@@ -6,6 +6,7 @@ import atomicedit.operations.implementations.SetBlocksOperation;
 import atomicedit.backend.parameters.ParameterDescriptor;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.operations.implementations.ErosionOperation;
+import atomicedit.operations.implementations.FloodFillOperation;
 import atomicedit.operations.implementations.NoiseOperation;
 import atomicedit.volumes.WorldVolume;
 import java.util.List;
@@ -36,6 +37,11 @@ public enum OperationType {
         "Noise Set",
         NoiseOperation.PARAM_DESCRIPTORS,
         NoiseOperation::getInstance
+    ),
+    FLOOD_FILL_OPERATION(
+        "Flood Fill",
+        FloodFillOperation.PARAM_DESCRIPTORS,
+        FloodFillOperation::getInstance
     ),
     ;
     

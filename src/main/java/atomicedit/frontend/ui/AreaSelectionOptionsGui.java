@@ -2,6 +2,7 @@
 package atomicedit.frontend.ui;
 
 import atomicedit.backend.BlockState;
+import atomicedit.backend.parameters.BooleanParameterDescriptor;
 import atomicedit.backend.parameters.FloatParameterDescriptor;
 import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.frontend.editor.AreaSelectionEditor;
@@ -19,6 +20,7 @@ import org.liquidengine.legui.listener.EventListener;
 import org.liquidengine.legui.style.Style;
 import org.liquidengine.legui.style.flex.FlexStyle;
 import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
+import atomicedit.frontend.ui.atomicedit_legui.BooleanSelectorComponent;
 import atomicedit.frontend.ui.atomicedit_legui.DoubleSelectorComponent;
 import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
 import java.util.ArrayList;
@@ -196,6 +198,18 @@ public class AreaSelectionOptionsGui {
                     floatSelector.getStyle().getFlexStyle().setFlexGrow(1);
                     floatSelector.getStyle().getFlexStyle().setFlexShrink(1);
                     paramPanel.add(floatSelector);
+                    break;
+                case BOOLEAN:
+                    BooleanParameterDescriptor booleanDesc = (BooleanParameterDescriptor)paramDesc;
+                    BooleanSelectorComponent booleanSelector = new BooleanSelectorComponent(booleanDesc.defaultValue);
+                    booleanSelector.setValueChangeCallback((boolean newValue) -> {
+                        this.opParameters.setParam(paramDesc, (boolean)newValue);
+                    });
+                    booleanSelector.getStyle().setMinimumSize(30, 30);
+                    booleanSelector.getStyle().setPosition(Style.PositionType.RELATIVE);
+                    booleanSelector.getStyle().getFlexStyle().setFlexGrow(1);
+                    booleanSelector.getStyle().getFlexStyle().setFlexShrink(1);
+                    paramPanel.add(booleanSelector);
                     break;
                 case BLOCK_SELECTOR:
                     BlockSelectorComponent blockSelector = new BlockSelectorComponent((BlockState)paramDesc.defaultValue);

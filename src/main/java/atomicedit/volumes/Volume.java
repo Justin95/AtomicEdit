@@ -139,7 +139,7 @@ public class Volume {
             x = GeneralUtils.getXFromIndexYZX(index, xLen);
             y = GeneralUtils.getYFromIndexYZX(index, xLen, zLen);
             z = GeneralUtils.getZFromIndexYZX(index, xLen, zLen);
-            action.action(x, y, z);
+            action.action(x, y, z, index);
         }
     }
     

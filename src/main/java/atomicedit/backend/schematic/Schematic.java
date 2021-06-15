@@ -105,12 +105,12 @@ public class Schematic {
         final int origXLen = origBox.getXLength();
         final int origYLen = origBox.getYLength();
         final int origZLen = origBox.getZLength();
-        origBox.doForXyz((x, y, z) -> {
+        origBox.doForXyz((x, y, z, blockIndex) -> {
             int newX = calcNewX(x, z, origXLen, origZLen, rightRots);
             int newY = yFlip ? origYLen - 1 - y : y;
             int newZ = calcNewZ(x, z, origXLen, origZLen, rightRots);
             final int newIndex = GeneralUtils.getIndexYZX(newX, newY, newZ, newBox.getXLength(), newBox.getZLength());
-            final int oldIndex = GeneralUtils.getIndexYZX(x, y, z, origBox.getXLength(), origBox.getZLength());
+            final int oldIndex = blockIndex;
             includedSet.set(newIndex, original.volume.getIncludedSet().get(oldIndex));
             newBlocks[newIndex] = rotateBlock(original.blocks[oldIndex], rightRots, yFlip);
         });
@@ -240,6 +240,24 @@ public class Schematic {
 
     public int[] getBlocks() {
         return this.blocks;
+    }
+    
+    /**
+     * Get the block at the relative coordinate in this schematic. Return -1 if the block is not
+     * in this schematic volume.
+     * @param x the x coord
+     * @param y the y coord
+     * @param z the z coord
+     * @return the block id or -1 if out of bounds
+     */
+    public int getBlockAt(int x, int y, int z) {
+        if (!this.volume.containsXYZ(x, y, z)) {
+            return -1;
+        }
+        int xLen = this.volume.getEnclosingBox().getXLength();
+        int zLen = this.volume.getEnclosingBox().getZLength();
+        int index = GeneralUtils.getIndexYZX(x, y, z, xLen, zLen);
+        return blocks[index];
     }
 
     public Collection<Entity> getEntities() {

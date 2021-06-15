@@ -33,7 +33,7 @@ public class FillBlockProvider implements BlockProvider{
     
     @Override
     public void doForBlock(ActionForBlock action){
-        volume.doForXyz((x, y, z) -> {
+        volume.doForXyz((x, y, z, index) -> {
             action.doAction(x, y, z, blockId);
         });
     }

@@ -40,6 +40,10 @@ public class BitArray {
         }
     }
     
+    public BitArray copy() {
+        return new BitArray(this.sizeInBits, this.bitArray);
+    }
+    
     private int getBackingArrayIndex(int index){
         return index / 64;
     }
@@ -72,6 +76,19 @@ public class BitArray {
             toSet &= ~(1L << internalIndex);
         }
         bitArray[backingArrayIndex] = toSet;
+    }
+    
+    /**
+     * Set all elements in this bit array, that are not true in the other bit array, to false.
+     * @param other another bit array of the same length
+     */
+    public void and(BitArray other) {
+        if (other.sizeInBits != this.sizeInBits) {
+            throw new IllegalArgumentException("Tried to compare bit arrays of different length.");
+        }
+        for (int i = 0; i < this.bitArray.length; i++) {
+            this.bitArray[i] = this.bitArray[i] & other.bitArray[i];
+        }
     }
     
     /**
