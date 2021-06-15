@@ -63,8 +63,8 @@ public class EditorTypesMenu extends Panel{
             ),
             new EditorTypeSelectorButton(
                 EditorType.SCHEMATIC_EDITOR,
-                "icons/NBT_icon.png", //temp icon
-                "icons/NBT_icon.png"
+                "icons/schematic_icon.png", //temp icon
+                "icons/schematic_icon.png"
             ),
             new EditorTypeSelectorButton(
                 EditorType.ENTITY_EDITOR,
