@@ -29,7 +29,7 @@ public class HardcodedBlockModels {
     
     private static String loadJson(String jsonName) {
         try {
-            return FileUtils.readResourceFile(HARDCODED_JSON_PATH + "/" + jsonName);
+            return FileUtils.readResourceFile(HARDCODED_JSON_PATH + jsonName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

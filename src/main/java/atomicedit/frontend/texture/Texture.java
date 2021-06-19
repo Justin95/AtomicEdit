@@ -3,6 +3,7 @@ package atomicedit.frontend.texture;
 
 import atomicedit.logging.Logger;
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -86,7 +87,7 @@ public class Texture {
 			buffer.put((byte) ((pixel >>  0) & 0xFF));  // Blue
 			buffer.put((byte) ((pixel >> 24) & 0xFF));  // Alpha
 		}
-		buffer.flip();
+		((Buffer)buffer).flip(); //cast to a Buffer to fix java 8 compatability issue: https://stackoverflow.com/questions/61267495/exception-in-thread-main-java-lang-nosuchmethoderror-java-nio-bytebuffer-flip
 		return buffer;
 	}
     
