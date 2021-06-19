@@ -62,7 +62,7 @@ public class VersionUtils {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                 responseJsonStr = reader.lines().collect(Collectors.joining("\n"));
             }
-        } catch (Exception e) {
+        } catch (Exception | ExceptionInInitializerError e) {
             Logger.error("Could not look for newer AtomicEdit version on Github at " + CHECK_RELEASES_URL, e);
             return null;
         } finally {

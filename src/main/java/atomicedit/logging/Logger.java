@@ -58,7 +58,7 @@ public class Logger {
         System.out.println(message);
     }
     
-    private static void log(String message, Exception e, LogLevel level) {
+    private static void log(String message, Throwable e, LogLevel level) {
         if (level.isLessImportantThan(minLevel)) {
             return;
         }
@@ -80,7 +80,7 @@ public class Logger {
         log(message, LogLevel.INFO);
     }
     
-    public static void info(String message, Exception e){
+    public static void info(String message, Throwable e){
         log(message, e, LogLevel.INFO);
     }
     
@@ -88,7 +88,7 @@ public class Logger {
         log(message, LogLevel.NOTICE);
     }
     
-    public static void notice(String message, Exception e){
+    public static void notice(String message, Throwable e){
         log(message, e, LogLevel.NOTICE);
     }
     
@@ -96,7 +96,7 @@ public class Logger {
         log(message, LogLevel.WARNING);
     }
     
-    public static void warning(String message, Exception e){
+    public static void warning(String message, Throwable e){
         log(message, e, LogLevel.WARNING);
     }
     
@@ -104,7 +104,7 @@ public class Logger {
         log(message, LogLevel.ERROR);
     }
     
-    public static void error(String message, Exception e){
+    public static void error(String message, Throwable e){
         log(message, e, LogLevel.ERROR);
     }
     
@@ -112,11 +112,11 @@ public class Logger {
         log(message, LogLevel.CRITICAL);
     }
     
-    public static void critical(String message, Exception e){
+    public static void critical(String message, Throwable e){
         log(message, e, LogLevel.CRITICAL);
     }
     
-    private static void printException(PrintWriter location, Exception e){
+    private static void printException(PrintWriter location, Throwable e){
         if(e == null){
             return;
         }
