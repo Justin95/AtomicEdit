@@ -45,12 +45,15 @@ public class ChunkRenderObjectCreator {
      * @param xPlus
      * @param zMinus
      * @param zPlus
+     * @param helper
      * @return 
      */
-    public static Collection<ChunkSectionRenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
+    public static Collection<ChunkSectionRenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus, ChunkRenderObjectCreatorHelper helper){
         ArrayList<ChunkSectionRenderObject> renderObjects = new ArrayList<>();
-        FloatList vertexBuffer = new FloatList();
-        IntList indiciesBuffer = new IntList();
+        FloatList vertexBuffer = helper.vertexBuffer;
+        IntList indiciesBuffer = helper.indiciesBuffer;
+        vertexBuffer.reset(); //ensure fresh slate
+        indiciesBuffer.reset();
         for(int i = 0; i < Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK; i++){
             try{
                 if(Arrays.equals(chunk.getBlocks(i), EMPTY_BLOCK_ARRAY)){
@@ -256,6 +259,17 @@ public class ChunkRenderObjectCreator {
             numVerticies + 5, numVerticies + 7,
             numVerticies + 6, numVerticies + 7
         );
+    }
+    
+    public static class ChunkRenderObjectCreatorHelper {
+        private final FloatList vertexBuffer;
+        private final IntList indiciesBuffer;
+        
+        public ChunkRenderObjectCreatorHelper() {
+            this.vertexBuffer = new FloatList();
+            this.indiciesBuffer = new IntList();
+        }
+        
     }
     
 }

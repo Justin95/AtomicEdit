@@ -5,6 +5,7 @@ import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.frontend.render.blockmodelcreation.ChunkRenderObjectCreator;
+import atomicedit.frontend.render.blockmodelcreation.ChunkRenderObjectCreator.ChunkRenderObjectCreatorHelper;
 import atomicedit.logging.Logger;
 import java.util.Collection;
 
@@ -18,8 +19,8 @@ public class ChunkRenderable {
     private Collection<RenderObject> miscRenderObjects;
     private ChunkCoord chunkCoord;
     
-    public ChunkRenderable(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus){
-        this.chunkSectionRenderObjects = ChunkRenderObjectCreator.createRenderObjects(chunk, xMinus, xPlus, zMinus, zPlus);
+    public ChunkRenderable(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus, ChunkRenderObjectCreatorHelper helper){
+        this.chunkSectionRenderObjects = ChunkRenderObjectCreator.createRenderObjects(chunk, xMinus, xPlus, zMinus, zPlus, helper);
         this.miscRenderObjects = ChunkRenderObjectCreator.createMiscRenderObjects(chunk);
         this.chunkCoord = null;
         try{
