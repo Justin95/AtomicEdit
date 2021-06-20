@@ -99,6 +99,8 @@ public class AtomicEditRenderer {
         
         context.updateGlfwWindow();
         Vector2i windowSize = context.getFramebufferSize();
+        this.width = windowSize.x;
+        this.height = windowSize.y;
         camera.setAspectRatio(windowSize.x / (float)windowSize.y);
         GL11.glClearColor(0f, 0f, 0f, 1);
         GL11.glViewport(0, 0, windowSize.x, windowSize.y);
@@ -144,11 +146,11 @@ public class AtomicEditRenderer {
     }
     
     public int getWidth(){
-        return this.width; //TODO update to get current window width
+        return this.width;
     }
     
     public int getHeight(){
-        return this.height; //TODO update to get current window height
+        return this.height;
     }
     
     public Camera getCamera(){

@@ -11,13 +11,11 @@ import atomicedit.backend.chunk.ChunkSection;
 import atomicedit.backend.entity.Entity;
 import atomicedit.backend.entity.EntityCoord;
 import atomicedit.backend.nbt.MalformedNbtTagException;
+import atomicedit.frontend.render.ChunkRenderObject;
 import atomicedit.frontend.render.ChunkSectionRenderObject;
 import atomicedit.frontend.render.LinesRenderObject;
-import atomicedit.frontend.render.NoTextureRenderObject;
 import atomicedit.frontend.render.OnlyPositionRenderObject;
 import atomicedit.frontend.render.RenderObject;
-import atomicedit.frontend.render.blockmodelcreation.BlockModelCreator;
-import atomicedit.frontend.render.blockmodelcreation.ChunkSectionPlus;
 import atomicedit.logging.Logger;
 import atomicedit.utils.FloatList;
 import atomicedit.utils.IntList;
@@ -38,6 +36,23 @@ public class ChunkRenderObjectCreator {
     private static final Vector4f BLOCK_ENTITY_COLOR = new Vector4f(.8f, .5f, .20f, .5f); //RGBA
     private static final Vector4f ENTITY_COLOR = new Vector4f(.8f, .20f, .20f, .5f); //RGBA
     
+    
+    public static ChunkRenderObject createChunkRenderObject(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus, ChunkRenderObjectCreatorHelper helper) {
+        FloatList vertexBuffer = helper.vertexBuffer;
+        IntList indiciesBuffer = helper.indiciesBuffer;
+        vertexBuffer.reset(); //ensure fresh slate
+        indiciesBuffer.reset();
+        ChunkCoord chunkCoord;
+        try {
+            chunkCoord = chunk.getChunkCoord();
+        } catch (MalformedNbtTagException e) {
+            Logger.error("Could not get chunk coord.", e);
+            return null;
+        }
+        ChunkPlus chunkPlus = new ChunkPlus(chunk, xPlus, xMinus, zPlus, zMinus, chunkCoord);
+        return createChunkRenderObject(chunkPlus, vertexBuffer, indiciesBuffer);
+    }
+    
     /**
      * Create a collection of Render Objects which together render a chunk.
      * @param chunk
@@ -48,17 +63,18 @@ public class ChunkRenderObjectCreator {
      * @param helper
      * @return 
      */
-    public static Collection<ChunkSectionRenderObject> createRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus, ChunkRenderObjectCreatorHelper helper){
+    public static Collection<ChunkSectionRenderObject> createSectionRenderObjects(ChunkReader chunk, ChunkReader xMinus, ChunkReader xPlus, ChunkReader zMinus, ChunkReader zPlus, ChunkRenderObjectCreatorHelper helper){
         ArrayList<ChunkSectionRenderObject> renderObjects = new ArrayList<>();
         FloatList vertexBuffer = helper.vertexBuffer;
         IntList indiciesBuffer = helper.indiciesBuffer;
-        vertexBuffer.reset(); //ensure fresh slate
-        indiciesBuffer.reset();
+        //create translucent ROs
         for(int i = 0; i < Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK; i++){
-            try{
+            try {
                 if(Arrays.equals(chunk.getBlocks(i), EMPTY_BLOCK_ARRAY)){
                     continue;
                 }
+                vertexBuffer.reset();
+                indiciesBuffer.reset();
                 ChunkSectionPlus section = new ChunkSectionPlus(
                     chunk.getChunkSection(i),
                     xPlus != null ? xPlus.getChunkSection(i) : null,
@@ -72,12 +88,6 @@ public class ChunkRenderObjectCreator {
                     chunk.getChunkCoord().z
                 );
                 ChunkSectionRenderObject sectionRenderObject = createChunkSectionRenderObject(section, true, vertexBuffer, indiciesBuffer);
-                if(sectionRenderObject != null){
-                    renderObjects.add(sectionRenderObject);
-                }
-                vertexBuffer.reset();
-                indiciesBuffer.reset();
-                sectionRenderObject = createChunkSectionRenderObject(section, false, vertexBuffer, indiciesBuffer);
                 if(sectionRenderObject != null){
                     renderObjects.add(sectionRenderObject);
                 }
@@ -120,6 +130,31 @@ public class ChunkRenderObjectCreator {
         );
     }
     
+    private static ChunkRenderObject createChunkRenderObject(ChunkPlus chunk, FloatList vertexData, IntList indicies) {
+        BlockModelCreator blockModelCreator = BlockModelCreator.getInstance();
+        final int minY = 0;
+        final int maxY = 16 * ChunkSection.SIDE_LENGTH;
+        for(int y = minY; y < maxY; y++){
+            for(int z = 0; z < ChunkSection.SIDE_LENGTH; z++){
+                for(int x = 0; x < ChunkSection.SIDE_LENGTH; x++){
+                    if(chunk.getBlockAt(x, y, z) == 0){ //AIR
+                        continue;
+                    }
+                    blockModelCreator.addBlockRenderData(x, y, z, chunk, vertexData, indicies, false);
+                }
+            }
+        }
+        if(vertexData.isEmpty()){
+            return null;
+        }
+        return new ChunkRenderObject(
+            chunk.coord,
+            false,
+            vertexData.asArray(),
+            indicies.asArray()
+        );
+    }
+    
     public static Collection<RenderObject> createMiscRenderObjects(ChunkReader chunk) {
         final ChunkCoord chunkCoord;
         try {
@@ -140,23 +175,25 @@ public class ChunkRenderObjectCreator {
             Logger.warning("Could not render Block Entities in chunk.", e);
             blockEntities = new ArrayList<>();
         }
-        for (BlockEntity blockEntity : blockEntities) {
-            BlockCoord coord;
-            try {
-                coord = blockEntity.getBlockCoord();
-            } catch (MalformedNbtTagException e) {
-                Logger.warning("Could not render Block Entity in chunk.", e);
-                continue;
+        final Vector3f pos = new Vector3f(chunkCoord.getMinBlockCoord().x, chunkCoord.getMinBlockCoord().y, chunkCoord.getMinBlockCoord().z);
+        if (!blockEntities.isEmpty()) {
+            for (BlockEntity blockEntity : blockEntities) {
+                BlockCoord coord;
+                try {
+                    coord = blockEntity.getBlockCoord();
+                } catch (MalformedNbtTagException e) {
+                    Logger.warning("Could not render Block Entity in chunk.", e);
+                    continue;
+                }
+                addBlockEntity(vertexData, faceIndicies, lineIndicies, coord);
             }
-            addBlockEntity(vertexData, faceIndicies, lineIndicies, coord);
+            miscRenderObjects.add(
+                new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), BLOCK_ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
+            );
+            miscRenderObjects.add(
+                new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
+            );
         }
-        Vector3f pos = new Vector3f(chunkCoord.getMinBlockCoord().x, chunkCoord.getMinBlockCoord().y, chunkCoord.getMinBlockCoord().z);
-        miscRenderObjects.add(
-            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), BLOCK_ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
-        );
-        miscRenderObjects.add(
-            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
-        );
         //create entity render object
         vertexData.reset();
         faceIndicies.reset();
@@ -168,25 +205,27 @@ public class ChunkRenderObjectCreator {
             Logger.warning("Could not render Entities in chunk.", e);
             entities = new ArrayList<>();
         }
-        for (Entity entity : entities) {
-            Vector3f entityPos;
-            EntityCoord coord;
-            try {
-                coord = entity.getCoord();
-            } catch (MalformedNbtTagException e) {
-                Logger.warning("Could not render Entity in chunk.", e);
-                continue;
+        if (!entities.isEmpty()) {
+            for (Entity entity : entities) {
+                Vector3f entityPos;
+                EntityCoord coord;
+                try {
+                    coord = entity.getCoord();
+                } catch (MalformedNbtTagException e) {
+                    Logger.warning("Could not render Entity in chunk.", e);
+                    continue;
+                }
+                entityPos = coord.getChunkRelativePosition();
+                addEntity(vertexData, faceIndicies, lineIndicies, entityPos);
             }
-            entityPos = coord.getChunkRelativePosition();
-            addEntity(vertexData, faceIndicies, lineIndicies, entityPos);
+            miscRenderObjects.add(
+                new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
+            );
+            miscRenderObjects.add(
+                new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
+            );
         }
         
-        miscRenderObjects.add(
-            new OnlyPositionRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), ENTITY_COLOR, true, vertexData.asArray(), faceIndicies.asArray())
-        );
-        miscRenderObjects.add(
-            new LinesRenderObject(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), new Vector4f(0,0,0,1f), false, vertexData.asArray(), lineIndicies.asArray())
-        );
         return miscRenderObjects;
     }
     
