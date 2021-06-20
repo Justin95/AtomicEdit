@@ -21,6 +21,7 @@ public class RenderableStage {
     
     private final List<ChunkSectionRenderObject> translucentChunkSectionRenderObjects;
     private final List<ChunkSectionRenderObject> opaqueChunkSectionRenderObjects;
+    private final List<ChunkRenderObject> opaqueChunkRenderObjects;
     private final List<RenderObject> otherRenderObjects;
     private final List<RenderObject> toDestroy;
     private boolean unchangedSinceLastSort;
@@ -30,6 +31,7 @@ public class RenderableStage {
         this.QUEUE_LOCK = new Object();
         this.translucentChunkSectionRenderObjects = new ArrayList<>();
         this.opaqueChunkSectionRenderObjects = new ArrayList<>();
+        this.opaqueChunkRenderObjects = new ArrayList<>();
         this.otherRenderObjects = new ArrayList<>();
         this.toDestroy = new ArrayList<>();
         this.chunkRenderablesToAdd = new ArrayList<>();
@@ -157,7 +159,7 @@ public class RenderableStage {
         sortChunkList(cameraChunkCoord);
     }
     
-    private void sortChunkList(ChunkSectionCoord cameraCoord){
+    private void sortChunkList(ChunkSectionCoord cameraCoord) {
         this.translucentChunkSectionRenderObjects.sort((sectionA, sectionB) -> {
             ChunkSectionCoord coord = sectionA.getChunkSectionCoord();
             float distA =  (coord.x - cameraCoord.x) * (coord.x - cameraCoord.x) +
@@ -188,6 +190,7 @@ public class RenderableStage {
                         this.opaqueChunkSectionRenderObjects.add(renderObj);
                     }
                 }
+                this.opaqueChunkRenderObjects.add(renderable.getChunkRenderObject());
                 this.otherRenderObjects.addAll(renderable.getMiscRenderObjects());
             }
             this.chunkRenderablesToAdd.clear();
@@ -205,6 +208,8 @@ public class RenderableStage {
                     }
                     toDestroy.add(renderObj);
                 }
+                this.opaqueChunkRenderObjects.remove(renderable.getChunkRenderObject());
+                this.toDestroy.add(renderable.getChunkRenderObject());
                 this.otherRenderObjects.removeAll(renderable.getMiscRenderObjects());
                 this.toDestroy.addAll(renderable.getMiscRenderObjects());
             }
@@ -228,8 +233,12 @@ public class RenderableStage {
         destroyOldRenderObjects();
     }
     
-    public void renderRenderables(Camera camera){
+    public void renderRenderables(Camera camera) {
+        Logger.info("Opaque" + this.opaqueChunkRenderObjects.size() + " Opaque sec: " + this.opaqueChunkSectionRenderObjects.size() + " misc: " + this.otherRenderObjects.size() + " trans: " + this.translucentChunkSectionRenderObjects.size());
         for(ChunkSectionRenderObject renObj : this.opaqueChunkSectionRenderObjects){
+            renObj.render();
+        }
+        for(ChunkRenderObject renObj : this.opaqueChunkRenderObjects){
             renObj.render();
         }
         for(RenderObject renObj : this.otherRenderObjects){

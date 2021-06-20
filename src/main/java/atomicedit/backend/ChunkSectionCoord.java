@@ -24,6 +24,19 @@ public class ChunkSectionCoord {
         return new ChunkSectionCoord((int)Math.floor(x / ChunkSection.SIDE_LENGTH), (int)Math.floor(y / ChunkSection.SIDE_LENGTH), (int)Math.floor(z / ChunkSection.SIDE_LENGTH));
     }
     
+    public static int getChunkSectionYFromWorldY(int y) {
+        return (int)Math.floor(y / ChunkSection.SIDE_LENGTH);
+    }
+    
+    /**
+     * Get the Chunk Section internal Y of a world coordinate Y.
+     * @param y
+     * @return 
+     */
+    public static int getRelativeChunkSectionYFromWorldY(int y) {
+        return ((y % ChunkSection.SIDE_LENGTH) + ChunkSection.SIDE_LENGTH) % ChunkSection.SIDE_LENGTH;
+    }
+    
     /**
      * Get the block coordinate in this chunk that is closest to negative infinity on x, y, and z
      * @return 
@@ -33,9 +46,10 @@ public class ChunkSectionCoord {
     }
     
     public BlockCoord getMaxBlockCoord(){
-        return new BlockCoord(x * Chunk.X_LENGTH + Chunk.X_LENGTH - 1,
-                              y * ChunkSection.SIDE_LENGTH + ChunkSection.SIDE_LENGTH - 1,
-                              z * Chunk.Z_LENGTH + Chunk.Z_LENGTH - 1
+        return new BlockCoord(
+            x * Chunk.X_LENGTH + Chunk.X_LENGTH - 1,
+            y * ChunkSection.SIDE_LENGTH + ChunkSection.SIDE_LENGTH - 1,
+            z * Chunk.Z_LENGTH + Chunk.Z_LENGTH - 1
         );
     }
     
