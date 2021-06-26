@@ -65,7 +65,7 @@ public class World {
         this.sessionStartTime = ZonedDateTime.now().toInstant().toEpochMilli();
         writeSessionLock(sessionStartTime, filepath);
         this.chunkStages = new HashMap<>();
-        for (Dimension dim : Dimension.getDimensions()) {
+        for (Dimension dim : Dimension.getDimensions(filepath)) {
             chunkStages.put(dim, new LoadedChunkStage(FileUtils.concatPaths(filepath, dim.getSubPathToDimFolder())));
             dimToUnsavedChunkMap.put(dim, new HashMap<>());
         }

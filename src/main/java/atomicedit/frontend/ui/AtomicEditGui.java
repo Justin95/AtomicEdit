@@ -45,6 +45,7 @@ public class AtomicEditGui {
     public static final Vector4f PANEL_COLOR = new Vector4f(.2f, .2f, .2f, .8f);
     //https://github.com/SpinyOwl/legui/blob/develop/src/main/java/org/liquidengine/legui/demo/ExampleGui.java
     private static Label coordsLabel;
+    private static SelectBox<Dimension> dimensionSelectBox;
     private static final ReentrantLock WORLD_SELECT_LOCK = new ReentrantLock();
     
     private static final int ICON_SIZE = 26;
@@ -118,6 +119,7 @@ public class AtomicEditGui {
                                         String worldFilePath = saveFile.getAbsolutePath();
                                         Logger.info("Selected world: " + worldFilePath);
                                         backendController.setWorld(worldFilePath);
+                                        updateDimensionsBox(worldFilePath);
                                     }
                                 } finally { //exceptions here are unexpected but we have to unlock
                                     WORLD_SELECT_LOCK.unlock();
@@ -224,8 +226,8 @@ public class AtomicEditGui {
         });
         topBar.add(redoButton);
         
-        SelectBox<Dimension> dimensionSelectBox = new SelectBox<>();
-        for (Dimension dim : Dimension.getDimensions()) {
+        dimensionSelectBox = new SelectBox<>();
+        for (Dimension dim : Dimension.getDefaultDimensions()) {
             dimensionSelectBox.addElement(dim);
         }
         dimensionSelectBox.setVisibleCount(10);
@@ -276,6 +278,16 @@ public class AtomicEditGui {
                 sectionCoord.x, sectionCoord.y, sectionCoord.z
         );
         coordsLabel.getTextState().setText(coordsString);
+    }
+    
+    private static void updateDimensionsBox(String worldFilePath) {
+        int numElements = dimensionSelectBox.getElements().size();
+        for (int i = numElements - 1; i >= 0; i--) {
+            dimensionSelectBox.removeElement(i);
+        }
+        for (Dimension dim : Dimension.getDimensions(worldFilePath)) {
+            dimensionSelectBox.addElement(dim);
+        }
     }
     
 }
