@@ -31,7 +31,7 @@ public enum AtomicEditSettings {
         "Render Distance",
         "chunk_render_distance",
         SettingDataType.INT,
-        () -> 9
+        () -> 12
     ),
     PREFERED_MINECRAFT_VERSION(
         "Prefered Minecraft Version",

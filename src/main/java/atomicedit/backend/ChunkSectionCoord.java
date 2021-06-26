@@ -24,6 +24,11 @@ public class ChunkSectionCoord {
         return new ChunkSectionCoord((int)Math.floor(x / ChunkSection.SIDE_LENGTH), (int)Math.floor(y / ChunkSection.SIDE_LENGTH), (int)Math.floor(z / ChunkSection.SIDE_LENGTH));
     }
     
+    /**
+     * Get the y of the chunk section from the world y.
+     * @param y
+     * @return 
+     */
     public static int getChunkSectionYFromWorldY(int y) {
         return (int)Math.floor(y / ChunkSection.SIDE_LENGTH);
     }

@@ -1,6 +1,9 @@
 
 package atomicedit.backend.dimension;
 
+import atomicedit.utils.FileUtils;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +31,6 @@ public class Dimension {
     
     public static final Dimension DEFAULT_DIMENSION = DEFAULT_DIMENSIONS.get(0); //overworld
     
-    //TODO add dimension lighting properties, ie use skylight or not
     private final String name;
     private final String pathToDimFolder;
     
@@ -49,8 +51,31 @@ public class Dimension {
         return this.pathToDimFolder;
     }
     
-    public static List<Dimension> getDimensions() {
-        return DEFAULT_DIMENSIONS; //TODO add custom datapack dimension support
+    public static List<Dimension> getDefaultDimensions() {
+        return DEFAULT_DIMENSIONS;
+    }
+    
+    public static List<Dimension> getDimensions(String saveFilePath) {
+        List<Dimension> dimensions = new ArrayList<>();
+        dimensions.addAll(DEFAULT_DIMENSIONS);
+        dimensions.addAll(getCustomDimensions(saveFilePath));
+        return Collections.unmodifiableList(dimensions);
+    }
+    
+    private static List<Dimension> getCustomDimensions(String saveFilePath) {
+        File dimFolder = new File(FileUtils.concatPaths(saveFilePath, "dimensions"));
+        if (!(dimFolder.exists() && dimFolder.isDirectory())) {
+            return Collections.EMPTY_LIST;
+        }
+        List<Dimension> customDimensions = new ArrayList<>();
+        for (File datapackDir : dimFolder.listFiles((file) -> file.isDirectory())) {
+            for (File custDimFolder : datapackDir.listFiles((file) -> file.isDirectory())) {
+                String dimName = datapackDir.getName() + "/" + custDimFolder.getName();
+                customDimensions.add(new Dimension(dimName, "dimensions/" + dimName));
+            }
+        }
+        customDimensions.sort((a, b) -> a.name.compareToIgnoreCase(b.name));
+        return customDimensions;
     }
     
     @Override

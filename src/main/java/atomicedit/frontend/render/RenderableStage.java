@@ -234,7 +234,6 @@ public class RenderableStage {
     }
     
     public void renderRenderables(Camera camera) {
-        Logger.info("Opaque" + this.opaqueChunkRenderObjects.size() + " Opaque sec: " + this.opaqueChunkSectionRenderObjects.size() + " misc: " + this.otherRenderObjects.size() + " trans: " + this.translucentChunkSectionRenderObjects.size());
         for(ChunkSectionRenderObject renObj : this.opaqueChunkSectionRenderObjects){
             renObj.render();
         }
