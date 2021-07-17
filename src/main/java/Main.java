@@ -18,7 +18,6 @@ public class Main {
     General UI cleanup, especially the nbt editor widget
     Rectangular prism brush shape
     add / delete chunks editor
-    custom dimension support
     custom world height support
     select box nudge buttons
     schematic repeat placement

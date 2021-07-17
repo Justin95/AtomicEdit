@@ -30,7 +30,10 @@ public class ChunkRenderable {
         }catch(MalformedNbtTagException e){
             Logger.error("Could not read chunk coord in ChunkRenderable constructor");
         }
-        
+    }
+    
+    public boolean hasChunkRenderObject() {
+        return this.chunkRenderObject != null;
     }
     
     public ChunkRenderObject getChunkRenderObject() {

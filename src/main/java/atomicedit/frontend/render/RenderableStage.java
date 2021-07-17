@@ -190,7 +190,9 @@ public class RenderableStage {
                         this.opaqueChunkSectionRenderObjects.add(renderObj);
                     }
                 }
-                this.opaqueChunkRenderObjects.add(renderable.getChunkRenderObject());
+                if (renderable.hasChunkRenderObject()) {
+                    this.opaqueChunkRenderObjects.add(renderable.getChunkRenderObject());
+                }
                 this.otherRenderObjects.addAll(renderable.getMiscRenderObjects());
             }
             this.chunkRenderablesToAdd.clear();
@@ -208,8 +210,10 @@ public class RenderableStage {
                     }
                     toDestroy.add(renderObj);
                 }
-                this.opaqueChunkRenderObjects.remove(renderable.getChunkRenderObject());
-                this.toDestroy.add(renderable.getChunkRenderObject());
+                if (renderable.hasChunkRenderObject()) {
+                    this.opaqueChunkRenderObjects.remove(renderable.getChunkRenderObject());
+                    this.toDestroy.add(renderable.getChunkRenderObject());
+                }
                 this.otherRenderObjects.removeAll(renderable.getMiscRenderObjects());
                 this.toDestroy.addAll(renderable.getMiscRenderObjects());
             }
