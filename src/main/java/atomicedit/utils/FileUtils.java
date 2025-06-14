@@ -7,9 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.liquidengine.legui.icon.ImageIcon;
-import org.liquidengine.legui.image.Image;
-import org.liquidengine.legui.image.StbBackedLoadableImage;
 
 /**
  *
@@ -24,11 +21,13 @@ public class FileUtils {
         return path + (path.endsWith(File.pathSeparator) ? "" : "/") + path2;
     }
     
+    /*
     public static ImageIcon loadIcon(String path){
         Image iconImage = new StbBackedLoadableImage(path);
         ImageIcon icon = new ImageIcon(iconImage);
         return icon;
     }
+    */
     
     public static String readResourceFile(String filepath) throws IOException {
         StringBuilder str = new StringBuilder();

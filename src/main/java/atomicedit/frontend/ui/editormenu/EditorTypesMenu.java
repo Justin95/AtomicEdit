@@ -1,29 +1,23 @@
 
 package atomicedit.frontend.ui.editormenu;
 
-import atomicedit.frontend.editor.EditorType;
-import org.liquidengine.legui.component.Panel;
-import org.liquidengine.legui.component.RadioButtonGroup;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.flex.FlexStyle;
-
 /**
  *
  * @author Justin Bonner
  */
-public class EditorTypesMenu extends Panel{
+public class EditorTypesMenu {
     
     private static final float BOTTOM_PADDING = 30;
     private static final float INTERNAL_PADDING = 10;
     private EditorTypeSelectorButton[] contents;
-    private RadioButtonGroup buttonGroup = new RadioButtonGroup();
     
     public EditorTypesMenu(){
         super();
-        this.contents = getContents();
-        initialize();
+        //this.contents = getContents();
+        //initialize();
     }
     
+    /*
     private void initialize() {
         for(int i = 0; i < contents.length; i++){
             contents[i].setRadioButtonGroup(buttonGroup);
@@ -78,6 +72,6 @@ public class EditorTypesMenu extends Panel{
             )
         };
     }
-    
+    */
     
 }

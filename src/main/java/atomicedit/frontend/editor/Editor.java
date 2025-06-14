@@ -9,6 +9,8 @@ public interface Editor {
     
     void initialize();
     
+    void updateUi();
+    
     void renderTick();
     
     void handleInput(boolean isUiFocused, int key, int action, int mods);

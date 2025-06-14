@@ -3,16 +3,13 @@ package atomicedit.backend.chunk;
 
 import atomicedit.backend.nbt.MalformedNbtTagException;
 
-
 /**
- * Changes since ChunkController1_14:
- * Block Ids are packed into a long array differently.
+ *
  * @author Justin Bonner
  */
-public class ChunkController1_15 extends BaseChunkControllerV1 {
+public class ChunkController1_18 extends BaseChunkControllerV2 {
     
-    
-    public ChunkController1_15(Chunk chunk) throws MalformedNbtTagException{
+    public ChunkController1_18(Chunk chunk) throws MalformedNbtTagException{
         super(chunk);
     }
 
@@ -20,5 +17,6 @@ public class ChunkController1_15 extends BaseChunkControllerV1 {
     protected boolean useCubicBiomes() {
         return true;
     }
+
     
 }

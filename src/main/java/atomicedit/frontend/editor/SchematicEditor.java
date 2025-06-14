@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.liquidengine.legui.component.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -71,12 +70,15 @@ public class SchematicEditor implements Editor {
     
     @Override
     public void initialize() {
-        Component root = renderer.getFrame().getContainer();
-        this.gui = new SchematicEditorGui(this, root);
+        this.gui = new SchematicEditorGui(this);
         this.pointerRenderObject = EditorUtils.createEditorPointerRenderObject(editorPointer.getSelectorPoint());
         setStatus(EditorStatus.SELECT);
-        root.add(gui.getSchematicPanel());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
+    }
+    
+    @Override
+    public void updateUi(){
+        this.gui.updateUi(status);
     }
     
     @Override
@@ -186,7 +188,6 @@ public class SchematicEditor implements Editor {
         renderer.getRenderableStage().removeRenderable(this.schematicRenderable);
         renderer.getRenderableStage().removeRenderable(this.selectionBoxRenderable);
         renderer.getRenderableStage().removeRenderObject(this.pointerRenderObject);
-        renderer.getFrame().getContainer().remove(gui.getSchematicPanel());
     }
     
     public void stepBack() {
@@ -382,7 +383,6 @@ public class SchematicEditor implements Editor {
                 break;
         }
         this.status = newStatus;
-        gui.updateStatus(status);
     }
     
     /*

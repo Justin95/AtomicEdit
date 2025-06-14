@@ -23,10 +23,12 @@ public class VersionUtils {
     private static final String DOWNLOAD_PAGE_URL = "https://github.com/Justin95/AtomicEdit/releases";
     private static final String VERSION;
     private static final String NEWEST_VERSION;
+    private static final boolean UPDATE_AVAILABLE;
     
     static {
         VERSION = readVersion();
         NEWEST_VERSION = checkForNewestVersion();
+        UPDATE_AVAILABLE = calcUpdateAvailable();
     }
     
     private static String readVersion() {
@@ -85,6 +87,10 @@ public class VersionUtils {
     }
     
     public static boolean isUpdateAvailable() {
+        return UPDATE_AVAILABLE;
+    }
+    
+    private static boolean calcUpdateAvailable() {
         if (VERSION == null || NEWEST_VERSION == null) {
             return false;
         }
@@ -96,6 +102,9 @@ public class VersionUtils {
                 int remote = Integer.parseInt(remoteVersNo[i]);
                 if (remote > curr) {
                     return true;
+                }
+                if (curr > remote) {
+                    return false;
                 }
             } catch (NumberFormatException e) {
                 Logger.warning("Could not parse version numbers.", e);

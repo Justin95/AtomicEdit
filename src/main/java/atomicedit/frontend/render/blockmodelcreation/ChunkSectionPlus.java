@@ -21,8 +21,10 @@ public class ChunkSectionPlus implements BlockVolumeDataProvider {
     public final ChunkSection secPlusY;
     public final ChunkSection secMinusY;
 
-    public ChunkSectionPlus(ChunkSection section, ChunkSection secPlusX, ChunkSection secMinusX, ChunkSection secPlusZ,
-                            ChunkSection secMinusZ, ChunkSection secPlusY, ChunkSection secMinusY, int x, int y, int z){
+    public ChunkSectionPlus(
+        ChunkSection section, ChunkSection secPlusX, ChunkSection secMinusX, ChunkSection secPlusZ,
+        ChunkSection secMinusZ, ChunkSection secPlusY, ChunkSection secMinusY, int x, int y, int z
+    ){
         this.centerSection = section;
         this.secPlusX = secPlusX;
         this.secMinusX = secMinusX;

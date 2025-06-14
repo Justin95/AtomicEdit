@@ -44,4 +44,12 @@ public interface ChunkReader {
     
     public void clearNeedsRedraw();
     
+    public int getLowestSectionY();
+    
+    public int getHighestSectionY();
+    
+    public default int getChunkHeight() {
+        return getHighestSectionY() - getLowestSectionY() + 1;
+    }
+    
 }

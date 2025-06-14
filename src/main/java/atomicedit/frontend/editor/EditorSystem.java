@@ -19,11 +19,18 @@ public class EditorSystem {
         renderer = aeRenderer;
         editorPointer = new EditorPointer();
         editorPointer.updatePosition(renderer.getCamera().getPosition(), renderer.getCamera().getRotation(), 0);
+        setEditorType(EditorType.AREA_SELECTION);
     }
     
     public static void cleanUp() {
         if (editor != null) {
             editor.cleanUp();
+        }
+    }
+    
+    public static void updateUi() {
+        synchronized (EDITOR_LOCK) {
+            editor.updateUi();
         }
     }
     

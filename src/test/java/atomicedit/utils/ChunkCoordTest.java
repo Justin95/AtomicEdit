@@ -1,8 +1,9 @@
 
 package atomicedit.utils;
 
+import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.backend.chunk.ChunkCoord;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -17,10 +18,20 @@ public class ChunkCoordTest {
         ChunkCoord a = ChunkCoord.getInstance(10,10);
         ChunkCoord b = ChunkCoord.getInstance(10,10);
         ChunkCoord c = ChunkCoord.getInstance(1,3);
-        assertTrue(a.equals(b));
-        assertTrue(!a.equals(c));
+        Assert.assertTrue(a.equals(b));
+        Assert.assertTrue(!a.equals(c));
     }
     
+    @Test
+    public void testSectionY() {
+        int innerSectionY = ChunkSectionCoord.getRelativeChunkSectionYFromWorldY(-2);
+        Assert.assertTrue(innerSectionY == 14);
+    }
     
+    @Test
+    public void test2() {
+        int secY = ChunkSectionCoord.getChunkSectionYFromWorldY(-1);
+        Assert.assertEquals(-1, secY);
+    }
     
 }

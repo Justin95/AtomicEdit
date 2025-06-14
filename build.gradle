@@ -1,53 +1,69 @@
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+    id "application"
+}
 
-mainClassName = "Main"
+def atomicEditVersion = "0.4.0"
 
-def atomicEditVersion = "0.3.1"
-
-def lwjglVersion = "3.2.3" //also dependency of legui
-def leguiVersion = "3.3.0-SNAPSHOT"
+def lwjglVersion = "3.3.6"
+def imguiVersion = "1.89.0"
 
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        name = "Releases"
-        url = "https://raw.github.com/LiquidEngine/repo/releases"
-    }
-    maven {
-        name = "Snapshots"
-        url = "https://raw.github.com/LiquidEngine/repo/snapshots"
-    }
-    maven {
-        name = "Develop"
-        url = "https://raw.github.com/LiquidEngine/repo/develop"
-    }
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
     //noise library for noise operation
     maven {
-        url 'https://repo.spongepowered.org/maven/'
+        url 'https://repo.spongepowered.org/repository/maven-public/'
     }
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 dependencies {
-    compile "org.lwjgl:lwjgl:$lwjglVersion"
-    compile "org.liquidengine:legui:$leguiVersion"
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    implementation "org.lwjgl:lwjgl"
+    implementation 'org.lwjgl:lwjgl-glfw'
+    implementation 'org.lwjgl:lwjgl-opengl'
     
-    ["natives-windows", "natives-linux", "natives-macos"].each { lwjglNatives ->
-        compile "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
-        compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
+    ["natives-windows", "natives-linux", "natives-macos", "natives-macos-arm64"].each { lwjglNatives ->
+        implementation "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
+        implementation "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
+        implementation "org.lwjgl:lwjgl-opengl:${lwjglVersion}:${lwjglNatives}"
+        //compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
     }
+    
+    //imgui for UI   https://github.com/SpaiR/imgui-java
+    implementation "io.github.spair:imgui-java-binding:$imguiVersion"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+    ["imgui-java-natives-windows", "imgui-java-natives-linux", "imgui-java-natives-macos"].each { imguiNatives ->
+        implementation "io.github.spair:${imguiNatives}:$imguiVersion"
+    }
+    
+    //gson for some json parsing. TODO remove this
+    implementation 'com.google.code.gson:gson:2.13.1'
+    
     //noise library for noise operation
     implementation 'org.spongepowered:noise:2.0.0-SNAPSHOT'
-    testCompile 'junit:junit:4.12'
+    
+    //vector math
+    implementation "org.joml:joml:1.10.5"
+
+    //tests
+    testImplementation 'junit:junit:4.12'
 }
 
+application {
+    mainClass = "Main"
+}
+
+tasks.named('test') {
+    useJUnitPlatform() 
+}
+
+/*
 jar {
     //destinationDirectory = buildDir
     baseName = "AtomicEdit_" + "$atomicEditVersion"
@@ -60,7 +76,7 @@ jar {
         }
     }
 }
-
+*/
 
 processResources {
     def replace = { replaceMap ->

@@ -61,14 +61,16 @@ public class ChunkPlus implements BlockVolumeDataProvider {
             selectionZ -= ChunkSection.SIDE_LENGTH;
             selectedChunk = secPlusZ;
         }
-        
+        if (selectedChunk == null) {
+            return getOp.getIntegerOp(selectionX, selectionY, selectionZ, null);
+        }
         ChunkSection selectedSection = null;
-        final int minSectionY = 0;
-        final int maxSectionY = 15;
+        final int minSectionY = selectedChunk.getLowestSectionY();
+        final int maxSectionY = selectedChunk.getHighestSectionY();
         int sectionY = ChunkSectionCoord.getChunkSectionYFromWorldY(y);
         try {
             if (sectionY >= minSectionY && sectionY <= maxSectionY) {
-                selectedSection = selectedChunk == null ? null : selectedChunk.getChunkSection(sectionY);
+                selectedSection = selectedChunk.getChunkSection(sectionY);
             }
         } catch (MalformedNbtTagException e) {
             Logger.error("Exception creating chunk renderable", e);

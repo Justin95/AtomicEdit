@@ -10,17 +10,13 @@ import atomicedit.backend.nbt.NbtTag;
 import atomicedit.backend.nbt.NbtTypes;
 import atomicedit.backend.utils.GeneralUtils;
 import atomicedit.logging.Logger;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +25,7 @@ import java.util.Map;
  *
  * @author Justin Bonner
  */
-public class MinecraftAnvilWorldFormat implements WorldFormat{
+public class AnvilWorldFormat_1_13 implements WorldFormat{
     
     private static final int NUM_CHUNKS_IN_REGION_FILE = 1024;
     private static final int SECTOR_SIZE_IN_BYTES = 4096;
@@ -40,7 +36,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     
     private String dimensionFilepath;
     
-    public MinecraftAnvilWorldFormat(String dimensionFilepath){
+    public AnvilWorldFormat_1_13(String dimensionFilepath){
         this.dimensionFilepath = dimensionFilepath;
     }
     
@@ -83,7 +79,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     private Chunk readChunk(ChunkCoord chunkCoord){
-        DataInputStream regionInput = getRegionAsDataInputStream(chunkCoord);
+        DataInputStream regionInput = WorldFormatUtils.getRegionAsDataInputStream(dimensionFilepath, chunkCoord);
         if(regionInput == null) return null;
         int chunkIndexOffset = 4 * ((chunkCoord.x & 31) + (chunkCoord.z & 31) * 32);
         Chunk chunk = null;
@@ -127,33 +123,6 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
         }
     }
     
-    private static String getRegionFileName(ChunkCoord chunkCoord){
-        return "r." + (int) Math.floor(chunkCoord.x / 32.0) + "." + (int) Math.floor(chunkCoord.z / 32.0) + ".mca";
-    }
-    
-    private DataInputStream getRegionAsDataInputStream(ChunkCoord chunkCoord){
-        String filepath = dimensionFilepath + "/region/" + getRegionFileName(chunkCoord);
-        DataInputStream regionInput = null;
-        try{
-            regionInput = new DataInputStream(new FileInputStream(filepath));
-        }catch(FileNotFoundException e){
-            Logger.info("Region file not found, chunk not generated yet: " + chunkCoord);
-        }
-        return regionInput;
-    }
-    
-    private DataInputStream getRegionAsDataInputStream(String regionFileName) throws IOException {
-        String filepath = dimensionFilepath + "/region/" + regionFileName;
-        DataInputStream regionInput = null;
-        try{
-            byte[] rawRegionFile = Files.readAllBytes(Paths.get(filepath));
-            regionInput = new DataInputStream(new ByteArrayInputStream(rawRegionFile));
-        }catch(FileNotFoundException e){
-            Logger.info("Region file not found " + regionFileName + ", chunk not generated yet.");
-        }
-        return regionInput;
-    }
-    
     public Chunk interpretChunk(NbtTag chunkNbt) throws MalformedNbtTagException{
         return new Chunk(NbtTypes.getAsCompoundTag(chunkNbt));
     }
@@ -166,7 +135,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     private static Map<String, Map<ChunkCoord, Chunk>> catigorizeByRegionFile(Map<ChunkCoord, ChunkController> chunks){
         Map<String, Map<ChunkCoord, Chunk>> regionToChunkMap = new HashMap<>();
         for(ChunkCoord coord : chunks.keySet()){
-            String regionFileName = getRegionFileName(coord);
+            String regionFileName = WorldFormatUtils.getRegionFileName(coord);
             if(!regionToChunkMap.containsKey(regionFileName)){
                 regionToChunkMap.put(regionFileName, new HashMap<>());
             }
@@ -176,7 +145,7 @@ public class MinecraftAnvilWorldFormat implements WorldFormat{
     }
     
     private void writeToRegionFile(String regionFileName, Map<ChunkCoord, Chunk> chunks) throws IOException, CorruptedRegionFileException{
-        DataInputStream oldRegionFile = getRegionAsDataInputStream(regionFileName);
+        DataInputStream oldRegionFile = WorldFormatUtils.getRegionAsDataInputStream(dimensionFilepath, regionFileName);
         byte[] oldChunkLocations = new byte[SECTOR_SIZE_IN_BYTES]; //locations and timestamps take up one sector each
         byte[] timestamps = new byte[SECTOR_SIZE_IN_BYTES];
         byte[][] oldChunkDatas = new byte[NUM_CHUNKS_IN_REGION_FILE][];//not including length header field, but does include compression header field, compressed chunk data

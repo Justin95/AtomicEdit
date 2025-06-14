@@ -2,14 +2,6 @@
 package atomicedit.frontend.ui;
 
 import atomicedit.frontend.editor.EntityEditor;
-import java.util.ArrayList;
-import java.util.List;
-import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Panel;
-import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.flex.FlexStyle;
 
 /**
  *
@@ -21,14 +13,18 @@ public class EntityEditorGui {
     private static final int GUI_HEIGHT = 800;
     
     private final EntityEditor editor;
-    private Panel opPanel;
     private NbtEditorWidget editorWidget;
     
     public EntityEditorGui(EntityEditor editor) {
         this.editor = editor;
-        initialize();
+        //initialize();
     }
     
+    public void updateUi() {
+        
+    }
+    
+    /*
     private void initialize() {
         this.opPanel = new Panel();
         this.opPanel.setFocusable(false);
@@ -87,11 +83,12 @@ public class EntityEditorGui {
     public Panel getOpPanel() {
         return this.opPanel;
     }
-    
+    */
     /**
      * Get all the Components used by this GUI. Useful for ensuring this GUI is cleaned up properly.
      * @return 
      */
+    /*
     public List<Component> getAllActiveComponents() {
         List<Component> comps = new ArrayList<>();
         comps.add(opPanel);
@@ -100,5 +97,5 @@ public class EntityEditorGui {
         }
         return comps;
     }
-    
+    */
 }

@@ -30,7 +30,7 @@ public class ChunkSectionCoord {
      * @return 
      */
     public static int getChunkSectionYFromWorldY(int y) {
-        return (int)Math.floor(y / ChunkSection.SIDE_LENGTH);
+        return (int)Math.floorDiv(y, ChunkSection.SIDE_LENGTH);
     }
     
     /**

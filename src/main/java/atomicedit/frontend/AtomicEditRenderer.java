@@ -7,12 +7,11 @@ import atomicedit.frontend.render.RenderableStage;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import atomicedit.logging.Logger;
 import atomicedit.utils.VersionUtils;
+import java.awt.Frame;
+import java.nio.IntBuffer;
+import javax.naming.Context;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.liquidengine.legui.component.Frame;
-import org.liquidengine.legui.system.context.Context;
-import org.liquidengine.legui.system.renderer.Renderer;
-import org.liquidengine.legui.system.renderer.nvg.NvgRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -37,11 +36,9 @@ public class AtomicEditRenderer {
     private static final String WINDOW_TITLE_STRING = "Atomic Edit " + VersionUtils.getCurrentVersion();
     private static final int GL_MAJOR_VERSION = 3;
     private static final int GL_MINOR_VERSION = 3;
+    public static final String GLSL_VERSION = "#version 330";
     
-    private Context context;
-    private Renderer guiRenderer;
     private long glfwWindow;
-    private Frame frame;
     private int width;
     private int height;
     private final RenderableStage renderableStage;
@@ -64,22 +61,23 @@ public class AtomicEditRenderer {
         }
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, GL_MAJOR_VERSION);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, GL_MINOR_VERSION);
-        GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        this.width = videoMode.width();
-        this.height = videoMode.height() - 70;
+        
+        int[] monXPosBuf = new int[1];
+        int[] monYPosBuf = new int[1];
+        int[] monWidthBuf = new int[1];
+        int[] monHeightBuf = new int[1];
+        GLFW.glfwGetMonitorWorkarea(GLFW.glfwGetPrimaryMonitor(), monXPosBuf, monYPosBuf, monWidthBuf, monHeightBuf);
+        this.width = monWidthBuf[0];
+        this.height = monHeightBuf[0];
         this.camera = new Camera(new Vector3f(0, 80, 0), new Vector3f(0, 0, 0), 90, width / (float)height);
         //glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, GLFW.glfwGetPrimaryMonitor(), NULL); //boarderless window
         glfwWindow = GLFW.glfwCreateWindow(width, height, WINDOW_TITLE_STRING, NULL, NULL);
         GLFW.glfwShowWindow(glfwWindow);
         GLFW.glfwMakeContextCurrent(glfwWindow);
         GLFW.glfwFocusWindow(glfwWindow);
-        GLFW.glfwSetWindowPos(glfwWindow, 0, 0);
+        GLFW.glfwSetWindowPos(glfwWindow, monXPosBuf[0], monYPosBuf[0]);
         GL.createCapabilities();
         GLFW.glfwSwapInterval(0);
-        frame = new Frame(width, height);
-        context = new Context(glfwWindow);
-        guiRenderer = new NvgRenderer();
-        guiRenderer.initialize();
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
     }
@@ -89,7 +87,6 @@ public class AtomicEditRenderer {
         if((check = glGetError()) != GL_NO_ERROR){
             Logger.error("OpenGL error " + check);
         }
-        glEnable(GL_CULL_FACE); //I think LEGUI turns this off
         
         //enable translucency
         glEnable(GL_BLEND);
@@ -97,13 +94,14 @@ public class AtomicEditRenderer {
         
         handleSetCursorVisible();
         
-        context.updateGlfwWindow();
-        Vector2i windowSize = context.getFramebufferSize();
-        this.width = windowSize.x;
-        this.height = windowSize.y;
-        camera.setAspectRatio(windowSize.x / (float)windowSize.y);
+        int[] widthBuf = new int[1];
+        int[] heightBuf = new int[1];
+        GLFW.glfwGetWindowSize(glfwWindow, widthBuf, heightBuf);
+        this.width = widthBuf[0];
+        this.height = heightBuf[0];
+        camera.setAspectRatio(width / (float)height);
         GL11.glClearColor(0f, 0f, 0f, 1);
-        GL11.glViewport(0, 0, windowSize.x, windowSize.y);
+        GL11.glViewport(0, 0, width, height);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
         
         //render world
@@ -112,37 +110,28 @@ public class AtomicEditRenderer {
         
         renderableStage.housekeeping();
         renderableStage.renderRenderables(camera);
-        
-        // render frame / GUI
-        guiRenderer.render(frame, context);
-        
-        EditorSystem.renderTick();
+    }
+    
+    public void pollInput() {
         // poll events to callbacks
         try {
             GLFW.glfwPollEvents();
         } catch (Exception e) {
-            Logger.error("Exception Polling Events.", e); //if an exception is thrown in legui callbacks
+            Logger.error("Exception Polling Events.", e); //if an exception is thrown in callbacks
         }
+    }
+    
+    public void swapBuffers() {
         GLFW.glfwSwapBuffers(glfwWindow);
-        
     }
     
     public void cleanUp(){
-        guiRenderer.destroy();
         GLFW.glfwDestroyWindow(glfwWindow);
         GLFW.glfwTerminate();
     }
     
     public long getGlfwWindow(){
         return this.glfwWindow;
-    }
-    
-    public Frame getFrame(){
-        return this.frame;
-    }
-    
-    public Context getContext(){
-        return this.context;
     }
     
     public int getWidth(){

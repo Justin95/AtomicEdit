@@ -1,33 +1,9 @@
 
 package atomicedit.frontend.ui;
 
-import atomicedit.backend.schematic.AeSchematicFormatV1;
-import atomicedit.backend.schematic.Schematic;
 import atomicedit.frontend.editor.SchematicEditor;
 import atomicedit.frontend.editor.SchematicEditor.EditorStatus;
-import atomicedit.logging.Logger;
-import atomicedit.settings.AtomicEditConstants;
-import atomicedit.utils.FileUtils;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.swing.JFileChooser;
-import org.joml.Vector2f;
-import org.joml.Vector3i;
-import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.CheckBox;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Panel;
-import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.icon.ImageIcon;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.color.ColorConstants;
-import org.liquidengine.legui.style.flex.FlexStyle;
-import org.liquidengine.legui.style.length.Length;
-import org.liquidengine.legui.style.length.LengthType;
 
 /**
  *
@@ -37,37 +13,30 @@ public class SchematicEditorGui {
     
     private static final int GUI_WIDTH = 350;
     private static final int GUI_HEIGHT = 800;
-    private static final ImageIcon ROTATE_LEFT_ICON = FileUtils.loadIcon("icons/rotate_left.png");
-    private static final ImageIcon ROTATE_RIGHT_ICON = FileUtils.loadIcon("icons/rotate_right.png");
-    private static final ImageIcon Y_FLIP_ICON = FileUtils.loadIcon("icons/flip.png");
+   // private static final ImageIcon ROTATE_LEFT_ICON = FileUtils.loadIcon("icons/rotate_left.png");
+    //private static final ImageIcon ROTATE_RIGHT_ICON = FileUtils.loadIcon("icons/rotate_right.png");
+    //private static final ImageIcon Y_FLIP_ICON = FileUtils.loadIcon("icons/flip.png");
     private static final ReentrantLock SAVE_LOCK = new ReentrantLock();
     private static final ReentrantLock LOAD_LOCK = new ReentrantLock();
     
+    /*
     static {
         ROTATE_LEFT_ICON.setSize(new Vector2f(30, 30));
         ROTATE_RIGHT_ICON.setSize(new Vector2f(30, 30));
         Y_FLIP_ICON.setSize((new Vector2f(30, 30)));
     }
+    */
     
     private final SchematicEditor editor;
-    private EditorStatus status;
-    private Panel schematicPanel;
-    private final Map<EditorStatus, List<Component>> statusToComponents;
-    private CheckBox includeAirCheckBox;
-    private Component root;
     
-    public SchematicEditorGui(SchematicEditor editor, Component root) {
+    public SchematicEditorGui(SchematicEditor editor) {
         this.editor = editor;
-        this.root = root;
-        this.status = EditorStatus.SELECT;
-        this.statusToComponents = new EnumMap<>(EditorStatus.class);
-        for (EditorStatus eStatus : EditorStatus.values()) {
-            this.statusToComponents.put(eStatus, new ArrayList<>());
-        }
-        initialize();
-        updateStatus(this.status);
     }
     
+    public void updateUi(EditorStatus status) {
+        
+    }
+    /*
     private void initialize() {
         this.schematicPanel = new Panel();
         this.schematicPanel.setFocusable(false);
@@ -87,9 +56,8 @@ public class SchematicEditorGui {
         //padding
         this.schematicPanel.getStyle().setPadding(30, 10, 30, 10); //top, right, bottom, left
         
-        /*
-        Add each component to the appropriate status list(s)
-        */
+        
+        //Add each component to the appropriate status list(s)
         //pickup button
         Button pickupButton = new Button();
         pickupButton.getListenerMap().addListener(MouseClickEvent.class, (event) -> {
@@ -448,5 +416,6 @@ public class SchematicEditorGui {
         }
         this.status = newStatus;
     }
+    */
     
 }

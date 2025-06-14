@@ -44,12 +44,6 @@ public class ChunkCoord {
         return new BlockCoord(x * Chunk.X_LENGTH, 0, z * Chunk.Z_LENGTH);
     }
     
-    public BlockCoord getMaxBlockCoord(){
-        return new BlockCoord(x * Chunk.X_LENGTH + Chunk.X_LENGTH - 1,
-                              Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK * ChunkSection.SIDE_LENGTH,
-                              z * Chunk.Z_LENGTH + Chunk.Z_LENGTH - 1
-        );
-    }
     
     @Override
     public String toString(){

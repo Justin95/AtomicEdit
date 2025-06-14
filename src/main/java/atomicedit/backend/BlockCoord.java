@@ -22,7 +22,7 @@ public class BlockCoord {
         this.z = z;
     }
     
-    public int getSubChunkIndex(){
+    public int getSubChunkY(){
         if (y < 0) {
             return -(-y / ChunkSection.SIDE_LENGTH);
         }
