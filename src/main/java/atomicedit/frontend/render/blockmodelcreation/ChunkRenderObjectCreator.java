@@ -68,7 +68,7 @@ public class ChunkRenderObjectCreator {
         FloatList vertexBuffer = helper.vertexBuffer;
         IntList indiciesBuffer = helper.indiciesBuffer;
         //create translucent ROs
-        for(int i = 0; i < Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK; i++){
+        for(int i = chunk.getLowestSectionY(); i <= chunk.getHighestSectionY(); i++){
             try {
                 if(Arrays.equals(chunk.getBlocks(i), EMPTY_BLOCK_ARRAY)){
                     continue;
@@ -81,8 +81,8 @@ public class ChunkRenderObjectCreator {
                     xMinus != null ? xMinus.getChunkSection(i) : null,
                     zPlus != null ? zPlus.getChunkSection(i) : null,
                     zMinus != null ? zMinus.getChunkSection(i) : null,
-                    i == Chunk.NUM_CHUNK_SECTIONS_IN_CHUNK - 1 ? null : chunk.getChunkSection(i + 1),
-                    i == 0 ? null : chunk.getChunkSection(i - 1),
+                    i == chunk.getHighestSectionY() ? null : chunk.getChunkSection(i + 1),
+                    i == chunk.getLowestSectionY() ? null : chunk.getChunkSection(i - 1),
                     chunk.getChunkCoord().x,
                     i,
                     chunk.getChunkCoord().z
@@ -132,8 +132,8 @@ public class ChunkRenderObjectCreator {
     
     private static ChunkRenderObject createChunkRenderObject(ChunkPlus chunk, FloatList vertexData, IntList indicies) {
         BlockModelCreator blockModelCreator = BlockModelCreator.getInstance();
-        final int minY = 0;
-        final int maxY = 16 * ChunkSection.SIDE_LENGTH;
+        final int minY = chunk.centerSection.getLowestSectionY() * ChunkSection.SIDE_LENGTH; //inclusive
+        final int maxY = (chunk.centerSection.getHighestSectionY() + 1) * ChunkSection.SIDE_LENGTH; //exclusive
         for(int y = minY; y < maxY; y++){
             for(int z = 0; z < ChunkSection.SIDE_LENGTH; z++){
                 for(int x = 0; x < ChunkSection.SIDE_LENGTH; x++){

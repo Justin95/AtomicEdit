@@ -4,19 +4,11 @@ package atomicedit.frontend.editor;
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockCoord;
-import atomicedit.backend.chunk.ChunkCoord;
-import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.entity.Entity;
-import atomicedit.backend.nbt.MalformedNbtTagException;
-import atomicedit.backend.nbt.NbtTag;
-import atomicedit.backend.nbt.NbtTypes;
-import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.Renderable;
 import atomicedit.frontend.ui.EntityEditorGui;
-import atomicedit.frontend.ui.NbtEditorWidget;
-import atomicedit.frontend.ui.NbtEditorWidget.ChangedNbtCallback;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
@@ -24,10 +16,7 @@ import atomicedit.operations.nbt.EditEntityOperation;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
@@ -55,8 +44,12 @@ public class EntityEditor implements Editor {
     public void initialize(){
         this.gui = new EntityEditorGui(this);
         this.pointerRenderObject = EditorUtils.createEditorPointerRenderObject(editorPointer.getSelectorPoint());
-        renderer.getFrame().getContainer().add(gui.getOpPanel());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
+    }
+    
+    @Override
+    public void updateUi() {
+        gui.updateUi();
     }
     
     @Override
@@ -91,7 +84,7 @@ public class EntityEditor implements Editor {
         }
     }
     
-    
+    /*
     public NbtEditorWidget createEditorWidget() {
         BackendController backendController = AtomicEdit.getBackendController();
         if (!backendController.hasWorld()) {
@@ -147,6 +140,7 @@ public class EntityEditor implements Editor {
         renderer.getFrame().getContainer().add(editorWidget);
         return editorWidget;
     }
+    */
     
     public OperationResult doOperation(WorldVolume volume, List<Entity> changes, boolean replaceExisting) {
         this.editorWidgetOpen = false;
@@ -190,7 +184,6 @@ public class EntityEditor implements Editor {
     public void cleanUp(){
         renderer.getRenderableStage().removeRenderable(this.selectionBoxRenderable);
         renderer.getRenderableStage().removeRenderObject(this.pointerRenderObject);
-        renderer.getFrame().getContainer().removeAll(gui.getAllActiveComponents());
         this.gui = null;
     }
     

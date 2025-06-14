@@ -1,36 +1,17 @@
 
 package atomicedit.frontend.ui;
 
-import atomicedit.backend.nbt.*;
-import atomicedit.frontend.ui.atomicedit_legui.DoubleSelectorComponent;
-import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
-import atomicedit.utils.FileUtils;
-import atomicedit.volumes.WorldVolume;
-import java.util.ArrayList;
-import java.util.List;
-import org.joml.Vector2f;
-import org.joml.Vector4f;
-import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.ImageView;
-import org.liquidengine.legui.component.Label;
-import org.liquidengine.legui.component.Panel;
-import org.liquidengine.legui.component.ScrollablePanel;
-import org.liquidengine.legui.component.SelectBox;
-import org.liquidengine.legui.component.TextInput;
-import org.liquidengine.legui.component.Tooltip;
-import org.liquidengine.legui.component.Widget;
-import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.icon.ImageIcon;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.flex.FlexStyle;
-
 /**
  *
  * @author Justin Bonner
  */
-public class NbtEditorWidget extends Widget {
+public class NbtEditorWidget {
     
+    public void updateUi() {
+        
+    }
+    
+    /*
     private static final int GUI_WIDTH = 700;
     private static final int GUI_HEIGHT = 800;
     private static final int SCROLL_PANEL_HEIGHT = GUI_HEIGHT - 100;
@@ -991,4 +972,5 @@ public class NbtEditorWidget extends Widget {
     private static interface AddTagCallback {
         void callback(NbtTypes type, String name);
     }
+    */
 }

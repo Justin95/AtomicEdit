@@ -5,8 +5,6 @@ import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.editor.EditorSystem;
 import java.nio.DoubleBuffer;
 import org.joml.Vector3f;
-import org.liquidengine.legui.component.Frame;
-import org.liquidengine.legui.system.context.Context;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -16,16 +14,12 @@ import org.lwjgl.glfw.GLFW;
  */
 public class MasterController {
     
-    private final Context context;
-    private final Frame frame;
     private final CameraController cameraController;
     private final AtomicEditRenderer renderer;
     private boolean cameraLookAround;
     private boolean centerMouse;
     
-    public MasterController(AtomicEditRenderer renderer){
-        this.context = renderer.getContext();
-        this.frame = renderer.getFrame();
+    public MasterController(AtomicEditRenderer renderer) {
         this.cameraController = new CameraController(renderer.getCamera());
         this.renderer = renderer;
         this.cameraLookAround = false;

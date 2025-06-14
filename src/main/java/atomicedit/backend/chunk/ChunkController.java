@@ -56,10 +56,20 @@ public abstract class ChunkController implements ChunkReader {
     protected abstract boolean useCubicBiomes();
     
     /**
-     * The number of chunk sections high this chunk data version calls for.
-     * @return 
+     * Set the valid chunk sections for this chunk. This will only remove chunk sections not create
+     * them.
+     * @param minY the minimum chunk Y to have available
+     * @param maxY the maximum chunk Y to have available
      */
-    public abstract int chunkHeightInSections();
+    protected abstract void pruneChunkHeight(int minY, int maxY);
+    
+    /**
+     * Set the valid chunk sections for this chunk. This will only create chunk sections not delete
+     * them.
+     * @param minY the minimum chunk Y to have available
+     * @param maxY the maximum chunk Y to have available
+     */
+    protected abstract void expandChunkHeight(int minY, int maxY);
     
     protected void declareNbtChanged(){
         this.chunk.setNeedsSaving(true);

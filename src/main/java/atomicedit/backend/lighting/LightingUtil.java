@@ -89,7 +89,7 @@ public class LightingUtil {
         //skylight
         iterator.forEach((x, y, z) -> {
             LightingBehavior lightBehavior = lightingArea.getLightingBehaviorAt(x, y, z);
-            int skyLight = y == 255 ? 15 : lightingArea.getSkyLightAt(x, y + 1, z);
+            int skyLight = y == lightingArea.highestBlockY ? 15 : lightingArea.getSkyLightAt(x, y + 1, z);
             if (!lightBehavior.allowBlockLight) {
                 skyLight = 0;
                 lightingArea.setEdited(x, y, z, true);
@@ -155,15 +155,23 @@ public class LightingUtil {
     private static LightingArea createLightingArea(Map<ChunkCoord, ChunkController> chunkMap) throws MalformedNbtTagException {
         HashMap<ChunkSectionCoord, Tuple<ChunkSectionCoord, LightingSection>> lightSections = new HashMap<>();
         final LightingBehavior[] blockIdToLightBehavior = calcLightBehaviorData();
+        int topSectionY = Integer.MIN_VALUE;
         for (ChunkCoord chunkCoord : chunkMap.keySet()) {
             ChunkController chunkController = chunkMap.get(chunkCoord);
             boolean needsLightingCalc = chunkController.needsLightingCalc();
-            int numSections = chunkController.chunkHeightInSections();
-            for (int sectionIndex = numSections - 1; sectionIndex >= 0; sectionIndex--) {
+            final int maxSectionY = chunkController.getHighestSectionY();
+            if (maxSectionY > topSectionY) {
+                topSectionY = maxSectionY;
+            }
+            final int minSectionY = chunkController.getLowestSectionY();
+            for (int sectionIndex = maxSectionY; sectionIndex >= minSectionY; sectionIndex--) {
                 ChunkSectionCoord sectionCoord = new ChunkSectionCoord(chunkCoord.x, sectionIndex, chunkCoord.z);
                 int[] blocks = chunkController.getBlocks(sectionIndex);
                 byte[] blockLightData = chunkController.getBlockLighting(sectionIndex);
                 byte[] skyLightData = chunkController.getSkyLighting(sectionIndex);
+                if (skyLightData == null || blockLightData == null || blocks == null) {
+                    continue; //happens if out of chunk Y bounds
+                }
                 //clear all existing lighting data in chunks being relit
                 if (needsLightingCalc) {
                     Arrays.fill(blockLightData, (byte)0);
@@ -177,7 +185,7 @@ public class LightingUtil {
                 lightSections.put(sectionCoord, new Tuple<>(sectionCoord, lightSection));
             }
         }
-        return new LightingArea(lightSections);
+        return new LightingArea(lightSections, topSectionY);
     }
     
     /**
@@ -199,9 +207,11 @@ public class LightingUtil {
         private HashMap<ChunkSectionCoord, Tuple<ChunkSectionCoord, LightingSection>> sections;
         private Tuple<ChunkSectionCoord, LightingSection> lastLookup;
         private Tuple<ChunkSectionCoord, LightingSection> secondLastLookup;
+        private final int highestBlockY;
         
-        LightingArea(HashMap<ChunkSectionCoord, Tuple<ChunkSectionCoord, LightingSection>> sections) {
+        LightingArea(HashMap<ChunkSectionCoord, Tuple<ChunkSectionCoord, LightingSection>> sections, int topSectionY) {
             this.sections = sections;
+            this.highestBlockY = ((topSectionY + 1) * ChunkSection.SIDE_LENGTH) - 1;
             this.lastLookup = sections.values().iterator().next();
             this.secondLastLookup = lastLookup;
         }
@@ -211,58 +221,77 @@ public class LightingUtil {
             int localX = x & 0xF;
             int localY = y & 0xF;
             int localZ = z & 0xF;
-            return getSectionFromWorldCoord(x, y, z).getLightingBehaviorAt(localX, localY, localZ);
+            LightingSection lightSection = getSectionFromWorldCoord(x, y, z);
+            if (lightSection == null) {
+                return LightingBehavior.DEFAULT_NON_FULL_BLOCK;
+            }
+            return lightSection.getLightingBehaviorAt(localX, localY, localZ);
         }
         
         byte getBlockLightAt(int x, int y, int z) {
-            if (y > 255 || y < 0) {
-                return 0;
-            }
             int localX = x & 0xF;
             int localY = y & 0xF;
             int localZ = z & 0xF;
-            return getSectionFromWorldCoord(x, y, z).getBlockLightAt(localX, localY, localZ);
+            LightingSection lightSection = getSectionFromWorldCoord(x, y, z);
+            if (lightSection == null) {
+                return 0;
+            }
+            return lightSection.getBlockLightAt(localX, localY, localZ);
         }
         
         void setBlockLightAt(int x, int y, int z, byte value) {
             int localX = x & 0xF;
             int localY = y & 0xF;
             int localZ = z & 0xF;
-            getSectionFromWorldCoord(x, y, z).setBlockLightAt(localX, localY, localZ, value);
+            LightingSection lightSection = getSectionFromWorldCoord(x, y, z);
+            if (lightSection == null) {
+                return;
+            }
+            lightSection.setBlockLightAt(localX, localY, localZ, value);
         }
         
         byte getSkyLightAt(int x, int y, int z) {
-            if (y > 255 || y < 0) {
-                return 0;
-            }
             int localX = x & 0xF;
             int localY = y & 0xF;
             int localZ = z & 0xF;
-            return getSectionFromWorldCoord(x, y, z).getSkyLightAt(localX, localY, localZ);
+            LightingSection lightSection = getSectionFromWorldCoord(x, y, z);
+            if (lightSection == null) {
+                return 0;
+            }
+            return lightSection.getSkyLightAt(localX, localY, localZ);
         }
         
         void setSkyLightAt(int x, int y, int z, byte value) {
             int localX = x & 0xF;
             int localY = y & 0xF;
             int localZ = z & 0xF;
-            getSectionFromWorldCoord(x, y, z).setSkyLightAt(localX, localY, localZ, value);
+            LightingSection lightSection = getSectionFromWorldCoord(x, y, z);
+            if (lightSection == null) {
+                return;
+            }
+            lightSection.setSkyLightAt(localX, localY, localZ, value);
         }
         
         boolean hasBeenEdited(int x, int y, int z) {
-            if (y > 255 || y < 0) {
-                return true; //dont edit those values
-            }
             int localX = x & 0xF;
             int localY = y & 0xF;
             int localZ = z & 0xF;
-            return getSectionFromWorldCoord(x, y, z).hasBeenEdited(localX, localY, localZ);
+            LightingSection lightSection = getSectionFromWorldCoord(x, y, z);
+            if (lightSection == null) {
+                return true;
+            }
+            return lightSection.hasBeenEdited(localX, localY, localZ);
         }
         
         void setEdited(int x, int y, int z, boolean value) {
             int localX = x & 0xF;
             int localY = y & 0xF;
             int localZ = z & 0xF;
-            getSectionFromWorldCoord(x, y, z).setEdited(localX, localY, localZ, value);
+            LightingSection lightSection = getSectionFromWorldCoord(x, y, z);
+            if (lightSection == null) {
+                return;
+            }
+            lightSection.setEdited(localX, localY, localZ, value);
         }
         
         void clearEdited() {
@@ -272,9 +301,9 @@ public class LightingUtil {
         }
         
         private LightingSection getSectionFromWorldCoord(int x, int y, int z) {
-            int sectionX = (int) Math.floor((float)x / ChunkSection.SIDE_LENGTH);
-            int sectionY = (int) Math.floor((float)y / ChunkSection.SIDE_LENGTH);
-            int sectionZ = (int) Math.floor((float)z / ChunkSection.SIDE_LENGTH);
+            int sectionX = Math.floorDiv(x, ChunkSection.SIDE_LENGTH);
+            int sectionY = Math.floorDiv(y, ChunkSection.SIDE_LENGTH);
+            int sectionZ = Math.floorDiv(z, ChunkSection.SIDE_LENGTH);
             if (lastLookup.left.x == sectionX && lastLookup.left.y == sectionY && lastLookup.left.z == sectionZ) {
                 return lastLookup.right;
             } else if (secondLastLookup.left.x == sectionX && secondLastLookup.left.y == sectionY && secondLastLookup.left.z == sectionZ) {
@@ -285,8 +314,7 @@ public class LightingUtil {
             }
             Tuple<ChunkSectionCoord, LightingSection> tuple = sections.get(new ChunkSectionCoord(sectionX, sectionY, sectionZ)); //plz alloc on stack
             if (tuple == null) {
-                Logger.error("Tried to look up an index out of bounds in lighting calc (" + x + ", " + y + ", " + z + "). Valid Sections: " + sections);
-                throw new RuntimeException("Tried to look out of bounds in lighting calc.");
+                return null;
             }
             secondLastLookup = lastLookup;
             lastLookup = tuple;

@@ -7,7 +7,7 @@ import atomicedit.backend.chunk.ChunkControllerFactory;
 import atomicedit.backend.chunk.ChunkCoord;
 import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.nbt.MalformedNbtTagException;
-import atomicedit.backend.worldformats.MinecraftAnvilWorldFormat;
+import atomicedit.backend.worldformats.AnvilWorldFormat_1_13;
 import atomicedit.backend.worldformats.WorldFormat;
 import atomicedit.logging.Logger;
 import java.lang.ref.WeakReference;
@@ -131,7 +131,7 @@ public class LoadedChunkStage {
     }
     
     private Map<ChunkCoord, Chunk> readChunks(Collection<ChunkCoord> chunkCoords) {
-        WorldFormat worldFormat = new MinecraftAnvilWorldFormat(dimensionFilepath);
+        WorldFormat worldFormat = new AnvilWorldFormat_1_13(dimensionFilepath);
         Map<ChunkCoord, Chunk> coordToChunk = worldFormat.readChunks(chunkCoords);
         return coordToChunk;
     }

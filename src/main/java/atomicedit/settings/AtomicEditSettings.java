@@ -45,6 +45,12 @@ public enum AtomicEditSettings {
         SettingDataType.BOOLEAN,
         () -> false
     ),
+    DEBUG_MODE(
+        "Debug Mode",
+        "debug_mode",
+        SettingDataType.BOOLEAN,
+        () -> false
+    ),
     ;
     
     public final String DISPLAY_NAME;

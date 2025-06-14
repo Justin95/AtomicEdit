@@ -21,11 +21,13 @@ public class BlockModelPrecursor {
         boxes = new ArrayList<>();
     }
     
-    String lookupTextureParam(String texParam){
+    String lookupTextureParam(String texParam) {
+        /*
         if(!texParam.startsWith("#")){
             Logger.warning("Tried to look up a texture parameter that does not start with '#': " + texParam);
             throw new IllegalArgumentException("Looked up bad tex parameter");
         }
+        */
         return lookupTexParam(texParam, 0);
     }
     

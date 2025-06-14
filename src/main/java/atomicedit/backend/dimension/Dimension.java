@@ -31,6 +31,10 @@ public class Dimension {
     
     public static final Dimension DEFAULT_DIMENSION = DEFAULT_DIMENSIONS.get(0); //overworld
     
+    //cache dimension list for one save
+    private static volatile String cachedDimensionKey;
+    private static volatile List<Dimension> cachedDimensions;
+    
     private final String name;
     private final String pathToDimFolder;
     
@@ -56,13 +60,25 @@ public class Dimension {
     }
     
     public static List<Dimension> getDimensions(String saveFilePath) {
+        if (saveFilePath == null) {
+            return DEFAULT_DIMENSIONS;
+        }
+        if (saveFilePath.equals(cachedDimensionKey)) {
+            return cachedDimensions;
+        }
         List<Dimension> dimensions = new ArrayList<>();
         dimensions.addAll(DEFAULT_DIMENSIONS);
         dimensions.addAll(getCustomDimensions(saveFilePath));
-        return Collections.unmodifiableList(dimensions);
+        List<Dimension> results = Collections.unmodifiableList(dimensions);
+        cachedDimensions = results;
+        cachedDimensionKey = saveFilePath;
+        return results;
     }
     
     private static List<Dimension> getCustomDimensions(String saveFilePath) {
+        if (saveFilePath == null) {
+            return Collections.EMPTY_LIST;
+        }
         File dimFolder = new File(FileUtils.concatPaths(saveFilePath, "dimensions"));
         if (!(dimFolder.exists() && dimFolder.isDirectory())) {
             return Collections.EMPTY_LIST;
@@ -81,6 +97,10 @@ public class Dimension {
     @Override
     public String toString() {
         return name;
+    }
+    
+    public static void clearDimensionListCache() {
+        cachedDimensionKey = null;
     }
     
 }

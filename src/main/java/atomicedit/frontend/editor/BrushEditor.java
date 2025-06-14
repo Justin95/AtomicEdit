@@ -27,13 +27,14 @@ import org.lwjgl.glfw.GLFW;
  */
 public class BrushEditor implements Editor {
     
+    private static Brush usedBrush = BrushType.ELIPSE.createInstance();
+    private static final long BRUSH_USE_DELAY = 100; //ms
+    
     private Volume brushVolume;
     private RenderObjectCollection brushRenderable;
     private BrushGui gui;
     private final AtomicEditRenderer renderer;
     private final EditorPointer editorPointer;
-    private static Brush usedBrush = BrushType.ELIPSE.createInstance();
-    private static final long BRUSH_USE_DELAY = 100; //ms
     private long brushLastUseTime;
     private RepeatOperationThread repeatThread;
     
@@ -47,10 +48,13 @@ public class BrushEditor implements Editor {
         this.repeatThread = new RepeatOperationThread(this);
         this.brushLastUseTime = System.currentTimeMillis();
         this.gui = new BrushGui(this);
-        renderer.getFrame().getContainer().add(gui.getBrushPanel());
-        renderer.getFrame().getContainer().add(gui.getOpPanel());
         setBrush(usedBrush, gui.getBrushParameters());
         this.repeatThread.start();
+    }
+    
+    @Override
+    public void updateUi() {
+        gui.updateUi();
     }
     
     @Override
@@ -68,8 +72,8 @@ public class BrushEditor implements Editor {
             return;
         }
         if(key == GLFW.GLFW_MOUSE_BUTTON_LEFT && action == GLFW.GLFW_PRESS) {
-            doOperationTimed();
             this.repeatThread.setActive(true);
+            this.repeatThread.interrupt(); //kick
         }
     }
     
@@ -104,8 +108,6 @@ public class BrushEditor implements Editor {
     @Override
     public void cleanUp() {
         this.repeatThread.shutdown();
-        renderer.getFrame().getContainer().remove(gui.getBrushPanel());
-        renderer.getFrame().getContainer().remove(gui.getOpPanel());
         renderer.getRenderableStage().removeRenderable(this.brushRenderable);
         this.gui = null;
     }
@@ -131,7 +133,7 @@ public class BrushEditor implements Editor {
     
     private static class RepeatOperationThread extends Thread {
         
-        private static long SLEEP_TIME_MS = 10;
+        private static final long SLEEP_TIME_MS = 10;
         private boolean active;
         private boolean keepAlive;
         private final BrushEditor brushEditor;
@@ -155,6 +157,7 @@ public class BrushEditor implements Editor {
         
         private void sleep() {
             try {
+                Thread.interrupted(); //clear flag
                 Thread.sleep(SLEEP_TIME_MS);
             } catch (InterruptedException e) {
                 //pass

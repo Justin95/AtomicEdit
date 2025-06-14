@@ -21,54 +21,40 @@ import atomicedit.backend.nbt.NbtTag;
 import atomicedit.backend.nbt.NbtTypes;
 import atomicedit.backend.utils.GeneralUtils;
 import atomicedit.logging.Logger;
+import atomicedit.utils.Tuple;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- *
+ * Base Chunk controller for 1.18+
  * @author justin
  */
-public abstract class BaseChunkControllerV1 extends ChunkController {
+public abstract class BaseChunkControllerV2 extends ChunkController {
     
     protected ChunkCoord coord;
     protected NbtCompoundTag chunkNbt;
     protected ChunkSection[] chunkSectionCache;
+    protected int sectionMinY;
+    protected int sectionMaxY;
     /**
      * True if the cache contains changes that have not yet been written to chunk NBT.
      */
     protected boolean chunkSectionCacheIsDirty;
     
-    public BaseChunkControllerV1(Chunk chunk) throws MalformedNbtTagException {
+    public BaseChunkControllerV2(Chunk chunk) throws MalformedNbtTagException {
         super(chunk);
         this.chunkNbt = chunk.getChunkTag();
-        this.coord = ChunkCoord.getInstance(getLevel().getIntTag("xPos").getPayload(), getLevel().getIntTag("zPos").getPayload());
-        this.chunkSectionCache = new ChunkSection[this.getChunkHeight()];
+        this.coord = ChunkCoord.getInstance(
+            this.chunkNbt.getIntTag("xPos").getPayload(),
+            this.chunkNbt.getIntTag("zPos").getPayload()
+        );
+        Tuple<Integer, Integer> minMaxes = findChunkHeight(chunkNbt);
+        this.sectionMinY = minMaxes.left;
+        this.sectionMaxY = minMaxes.right;
+        int numChunkSections = this.sectionMaxY - this.sectionMinY + 1;
+        this.chunkSectionCache = new ChunkSection[numChunkSections];
         this.chunkSectionCacheIsDirty = false;
-    }
-    
-    @Override
-    public int getHighestSectionY() {
-        return 15;
-    }
-    
-    @Override
-    public int getLowestSectionY() {
-        return 0;
-    }
-
-    @Override
-    protected void pruneChunkHeight(int minY, int maxY) {
-        
-    }
-
-    @Override
-    protected void expandChunkHeight(int minY, int maxY) {
-        
-    }
-    
-    private NbtCompoundTag getLevel() throws MalformedNbtTagException {
-        return this.chunkNbt.getCompoundTag("Level");
     }
     
     @Override
@@ -76,17 +62,58 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         return this.coord;
     }
     
-    
-    public void setBiomeAt(BlockCoord coord, int biome) throws MalformedNbtTagException{
-        NbtByteArrayTag biomes = getLevel().getByteArrayTag("Biomes");
-        biomes.getPayload()[GeneralUtils.getIndexZX(coord.getChunkLocalX(), coord.getChunkLocalZ(), Chunk.X_LENGTH)] = (byte) biome;
-        declareNbtChanged();
+    private static Tuple<Integer, Integer> findChunkHeight(NbtCompoundTag chunkNbt) throws MalformedNbtTagException {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (NbtCompoundTag sectionTag : chunkNbt.getListTag("sections").getCompoundTags()) {
+            int y = sectionTag.getByteTag("Y").getPayload();
+            if (y < min) {
+                min = y;
+            }
+            if (y > max) {
+                max = y;
+            }
+        }
+        if (min == Integer.MAX_VALUE) {
+            min = 0;
+        }
+        if (max == Integer.MIN_VALUE) {
+            max = 0;
+        }
+        return new Tuple<>(min, max);
     }
     
     @Override
-    public int getBiomeAt(BlockCoord coord) throws MalformedNbtTagException{
-        NbtByteArrayTag biomes = getLevel().getByteArrayTag("Biomes");
-        return biomes.getPayload()[GeneralUtils.getIndexZX(coord.getChunkLocalX(), coord.getChunkLocalZ(), Chunk.X_LENGTH)];
+    public void expandChunkHeight(int minY, int maxY) {
+        
+    }
+    
+    @Override
+    public void pruneChunkHeight(int minY, int maxY) {
+        int newMinY = Math.min(minY, this.sectionMinY);
+        int newMaxY = Math.max(maxY, this.sectionMaxY);
+        int newHeight = newMaxY - newMinY + 1;
+        ChunkSection[] newSections = new ChunkSection[newHeight];
+        //TODO
+    }
+    
+    @Override
+    public int getLowestSectionY() {
+        return this.sectionMinY;
+    }
+
+    @Override
+    public int getHighestSectionY() {
+        return this.sectionMaxY;
+    }
+    
+    public void setBiomeAt(BlockCoord coord, int biome) throws MalformedNbtTagException{
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public int getBiomeAt(BlockCoord coord) throws MalformedNbtTagException {
+        throw new UnsupportedOperationException();
     }
     
     @Override
@@ -103,60 +130,64 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public BlockState getBlockAt(BlockCoord coord) throws MalformedNbtTagException{
+    public BlockState getBlockAt(BlockCoord coord) throws MalformedNbtTagException {
         int subChunkY = coord.getSubChunkY();
         if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
             return null;
         }
-        if (chunkSectionCache[subChunkY] == null){
-            readChunkSectionIntoCache(coord.getSubChunkY());
+        int subChunkIndex = subChunkY - sectionMinY;
+        if (chunkSectionCache[subChunkIndex] == null){
+            readChunkSectionIntoCache(subChunkY);
         }
-        int[] blockIds = chunkSectionCache[coord.getSubChunkY()].getBlockIds();
+        int[] blockIds = chunkSectionCache[subChunkIndex].getBlockIds();
         int index = GeneralUtils.getIndexYZX(coord.getChunkLocalX(), coord.getSubChunkLocalY(), coord.getChunkLocalZ(), ChunkSection.SIDE_LENGTH);
         int globalId = blockIds[index];
         return GlobalBlockStateMap.getBlockType(globalId);
     }
     
     @Override
-    public void setBlockAt(BlockCoord coord, BlockState block) throws MalformedNbtTagException{
+    public void setBlockAt(BlockCoord coord, BlockState block) throws MalformedNbtTagException {
         int subChunkY = coord.getSubChunkY();
         if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
             return;
         }
-        if(chunkSectionCache[subChunkY] == null){
-            readChunkSectionIntoCache(coord.getSubChunkY());
+        int subChunkIndex = subChunkY - sectionMinY;
+        if(chunkSectionCache[subChunkIndex] == null){
+            readChunkSectionIntoCache(subChunkY);
         }
-        int[] blockIds = chunkSectionCache[coord.getSubChunkY()].getBlockIds();
+        int[] blockIds = chunkSectionCache[subChunkIndex].getBlockIds();
         int index = GeneralUtils.getIndexYZX(coord.getChunkLocalX(), coord.getSubChunkLocalY(), coord.getChunkLocalZ(), ChunkSection.SIDE_LENGTH);
         blockIds[index] = GlobalBlockStateMap.getBlockId(block);
         declareCacheIsDirty();
-        chunkSectionCache[coord.getSubChunkY()].setDirty(true);
+        chunkSectionCache[subChunkIndex].setDirty(true);
         declareNbtChanged();
         declareVisiblyChanged();
     }
     
     @Override
-    public ChunkSection getChunkSection(int subChunkIndex) throws MalformedNbtTagException{
-        if (subChunkIndex < this.getLowestSectionY() || subChunkIndex > this.getHighestSectionY()) {
+    public ChunkSection getChunkSection(int subChunkY) throws MalformedNbtTagException {
+        if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
             return null;
         }
+        int subChunkIndex = subChunkY - sectionMinY;
         if(chunkSectionCache[subChunkIndex] == null){
-            readChunkSectionIntoCache(subChunkIndex);
+            readChunkSectionIntoCache(subChunkY);
         }
         return this.chunkSectionCache[subChunkIndex];
     }
     
     @Override
-    public int[] getBlocks(int subChunkIndex) throws MalformedNbtTagException{
-        if (subChunkIndex < this.getLowestSectionY() || subChunkIndex > this.getHighestSectionY()) {
+    public int[] getBlocks(int sectionY) throws MalformedNbtTagException {
+        if(sectionY > this.getHighestSectionY() || sectionY < this.getLowestSectionY()) {
             return null;
         }
-        return getChunkSection(subChunkIndex).getBlockIds();
+        return getChunkSection(sectionY).getBlockIds();
     }
     
     @Override
-    public void setBlocks(int subChunkIndex, int[] blocks) throws MalformedNbtTagException{
-        if(subChunkIndex > this.getHighestSectionY() || subChunkIndex < this.getLowestSectionY()) {
+    public void setBlocks(int sectionY, int[] blocks) throws MalformedNbtTagException{
+        int subChunkIndex = sectionY - this.getLowestSectionY();
+        if(sectionY > this.getHighestSectionY() || sectionY < this.getLowestSectionY()) {
             return;
         }
         if(chunkSectionCache[subChunkIndex] == null) {
@@ -175,20 +206,21 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public byte[] getBlockLighting(int subChunkIndex) throws MalformedNbtTagException {
-        if(subChunkIndex > this.getHighestSectionY() || subChunkIndex < this.getLowestSectionY()) {
+    public byte[] getBlockLighting(int subChunkY) throws MalformedNbtTagException {
+        if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
             return null;
         }
-        return getChunkSection(subChunkIndex).getBlockLightValues();
+        return getChunkSection(subChunkY).getBlockLightValues();
     }
     
     @Override
-    public void setBlockLighting(int subChunkIndex, byte[] blockLight) throws MalformedNbtTagException {
-        if(subChunkIndex > this.getHighestSectionY() || subChunkIndex < this.getLowestSectionY()) {
+    public void setBlockLighting(int subChunkY, byte[] blockLight) throws MalformedNbtTagException {
+        int subChunkIndex = subChunkY - sectionMinY;
+        if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
             return;
         }
         if(chunkSectionCache[subChunkIndex] == null){
-            readChunkSectionIntoCache(subChunkIndex);
+            readChunkSectionIntoCache(subChunkY);
         }
         if(blockLight.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2){
             throw new IllegalArgumentException("Wrong number of block lights tried to occupy chunk sub section");
@@ -204,20 +236,24 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     }
     
     @Override
-    public byte[] getSkyLighting(int subChunkIndex) throws MalformedNbtTagException {
-        if(subChunkIndex > this.getHighestSectionY() || subChunkIndex < this.getLowestSectionY()) {
+    public byte[] getSkyLighting(int subChunkY) throws MalformedNbtTagException {
+        if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
             return null;
         }
-        return getChunkSection(subChunkIndex).getSkyLightValues();
+        return getChunkSection(subChunkY).getSkyLightValues();
     }
     
     @Override
-    public void setSkyLighting(int subChunkIndex, byte[] blockLight) throws MalformedNbtTagException {
-        if(subChunkIndex > this.getHighestSectionY() || subChunkIndex < this.getLowestSectionY()) {
+    public void setSkyLighting(int subChunkY, byte[] blockLight) throws MalformedNbtTagException {
+        if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
             return;
         }
+        int subChunkIndex = subChunkY - sectionMinY;
+        if(subChunkY > this.getHighestSectionY() || subChunkY < this.getLowestSectionY()) {
+            throw new IllegalArgumentException("Cannot write to sub chunk at index: " + subChunkIndex);
+        }
         if(chunkSectionCache[subChunkIndex] == null){
-            readChunkSectionIntoCache(subChunkIndex);
+            readChunkSectionIntoCache(subChunkY);
         }
         if(blockLight.length != ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2){
             throw new IllegalArgumentException("Wrong number of block lights tried to occupy chunk sub section");
@@ -232,10 +268,11 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
         setNeedsRedraw();
     }
     
-    private void readChunkSectionIntoCache(int subChunkIndex) throws MalformedNbtTagException{
-        ChunkSectionCoord sectionCoord = new ChunkSectionCoord(coord.x, subChunkIndex, coord.z);
-        for(NbtCompoundTag section : getLevel().getListTag("Sections").getCompoundTags()){
-            if(section.getByteTag("Y").getPayload() == subChunkIndex){
+    private void readChunkSectionIntoCache(int sectionY) throws MalformedNbtTagException {
+        int subChunkIndex = sectionY - this.getLowestSectionY();
+        ChunkSectionCoord sectionCoord = new ChunkSectionCoord(coord.x, sectionY, coord.z);
+        for(NbtCompoundTag section : this.chunkNbt.getListTag("sections").getCompoundTags()){
+            if(section.getByteTag("Y").getPayload() == sectionY){
                 this.chunkSectionCache[subChunkIndex] = readChunkSection(section, sectionCoord);
                 return;
             }
@@ -245,24 +282,25 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     private void writeChunkSectionCacheIntoNbt(int subChunkIndex) throws MalformedNbtTagException{
         ChunkSection chunkSection = this.chunkSectionCache[subChunkIndex];
+        int sectionY = subChunkIndex + this.getLowestSectionY();
         if(chunkSection == null){
             Logger.warning("Tried to write null chunk section");
             throw new IllegalArgumentException("Cannot write null chunk section.");
         }
         NbtCompoundTag sectionTag = null;
-        for(NbtCompoundTag sectionNbt : getLevel().getListTag("Sections").getCompoundTags()){
-            if(sectionNbt.getByteTag("Y").getPayload() == subChunkIndex){
+        for(NbtCompoundTag sectionNbt : this.chunkNbt.getListTag("sections").getCompoundTags()){
+            if(sectionNbt.getByteTag("Y").getPayload() == sectionY){
                 sectionTag = sectionNbt;
                 break;
             }
         }
         if(sectionTag == null){
             ArrayList<NbtTag> tags = new ArrayList<>();
-            tags.add(new NbtByteTag("Y", (byte)subChunkIndex));
+            tags.add(new NbtByteTag("Y", (byte)sectionY));
             tags.add(new NbtByteArrayTag("BlockLight", chunkSection.getBlockLightValues()));
             tags.add(new NbtByteArrayTag("SkyLight", chunkSection.getSkyLightValues()));
             sectionTag = new NbtCompoundTag("", tags);
-            getLevel().getListTag("Sections").getCompoundTags().add(sectionTag);
+            this.chunkNbt.getListTag("sections").getCompoundTags().add(sectionTag);
         }
         writeChunkSection(sectionTag, chunkSection);
     }
@@ -295,17 +333,24 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
             NbtCompoundTag blockStateTag = new NbtCompoundTag("", blockStateNameTag, blockStatePropertiesTag);
             blockPalletTags.add(blockStateTag);
         }
-        sectionTag.putTag(new NbtListTag("Palette", blockPalletTags, NbtTypes.TAG_COMPOUND));
+        NbtCompoundTag blockStatesTag = new NbtCompoundTag("block_states");
+        blockStatesTag.putTag(new NbtListTag("palette", blockPalletTags, NbtTypes.TAG_COMPOUND));
         
-        int[] blockValues = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
-        for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
-            int globalBlockId = chunkSection.getBlockIds()[i];
-            BlockState blockState = GlobalBlockStateMap.getBlockType(globalBlockId);
-            blockValues[i] = blockStates.indexOf(blockState);
+        /*
+        If a pallet only contains one block type then the data tag containing the blocks is optional.
+        */
+        if (blockPalletTags.size() > 1) {
+            int[] blockValues = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
+            for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
+                int globalBlockId = chunkSection.getBlockIds()[i];
+                BlockState blockState = GlobalBlockStateMap.getBlockType(globalBlockId);
+                blockValues[i] = blockStates.indexOf(blockState);
+            }
+            int indexSize = getIndexSize(blockStates.size());
+            long[] packedBlockValues = packBlockIds(blockValues, indexSize);
+            blockStatesTag.putTag(new NbtLongArrayTag("data", packedBlockValues));
         }
-        int indexSize = getIndexSize(blockStates.size());
-        long[] packedBlockValues = packBlockIds(blockValues, indexSize);
-        sectionTag.putTag(new NbtLongArrayTag("BlockStates", packedBlockValues));
+        sectionTag.putTag(blockStatesTag);
         sectionTag.putTag(new NbtByteArrayTag("BlockLight", chunkSection.getBlockLightValues()));
         sectionTag.putTag(new NbtByteArrayTag("SkyLight", chunkSection.getSkyLightValues()));
     }
@@ -325,8 +370,10 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     private ChunkSection readChunkSection(NbtCompoundTag sectionTag, ChunkSectionCoord chunkSectionCoord) throws MalformedNbtTagException{
         int[] blocks = new int[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION];
-        if(sectionTag.contains("Palette")) {
-            List<NbtCompoundTag> blockStateNbts = sectionTag.getListTag("Palette").getCompoundTags();
+        if(sectionTag.contains("block_states")) {
+            NbtCompoundTag blockStatesTag = sectionTag.getCompoundTag("block_states");
+            List<NbtCompoundTag> blockStateNbts = blockStatesTag.getListTag("palette").getCompoundTags();
+            //System.out.println(blockStateNbts);
             BlockState[] blockTypes = new BlockState[blockStateNbts.size()];
             for(int i = 0; i < blockStateNbts.size(); i++){
                 NbtCompoundTag blockStateTag = blockStateNbts.get(i);
@@ -358,16 +405,24 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
                 throw new MalformedNbtTagException("Too many blocks in palette: " + blockTypes.length);
             }
             int indexSize = getIndexSize(blockTypes.length);
-            long[] localBlockIds = sectionTag.getLongArrayTag("BlockStates").getPayload();
-            for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
-                int blockTypeIndex = readBlockIdFromPackedIds(indexSize, i, localBlockIds);
-                if(blockTypeIndex >= blockTypes.length){
-                    Logger.warning("Invalid block type index (" + blockTypeIndex + ") in chunk "+chunkSectionCoord+" at index ("+i+"), replacing with air");
-                    blockTypeIndex = 0;
+            if (blockTypes.length > 1) { //tag is required to contain 'data' tag
+                long[] localBlockIds = blockStatesTag.getLongArrayTag("data").getPayload();
+                for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
+                    int blockTypeIndex = readBlockIdFromPackedIds(indexSize, i, localBlockIds);
+                    if(blockTypeIndex >= blockTypes.length){
+                        Logger.warning("Invalid block type index (" + blockTypeIndex + ") in chunk "+chunkSectionCoord+" at index ("+i+"), replacing with air");
+                        blockTypeIndex = 0;
+                    }
+                    BlockState blockType = blockTypes[blockTypeIndex];
+                    blocks[i] = GlobalBlockStateMap.getBlockId(blockType);
                 }
-                BlockState blockType = blockTypes[blockTypeIndex];
-                blocks[i] = GlobalBlockStateMap.getBlockId(blockType);
+            } else { //assume its all of the only block type in the pallet
+                for(int i = 0; i < ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION; i++){
+                    BlockState blockType = blockTypes[0];
+                    blocks[i] = GlobalBlockStateMap.getBlockId(blockType);
+                }
             }
+            
         }
         byte[] blockLight = sectionTag.contains("BlockLight") ? sectionTag.getByteArrayTag("BlockLight").getPayload() : new byte[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2];
         byte[] skyLight = sectionTag.contains("SkyLight") ? sectionTag.getByteArrayTag("SkyLight").getPayload() : new byte[ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION / 2];
@@ -397,10 +452,10 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public List<Entity> getEntities() throws MalformedNbtTagException{
-        if(!getLevel().contains("Entities")){
+        if(!this.chunkNbt.contains("entities")){
             return new ArrayList<>();
         }
-        List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
+        List<NbtCompoundTag> entityNbts = this.chunkNbt.getListTag("entities").getCompoundTags();
         ArrayList<Entity> entities = new ArrayList<>();
         for(NbtCompoundTag tag : entityNbts){
             entities.add(new Entity(tag.copy()));
@@ -410,10 +465,10 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public void addEntity(Entity entity) throws MalformedNbtTagException {
-        if(!getLevel().contains("Entities")){
-            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
+        if(!this.chunkNbt.contains("entities")){
+            this.chunkNbt.putTag(new NbtListTag("entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
-        List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
+        List<NbtCompoundTag> entityNbts = this.chunkNbt.getListTag("entities").getCompoundTags();
         entityNbts.add(entity.getNbtData().copy());
         declareNbtChanged();
         declareVisiblyChanged();
@@ -421,10 +476,10 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public void removeEntity(Entity entity) throws MalformedNbtTagException {
-        if(!getLevel().contains("Entities")){
-            getLevel().putTag(new NbtListTag("Entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
+        if(!this.chunkNbt.contains("entities")){
+            this.chunkNbt.putTag(new NbtListTag("entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
-        List<NbtCompoundTag> entityNbts = getLevel().getListTag("Entities").getCompoundTags();
+        List<NbtCompoundTag> entityNbts = this.chunkNbt.getListTag("entities").getCompoundTags();
         entityNbts.remove(entity.getNbtData());
         declareNbtChanged();
         declareVisiblyChanged();
@@ -432,10 +487,10 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public List<BlockEntity> getBlockEntities() throws MalformedNbtTagException {
-        if(!getLevel().contains("TileEntities")){
+        if(!this.chunkNbt.contains("block_entities")){
             return new ArrayList<>();
         }
-        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
+        List<NbtCompoundTag> blockEntityNbts = this.chunkNbt.getListTag("block_entities").getCompoundTags();
         ArrayList<BlockEntity> blockEntities = new ArrayList<>();
         for(NbtCompoundTag tag : blockEntityNbts){
             blockEntities.add(new BlockEntity(tag.copy()));
@@ -445,10 +500,10 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public void addBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException {
-        if(!getLevel().contains("TileEntities")){
-            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
+        if(!this.chunkNbt.contains("block_entities")){
+            this.chunkNbt.putTag(new NbtListTag("block_entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
-        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
+        List<NbtCompoundTag> blockEntityNbts = this.chunkNbt.getListTag("block_entities").getCompoundTags();
         blockEntityNbts.add(blockEntity.getNbtData().copy());
         declareNbtChanged();
         declareVisiblyChanged();
@@ -456,10 +511,10 @@ public abstract class BaseChunkControllerV1 extends ChunkController {
     
     @Override
     public void removeBlockEntity(BlockEntity blockEntity) throws MalformedNbtTagException {
-        if(!getLevel().contains("TileEntities")){
-            getLevel().putTag(new NbtListTag("TileEntities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
+        if(!this.chunkNbt.contains("block_entities")){
+            this.chunkNbt.putTag(new NbtListTag("block_entities", new ArrayList<>(), NbtTypes.TAG_COMPOUND));
         }
-        List<NbtCompoundTag> blockEntityNbts = getLevel().getListTag("TileEntities").getCompoundTags();
+        List<NbtCompoundTag> blockEntityNbts = this.chunkNbt.getListTag("block_entities").getCompoundTags();
         blockEntityNbts.remove(blockEntity.getNbtData());
         declareNbtChanged();
         declareVisiblyChanged();

@@ -77,7 +77,7 @@ public class ChunkUtils {
             if (section == null) { //null chunk sections were out of bounds
                 continue;
             }
-            section.controller.setBlocks(section.sectionIndex, section.blocks);
+            section.controller.setBlocks(section.sectionY, section.blocks);
         }
     }
     
@@ -111,32 +111,36 @@ public class ChunkUtils {
             }
             int chunkX = chunkCoord.x - smallestChunk.x;
             int chunkZ = chunkCoord.z - smallestChunk.z;
-            int sectionStart = Math.max(smallestChunk.y, 0); //inclusive
-            int sectionEnd = Math.min(largestChunk.y + 1, chunkController.chunkHeightInSections()); //exclusive
-            for(int sectionIndex = sectionStart; sectionIndex < sectionEnd ; sectionIndex++){
-                int chunkY = sectionIndex - smallestChunk.y;
+            int sectionStart = smallestChunk.y; //inclusive
+            int sectionEnd = largestChunk.y + 1; //exclusive
+            for(int sectionY = sectionStart; sectionY < sectionEnd ; sectionY++){
+                int chunkY = sectionY - smallestChunk.y;
+                int[] blocks = chunkController.getBlocks(sectionY);
+                if (blocks == null) {
+                    continue;
+                }
                 chunkSectionBlocks[GeneralUtils.getIndexYZX(chunkX, chunkY, chunkZ, xChunkLen, zChunkLen)] = 
-                    new ChunkSectionBlocks(chunkController, chunkController.getBlocks(sectionIndex), sectionIndex);
+                    new ChunkSectionBlocks(chunkController, blocks, sectionY);
             }
         }
         return chunkSectionBlocks;
     }
     
     private static class ChunkSectionBlocks {
-        public final int sectionIndex;
+        public final int sectionY;
         public final int[] blocks;
         public final ChunkController controller;
         
         public ChunkSectionBlocks(ChunkController controller, int[] blocks, int sectionIndex){
             this.blocks = blocks;
             this.controller = controller;
-            this.sectionIndex = sectionIndex;
+            this.sectionY = sectionIndex;
         }
         
         @Override
         public String toString() {
             try {
-                return "{x=" + controller.getChunkCoord().x + ", y=" + sectionIndex + ", z=" + controller.getChunkCoord().z + "}";
+                return "{x=" + controller.getChunkCoord().x + ", y=" + sectionY + ", z=" + controller.getChunkCoord().z + "}";
             } catch (Exception e) {
                 return "Exception in ChunkSectionBlocks.toString()";
             }

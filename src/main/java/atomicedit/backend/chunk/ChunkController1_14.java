@@ -22,11 +22,6 @@ public class ChunkController1_14 extends BaseChunkControllerV1 {
     }
 
     @Override
-    public int chunkHeightInSections() {
-        return 16;
-    }
-
-    @Override
     protected void writeBiomes(int[] biomes) throws MalformedNbtTagException {
         VersionBehaviors.writeBiomes_1_13(chunkNbt, biomes);
     }

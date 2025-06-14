@@ -12,9 +12,7 @@ public class Chunk {
     
     public static final int X_LENGTH = 16;
     public static final int Z_LENGTH = 16;
-    public static final int NUM_CHUNK_SECTIONS_IN_CHUNK = 16;
     public static final int NUM_COLUMNS_IN_CHUNK = X_LENGTH * Z_LENGTH;
-    public static final int MAX_LEGAL_BLOCK_Y = NUM_CHUNK_SECTIONS_IN_CHUNK * ChunkSection.NUM_BLOCKS_IN_CHUNK_SECTION - 1;
     private static final Object FLAG_LOCK = new Object();
     private NbtCompoundTag chunkTag;
     private boolean needsSave;

@@ -14,8 +14,6 @@ import atomicedit.logging.Logger;
 import atomicedit.settings.AeSettingValues;
 import atomicedit.settings.AtomicEditSettingsCreator;
 import atomicedit.utils.VersionUtils;
-import org.liquidengine.legui.style.font.FontRegistry;
-import org.liquidengine.legui.theme.Themes;
 
 
 /**
@@ -46,7 +44,6 @@ public class AtomicEdit {
     
     private void initialize(){
         Logger.info("AtomicEdit version: " + VersionUtils.getCurrentVersion());
-        FontRegistry.setDefaultFont(FontRegistry.ROBOTO_REGULAR);
         //Themes.setDefaultTheme(Themes.FLAT_DARK);
         BlockState.loadKnownBlockStates();
         TextureLoader.getMinecraftDefaultTexture(); //force load textures

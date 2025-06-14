@@ -1,22 +1,17 @@
 
 package atomicedit.frontend.ui;
 
-import atomicedit.frontend.editor.BlockEntityEditor;
-import java.util.ArrayList;
-import java.util.List;
-import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Panel;
-import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.flex.FlexStyle;
-
 /**
  *
  * @author Justin Bonner
  */
 public class BlockEntityEditorGui {
     
+    public void updateUi() {
+        
+    }
+    
+    /*
     private static final int GUI_WIDTH = 350;
     private static final int GUI_HEIGHT = 800;
     
@@ -77,7 +72,7 @@ public class BlockEntityEditorGui {
     /**
      * Get all the Components used by this GUI. Useful for ensuring this GUI is cleaned up properly.
      * @return 
-     */
+     *//*
     public List<Component> getAllActiveComponents() {
         List<Component> comps = new ArrayList<>();
         comps.add(opPanel);
@@ -86,5 +81,5 @@ public class BlockEntityEditorGui {
         }
         return comps;
     }
-    
+    */
 }

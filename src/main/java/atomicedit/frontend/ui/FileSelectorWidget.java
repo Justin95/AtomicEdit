@@ -1,30 +1,19 @@
 
 package atomicedit.frontend.ui;
 
-import atomicedit.logging.Logger;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Label;
-import org.liquidengine.legui.component.ScrollablePanel;
-import org.liquidengine.legui.component.Widget;
-import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.listener.MouseClickEventListener;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.flex.FlexStyle;
-import org.liquidengine.legui.style.length.Length;
-import org.liquidengine.legui.style.length.LengthType;
-
 /**
  * 
  * @author Justin Bonner
  */
-public class FileSelectorWidget extends Widget {
+public class FileSelectorWidget {
     
+    //https://docs.oracle.com/javase/8/docs/api/javax/swing/JFileChooser.html
+    
+    
+    
+    
+    
+    /*
     private final Predicate<File> fileCheck;
     private final Label pathLabel;
     private final FilePanel filePanel;
@@ -172,5 +161,6 @@ public class FileSelectorWidget extends Widget {
         }
         
     }
+*/
     
 }

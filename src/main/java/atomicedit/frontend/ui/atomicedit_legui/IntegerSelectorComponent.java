@@ -1,16 +1,14 @@
 
 package atomicedit.frontend.ui.atomicedit_legui;
 
-import java.util.regex.Pattern;
-import org.liquidengine.legui.component.TextInput;
-import org.liquidengine.legui.component.optional.TextState;
 
 /**
  *
  * @author Justin Bonner
  */
-public class IntegerSelectorComponent extends TextInput {
+public class IntegerSelectorComponent {
     
+    /*
     private static final Pattern INT_PATTERN = Pattern.compile("-?\\d+");
     public static final int RECOMMENDED_WIDTH = 150;
     
@@ -81,5 +79,5 @@ public class IntegerSelectorComponent extends TextInput {
     public interface ValueSetCallback {
         void valueSetCallback(long newValue);
     }
-    
+    */
 }

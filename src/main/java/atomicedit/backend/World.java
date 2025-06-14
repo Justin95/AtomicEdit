@@ -16,7 +16,7 @@ import atomicedit.backend.nbt.MalformedNbtTagException;
 import atomicedit.backend.schematic.Schematic;
 import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.backend.worldformats.CorruptedRegionFileException;
-import atomicedit.backend.worldformats.MinecraftAnvilWorldFormat;
+import atomicedit.backend.worldformats.AnvilWorldFormat_1_13;
 import atomicedit.backend.worldformats.WorldFormat;
 import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
@@ -87,7 +87,7 @@ public class World {
             return;
         }
         for (Dimension dimension : this.dimToUnsavedChunkMap.keySet()) {
-            WorldFormat worldFormat = new MinecraftAnvilWorldFormat(FileUtils.concatPaths(filepath, dimension.getSubPathToDimFolder()));
+            WorldFormat worldFormat = new AnvilWorldFormat_1_13(FileUtils.concatPaths(filepath, dimension.getSubPathToDimFolder()));
             try{
                 worldFormat.writeChunks(this.dimToUnsavedChunkMap.get(dimension));
             }catch(CorruptedRegionFileException e){

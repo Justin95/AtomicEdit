@@ -1,35 +1,6 @@
 
 package atomicedit.frontend.ui;
 
-import atomicedit.backend.BlockState;
-import atomicedit.backend.parameters.BooleanParameterDescriptor;
-import atomicedit.backend.parameters.FloatParameterDescriptor;
-import atomicedit.backend.parameters.IntegerParameterDescriptor;
-import atomicedit.frontend.editor.AreaSelectionEditor;
-import atomicedit.operations.OperationType;
-import atomicedit.backend.parameters.ParameterDescriptor;
-import atomicedit.backend.parameters.Parameters;
-import java.util.List;
-import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Panel;
-import org.liquidengine.legui.component.SelectBox;
-import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent;
-import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.listener.EventListener;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.flex.FlexStyle;
-import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
-import atomicedit.frontend.ui.atomicedit_legui.BooleanSelectorComponent;
-import atomicedit.frontend.ui.atomicedit_legui.DoubleSelectorComponent;
-import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
-import java.util.ArrayList;
-import org.joml.Vector4f;
-import org.liquidengine.legui.component.Label;
-import org.liquidengine.legui.style.color.ColorConstants;
-import org.liquidengine.legui.style.length.Length;
-import org.liquidengine.legui.style.length.LengthType;
-
 /**
  *
  * @author Justin Bonner
@@ -37,6 +8,12 @@ import org.liquidengine.legui.style.length.LengthType;
 public class AreaSelectionOptionsGui {
     
     
+    
+    public void updateUi() {
+        
+    }
+    
+    /*
     private static final float GUI_WIDTH = 350;
     private static final float GUI_HEIGHT = 800;
     private static final String DO_OP_TEXT = "Do Operation";
@@ -239,5 +216,5 @@ public class AreaSelectionOptionsGui {
     public Panel getOpPanel() {
         return this.opPanel;
     }
-    
+    */
 }

@@ -46,7 +46,7 @@ public class BlockModelParser {
         if(root.has("parent")){
             String parentName = root.get("parent").getAsString();
             //some models are just 'block/blah' and some are 'minecraft:block/blah' in 1.16
-            Logger.debug("Lookup up parent model: " + parentName);
+            Logger.debug("Lookup parent model: " + parentName);
             String precursorJsonStr;
             if (nameToJsonMap.containsKey(parentName)) {
                 precursorJsonStr = nameToJsonMap.get(parentName);

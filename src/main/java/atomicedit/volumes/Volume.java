@@ -112,7 +112,7 @@ public class Volume {
         this.containedChunkSectionCoords = new ArrayList<>();
         for(int x = smallestCoord.getChunkCoord().x; x <= largestCoord.getChunkCoord().x; x++){
             for(int z = smallestCoord.getChunkCoord().z; z <= largestCoord.getChunkCoord().z; z++){
-                for(int y = smallestCoord.getSubChunkIndex(); y <= largestCoord.getSubChunkIndex(); y++){
+                for(int y = smallestCoord.getSubChunkY(); y <= largestCoord.getSubChunkY(); y++){
                     this.containedChunkSectionCoords.add(new ChunkSectionCoord(x, y, z));
                 }
             }

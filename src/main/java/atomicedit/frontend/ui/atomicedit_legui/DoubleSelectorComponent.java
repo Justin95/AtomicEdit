@@ -1,16 +1,12 @@
 
 package atomicedit.frontend.ui.atomicedit_legui;
 
-import java.util.regex.Pattern;
-import org.liquidengine.legui.component.TextInput;
-import org.liquidengine.legui.component.optional.TextState;
-
 /**
  *
  * @author Justin Bonner
  */
-public class DoubleSelectorComponent extends TextInput {
-    
+public class DoubleSelectorComponent {
+    /*
     private static final Pattern NUMBER_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
     
     private ValueSetCallback valueSetCallback;
@@ -80,5 +76,5 @@ public class DoubleSelectorComponent extends TextInput {
     public interface ValueSetCallback {
         void valueSetCallback(double newValue);
     }
-    
+    */
 }

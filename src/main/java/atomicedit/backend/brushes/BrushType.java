@@ -48,6 +48,15 @@ public enum BrushType {
         Brush createInstance();
     }
     
+    public static BrushType fromName(String displayName) {
+        for (BrushType brush : values()) {
+            if (brush.displayName.equals(displayName)) {
+                return brush;
+            }
+        }
+        return null;
+    }
+    
     @Override
     public String toString() {
         return this.displayName;

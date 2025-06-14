@@ -1,31 +1,18 @@
 
 package atomicedit.frontend.ui;
 
-import atomicedit.backend.BlockState;
 import atomicedit.backend.brushes.BrushType;
-import atomicedit.backend.parameters.BooleanParameterDescriptor;
-import atomicedit.backend.parameters.FloatParameterDescriptor;
-import atomicedit.backend.parameters.IntegerParameterDescriptor;
 import atomicedit.backend.parameters.ParameterDescriptor;
+import atomicedit.backend.parameters.ParameterType;
 import atomicedit.backend.parameters.Parameters;
 import atomicedit.frontend.editor.BrushEditor;
-import atomicedit.frontend.ui.atomicedit_legui.BlockSelectorComponent;
-import atomicedit.frontend.ui.atomicedit_legui.BooleanSelectorComponent;
-import atomicedit.frontend.ui.atomicedit_legui.DoubleSelectorComponent;
-import atomicedit.frontend.ui.atomicedit_legui.IntegerSelectorComponent;
+import atomicedit.logging.Logger;
 import atomicedit.operations.OperationType;
-import java.util.ArrayList;
-import java.util.List;
-import org.joml.Vector4f;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Label;
-import org.liquidengine.legui.component.Panel;
-import org.liquidengine.legui.component.SelectBox;
-import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent;
-import org.liquidengine.legui.listener.EventListener;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.color.ColorConstants;
-import org.liquidengine.legui.style.flex.FlexStyle;
+import imgui.ImVec2;
+import imgui.ImGui;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImInt;
 
 /**
  * https://yogalayout.com/docs/
@@ -35,26 +22,73 @@ public class BrushGui {
     
     private static final int GUI_WIDTH = 350;
     private static final int GUI_HEIGHT = 800;
+    private static final String[] BRUSH_NAMES;
+    
+    static {
+        BRUSH_NAMES = new String[BrushType.values().length];
+        for (int i = 0; i < BRUSH_NAMES.length; i++) {
+            BRUSH_NAMES[i] = BrushType.values()[i].displayName;
+        }
+    }
     
     private final BrushEditor editor;
-    private final Panel brushPanel;
-    private final Panel opPanel;
-    private final List<Component> brushParamComponents;
+    //private final List<Component> brushParamComponents;
     private BrushType brushType;
     private Parameters brushParameters;
-    private final List<Component> opParamComponents;
+    //private final List<Component> opParamComponents;
     private OperationType opType;
     private Parameters opParameters;
     
     public BrushGui(BrushEditor editor) {
         this.editor = editor;
-        this.brushParamComponents = new ArrayList<>();
-        this.opParamComponents = new ArrayList<>();
-        this.brushPanel = new Panel();
-        this.opPanel = new Panel();
-        initialize();
+        //initialize();
     }
     
+    public void updateUi() {
+        
+        //brush window
+        ImVec2 totalSize = new ImVec2();
+        ImGui.getMainViewport().getSize(totalSize);
+        
+        //put window on the right side middle
+        ImGui.setNextWindowPos(totalSize.x, totalSize.y / 2f, ImGuiCond.Appearing, 0.5f, 1f);
+        int flags = ImGuiWindowFlags.NoTitleBar
+            | ImGuiWindowFlags.NoResize
+            | ImGuiWindowFlags.NoFocusOnAppearing
+            | ImGuiWindowFlags.NoCollapse;
+        if (ImGui.begin("###brush_window", flags)) {
+            ImInt currBrushIdx = new ImInt();
+            if (ImGui.combo("Brush", currBrushIdx, BRUSH_NAMES, 5)) {
+                String brushName = BRUSH_NAMES[currBrushIdx.intValue()];
+                this.brushType = BrushType.fromName(brushName);
+            }
+            for (ParameterDescriptor paramDesc : this.brushType.getParameterDescriptors()) {
+                switch (paramDesc.parameterType) {
+                    case ParameterType.BLOCK_SELECTOR -> {
+                        
+                    }
+                    case ParameterType.INT -> {
+                        
+                    }
+                    case ParameterType.FLOAT -> {
+                        
+                    }
+                    case ParameterType.BOOLEAN -> {
+                        
+                    }
+                    case ParameterType.STRING -> {
+                        
+                    }
+                }
+            }
+        }
+        
+        //operation window
+        
+        
+    }
+    
+    /*
     private void initialize() {
         this.brushPanel.setFocusable(false);
         this.brushPanel.getStyle().getBackground().setColor(AtomicEditGui.PANEL_COLOR);
@@ -188,7 +222,7 @@ public class BrushGui {
             /*
             this.brushParameters.setParam(paramDesc, (int)event.getNewValue());
                         editor.setBrush(this.brushType.createInstance(), this.brushParameters);
-            */
+            *//*
             
             switch(paramDesc.parameterType) {
                 case INT:
@@ -341,14 +375,7 @@ public class BrushGui {
             this.opPanel.add(paramPanel);
         }
     }
-    
-    public Panel getBrushPanel() {
-        return this.brushPanel;
-    }
-    
-    public Panel getOpPanel() {
-        return this.opPanel;
-    }
+    */
     
     public OperationType getOperationType() {
         return this.opType;

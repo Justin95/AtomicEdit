@@ -39,7 +39,13 @@ public class BlockStateModelGenerator {
      * @return 
      */
     public static BlockStateModelGenerator getInstance(String blockName, String blockStateJson){
-        Map<Condition, BlockStateModel> conditionsToModels = createConditionMap(blockStateJson);
+        Map<Condition, BlockStateModel> conditionsToModels;
+        try {
+            conditionsToModels = createConditionMap(blockStateJson);
+        } catch (Exception e) {
+            Logger.error("Error creating block state model generator: " + blockName + "\n" + blockStateJson);
+            throw e;
+        }
         return new BlockStateModelGenerator(conditionsToModels);
     }
     
@@ -98,7 +104,7 @@ public class BlockStateModelGenerator {
     }
     
     private static Condition parseWhenStatement(JsonObject whenJson){
-        if(whenJson.has("OR")){
+        if (whenJson.has("OR")) {
             JsonArray orJson = whenJson.getAsJsonArray("OR");
             List<Condition> subConditions = new ArrayList<>();
             for(int i = 0; i < orJson.size(); i++){
@@ -113,7 +119,22 @@ public class BlockStateModelGenerator {
                 return false;
             };
             return condition;
-        }else{
+        } else if (whenJson.has("AND")) {
+            JsonArray orJson = whenJson.getAsJsonArray("AND");
+            List<Condition> subConditions = new ArrayList<>();
+            for(int i = 0; i < orJson.size(); i++){
+                subConditions.add(parseWhenStatement(orJson.get(i).getAsJsonObject()));
+            }
+            Condition condition = (BlockState blockState) -> {
+                for(Condition subCondition : subConditions){
+                    if(!subCondition.checkCondition(blockState)){
+                        return false;
+                    }
+                }
+                return true;
+            };
+            return condition;
+        } else {
             String[] checkVars = new String[whenJson.size()];
             String[] checkValues = new String[whenJson.size()];
             int i = 0;

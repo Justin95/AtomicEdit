@@ -14,6 +14,7 @@ public class ChunkControllerFactory {
     public static ChunkController getChunkController(Chunk chunk) throws MalformedNbtTagException{
         for(ChunkControllerType option : ChunkControllerType.values()){
             if(option.canWorkWith(chunk)){
+                //System.out.println(chunk.getChunkTag());
                 return option.getChunkController(chunk);
             }
         }
@@ -41,8 +42,12 @@ public class ChunkControllerFactory {
             chunk -> new ChunkController1_14(chunk)
         ),
         VERSION_1_15(
-            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 2225, //2225 is full release minecraft 1.15
+            chunk -> between(chunk.getChunkTag().getIntTag("DataVersion").getPayload(), 2225, 2731), //2225 is full release minecraft 1.15
             chunk -> new ChunkController1_15(chunk)
+        ),
+        VERSION_1_18(
+            chunk -> chunk.getChunkTag().getIntTag("DataVersion").getPayload() >= 2731, //2731 is after full release 1.17.1
+            chunk -> new ChunkController1_18(chunk)
         ),
         ;
         

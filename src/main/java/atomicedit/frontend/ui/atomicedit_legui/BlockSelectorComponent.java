@@ -1,28 +1,12 @@
 
 package atomicedit.frontend.ui.atomicedit_legui;
 
-import atomicedit.backend.BlockState;
-import atomicedit.backend.GlobalBlockStateMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import org.liquidengine.legui.component.Button;
-import org.liquidengine.legui.component.Component;
-import org.liquidengine.legui.component.Label;
-import org.liquidengine.legui.component.ScrollablePanel;
-import org.liquidengine.legui.component.TextInput;
-import org.liquidengine.legui.component.Widget;
-import org.liquidengine.legui.event.MouseClickEvent;
-import org.liquidengine.legui.listener.MouseClickEventListener;
-import org.liquidengine.legui.style.Style;
-import org.liquidengine.legui.style.flex.FlexStyle;
-
 /**
  *
  * @author justin
  */
-public class BlockSelectorComponent extends Label {
-    
+public class BlockSelectorComponent {
+    /*
     private BlockState value;
     private boolean isWidgetOpen;
     private static String searchText = "";
@@ -67,9 +51,8 @@ public class BlockSelectorComponent extends Label {
         
         private static final int WIDTH = 400;
         private static final int HEIGHT = 800;
-        /**
-         * Max options in the scrollable panel at a time.
-         */
+        
+        //Max options in the scrollable panel at a time.
         private static final int MAX_OPTIONS = 50;
         
         private TextInput textBox;
@@ -167,5 +150,5 @@ public class BlockSelectorComponent extends Label {
         }
         
     }
-    
+    */
 }

@@ -1,15 +1,13 @@
 
 package atomicedit.frontend.ui.atomicedit_legui;
 
-import org.liquidengine.legui.component.CheckBox;
-
 /**
  *
  * @author Justin Bonner
  */
-public class BooleanSelectorComponent extends CheckBox {
+public class BooleanSelectorComponent {
     
-    
+    /*
     public BooleanSelectorComponent(boolean initialValue) {
         this.textState.setText("");
         this.setEnabled(true);
@@ -28,5 +26,5 @@ public class BooleanSelectorComponent extends CheckBox {
     public interface ValueSetCallback {
         void valueSetCallback(boolean newValue);
     }
-    
+    */
 }

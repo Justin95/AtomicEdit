@@ -35,10 +35,14 @@ public class AreaSelectionEditor implements Editor {
     
     @Override
     public void initialize(){
-        this.gui = new AreaSelectionOptionsGui(this);
+        this.gui = new AreaSelectionOptionsGui();
         this.pointerRenderObject = EditorUtils.createEditorPointerRenderObject(editorPointer.getSelectorPoint());
-        renderer.getFrame().getContainer().add(gui.getOpPanel());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
+    }
+    
+    @Override
+    public void updateUi() {
+        gui.updateUi();
     }
     
     @Override
@@ -99,7 +103,6 @@ public class AreaSelectionEditor implements Editor {
     public void cleanUp(){
         renderer.getRenderableStage().removeRenderable(this.selectionBoxRenderable);
         renderer.getRenderableStage().removeRenderObject(this.pointerRenderObject);
-        renderer.getFrame().getContainer().remove(gui.getOpPanel());
         this.gui = null;
     }
     
