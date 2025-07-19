@@ -63,7 +63,7 @@ public class EditorPointer {
         }
         this.selectorDistanceFromCamera = distance;
         facingDir.mul(this.selectorDistanceFromCamera);
-        this.selectorPoint = new Vector3i(Math.round(cameraPos.x + facingDir.x), Math.round(cameraPos.y + facingDir.y), Math.round(cameraPos.z + facingDir.z));
+        this.selectorPoint = new Vector3i((int)Math.floor(cameraPos.x + facingDir.x), (int)Math.floor(cameraPos.y + facingDir.y), (int)Math.floor(cameraPos.z + facingDir.z));
     }
     
     public Vector3i getSelectorPoint(){

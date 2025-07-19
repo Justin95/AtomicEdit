@@ -51,6 +51,12 @@ public enum AtomicEditSettings {
         SettingDataType.BOOLEAN,
         () -> false
     ),
+    FRAME_RATE_LIMIT(
+        "Frame Throttle",
+        "frame_throttle",
+        SettingDataType.BOOLEAN,
+        () -> true
+    ),
     ;
     
     public final String DISPLAY_NAME;

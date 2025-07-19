@@ -12,8 +12,11 @@ import atomicedit.settings.AtomicEditSettings;
 import atomicedit.utils.VersionUtils;
 import imgui.ImGui;
 import imgui.type.ImInt;
+import java.io.File;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -26,10 +29,11 @@ public class AtomicEditGui {
     public static final Vector4f PANEL_COLOR = new Vector4f(.2f, .2f, .2f, .8f);
     //private static Label coordsLabel;
     //private static SelectBox<Dimension> dimensionSelectBox;
-    private static final ReentrantLock WORLD_SELECT_LOCK = new ReentrantLock();
+    private static final Semaphore WORLD_SELECT_SEM = new Semaphore(1);
     
     private static final int ICON_SIZE = 26;
     private static final int CHAR_WIDTH = 7;
+    private static final ImInt currDimItem = new ImInt();
     /*
     private static final ImageIcon SAVE_ICON = FileUtils.loadIcon("icons/save.png");
     private static final ImageIcon LOAD_ICON = FileUtils.loadIcon("icons/load.png");
@@ -52,30 +56,36 @@ public class AtomicEditGui {
         //top menu bar
         if (ImGui.beginMainMenuBar()) {
             if (ImGui.button("Open###select_world_button")) {
-                if (WORLD_SELECT_LOCK.tryLock()) {
+                if (WORLD_SELECT_SEM.tryAcquire()) {
                     try {
-                        /*
-                        FileSelectorWidget selector = new FileSelectorWidget(
-                            "Select Save File",
-                            AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves",
-                            (File file) -> {
-                                return file.isDirectory(); //could look for a level.dat too
-                            },
-                            (File saveFile) -> {
+                        new Thread(
+                            () -> {
                                 try {
-                                    if (saveFile != null) {
-                                        String worldFilePath = saveFile.getAbsolutePath();
-                                        Logger.info("Selected world: " + worldFilePath);
-                                        backendController.setWorld(worldFilePath);
-                                        updateDimensionsBox(worldFilePath);
-                                    }
-                                } finally { //exceptions here are unexpected but we have to unlock
-                                    WORLD_SELECT_LOCK.unlock();
+                                    JFileChooser fileChooser = new JFileChooser(
+                                        AtomicEdit.getSettings().getSettingValueAsString(AtomicEditSettings.MINECRAFT_INSTALL_LOCATION) + "/saves"
+                                    );
+                                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                                    fileChooser.setMultiSelectionEnabled(false);
+                                    fileChooser.setDialogTitle("Select Save Folder");
+                                    fileChooser.setAcceptAllFileFilterUsed(false);
+                                    fileChooser.setFileFilter(new WorldDirFileFilter());
+                                    int check = fileChooser.showOpenDialog(null);
+                                    if (check == JFileChooser.APPROVE_OPTION) {
+                                        File saveFile = fileChooser.getSelectedFile();
+                                        if (saveFile != null && isValidMcSave(saveFile)) {
+                                            String worldFilePath = saveFile.getAbsolutePath();
+                                            Logger.info("Selected world: " + worldFilePath);
+                                            backendController.setWorld(worldFilePath);
+                                        } else {
+                                            Logger.notice("Invalid save file: " + saveFile);
+                                        }
+                                    } 
+                                } finally {
+                                    WORLD_SELECT_SEM.release();
                                 }
-                            }
-                        );
-                        root.add(selector);
-                        */
+                            },
+                            "Level Chooser Thread"
+                        ).start();
                     } catch(Exception e) {
                         Logger.error("Exception trying to select a world", e);
                     }
@@ -91,9 +101,9 @@ public class AtomicEditGui {
             }
             //Dimension selector
             {
-                ImInt currDimItem = new ImInt();
                 String[] dimensionStrs = getDimensionNames(Dimension.getDimensions(backendController.getWorldPath()));
-                if (ImGui.combo("Dimension", currDimItem, dimensionStrs, DIMENSION_SELECT_HEIGHT)) {
+                ImGui.setNextItemWidth(200); //temp solution
+                if (ImGui.combo("###dimension_combo", currDimItem, dimensionStrs, DIMENSION_SELECT_HEIGHT)) {
                     Dimension newDim = Dimension.DEFAULT_DIMENSION;
                     final String newDimName = dimensionStrs[currDimItem.intValue()];
                     for (Dimension dim : Dimension.getDimensions(backendController.getWorldPath())) {
@@ -153,6 +163,30 @@ public class AtomicEditGui {
             names[i] = dimentions.get(i).getName();
         }
         return names;
+    }
+    
+    private static boolean isValidMcSave(File file) {
+        if (!file.isDirectory()) {
+            return false;
+        }
+        //only accept directories containing a 'level.dat'
+
+        String[] subFiles = file.list((dir, filename) -> "level.dat".equals(filename));
+        return subFiles.length > 0;
+    }
+    
+    public static class WorldDirFileFilter extends FileFilter {
+
+        @Override
+        public boolean accept(File file) {
+            return isValidMcSave(file);
+        }
+
+        @Override
+        public String getDescription() {
+            return "Minecraft save folders";
+        }
+        
     }
     
 }

@@ -44,10 +44,10 @@ public class AtomicEditFrontEnd {
         this.masterController = new MasterController(renderer);
         chunkLoadingThread.start();
         EditorSystem.initialize(renderer); //editor system must be initialized before gui
-        AtomicEditUi.initialize(renderer);
         
         //set up GLFW callbacks
         long glfwWindow = renderer.getGlfwWindow();
+        
         GLFW.glfwSetMouseButtonCallback(
             glfwWindow, 
             (window, button, action, mods) -> {
@@ -71,6 +71,9 @@ public class AtomicEditFrontEnd {
             w -> keepRunning = false
         );
         
+        //Initialize UI after setting callbacks
+        AtomicEditUi.initialize(renderer);
+        
         Logger.info(
             "OpenGL INFO:"
             + "\nGL Renderer: " + GL11.glGetString(GL11.GL_RENDERER)
@@ -93,6 +96,7 @@ public class AtomicEditFrontEnd {
             EditorSystem.renderTick();
             
             renderer.swapBuffers();
+            renderer.sleep();
         }
     }
     

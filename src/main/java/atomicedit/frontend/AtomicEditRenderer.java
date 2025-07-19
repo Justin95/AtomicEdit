@@ -1,19 +1,15 @@
 
 package atomicedit.frontend;
 
-import atomicedit.frontend.editor.EditorSystem;
+import atomicedit.AtomicEdit;
 import atomicedit.frontend.render.Camera;
 import atomicedit.frontend.render.RenderableStage;
 import atomicedit.frontend.render.shaders.UniformLayoutFormat;
 import atomicedit.logging.Logger;
+import atomicedit.settings.AtomicEditSettings;
 import atomicedit.utils.VersionUtils;
-import java.awt.Frame;
-import java.nio.IntBuffer;
-import javax.naming.Context;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
@@ -45,6 +41,8 @@ public class AtomicEditRenderer {
     private Camera camera;
     private boolean isCursorVisible;
     private boolean shouldCursorBeVisible;
+    private int targetFps;
+    private long frameStartTime;
     
     public AtomicEditRenderer(){
         this.renderableStage = new RenderableStage();
@@ -67,6 +65,8 @@ public class AtomicEditRenderer {
         int[] monWidthBuf = new int[1];
         int[] monHeightBuf = new int[1];
         GLFW.glfwGetMonitorWorkarea(GLFW.glfwGetPrimaryMonitor(), monXPosBuf, monYPosBuf, monWidthBuf, monHeightBuf);
+        this.targetFps = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()).refreshRate();
+        this.frameStartTime = System.currentTimeMillis();
         this.width = monWidthBuf[0];
         this.height = monHeightBuf[0];
         this.camera = new Camera(new Vector3f(0, 80, 0), new Vector3f(0, 0, 0), 90, width / (float)height);
@@ -125,6 +125,24 @@ public class AtomicEditRenderer {
         GLFW.glfwSwapBuffers(glfwWindow);
     }
     
+    public void sleep() {
+        if (!AtomicEdit.getSettings().getSettingValueAsBoolean(AtomicEditSettings.FRAME_RATE_LIMIT)) {
+            return;
+        }
+        float targetDelayMs = 1000f / targetFps;
+        long frameEndTime = System.currentTimeMillis();
+        long frameTime = frameEndTime - frameStartTime;
+        float sleepTime = targetDelayMs - frameTime;
+        if (sleepTime > 1) {
+            try {
+                Thread.sleep((long) sleepTime); //truncate any fractions of a ms
+            } catch (InterruptedException e) {
+
+            }
+        }
+        frameStartTime = System.currentTimeMillis();
+    }
+    
     public void cleanUp(){
         GLFW.glfwDestroyWindow(glfwWindow);
         GLFW.glfwTerminate();
@@ -152,8 +170,8 @@ public class AtomicEditRenderer {
     
     private void handleSetCursorVisible(){
         boolean setVisible = this.shouldCursorBeVisible; //shouldnt need to use locks for this
-        if(setVisible != this.isCursorVisible){
-            GLFW.glfwSetInputMode(glfwWindow, GLFW.GLFW_CURSOR, setVisible ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_HIDDEN);
+        if(setVisible != this.isCursorVisible) {
+            GLFW.glfwSetInputMode(glfwWindow, GLFW.GLFW_CURSOR, setVisible ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_DISABLED);
             this.isCursorVisible = setVisible;
         }
     }

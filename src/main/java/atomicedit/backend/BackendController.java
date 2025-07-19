@@ -102,7 +102,7 @@ public class BackendController {
     
     public void setActiveDimension(Dimension dimension) {
         if (world == null) {
-            throw new IllegalStateException("Cannot change dimension because no world is loaded.");
+            return;
         }
         this.world.setActiveDimension(dimension);
     }
