@@ -35,7 +35,7 @@ public class AreaSelectionEditor implements Editor {
     
     @Override
     public void initialize(){
-        this.gui = new AreaSelectionOptionsGui();
+        this.gui = new AreaSelectionOptionsGui(this);
         this.pointerRenderObject = EditorUtils.createEditorPointerRenderObject(editorPointer.getSelectorPoint());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
     }

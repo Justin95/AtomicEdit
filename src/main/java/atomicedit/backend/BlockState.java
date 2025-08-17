@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,6 +80,65 @@ public class BlockState {
         GlobalBlockStateMap.addBlockType(newType);
         newType.lightingBehavior = guessLightingBehavior(newType);
         return newType;
+    }
+    
+    public static BlockState lookupBlockState(String name, Collection<BlockStateProperty> properties) {
+        if (!blockLibrary.containsKey(name)) {
+            Logger.error("Block not found in block library!: `" + name + "`");
+            return AIR;
+        }
+        ArrayList<BlockState> potentialTypes = blockLibrary.get(name);
+        for(BlockState type : potentialTypes){
+            if (doPropertiesMatch(type.blockStateProperties, properties)) {
+                return type;
+            }
+        }
+        Logger.error("Block not found in block library!: `" + name + "` " + properties.toString());
+        return AIR;
+    }
+    
+    private static boolean doPropertiesMatch(BlockStateProperty[] a, Collection<BlockStateProperty> b) {
+        if (a == null) {
+            return true;
+        }
+        for (BlockStateProperty prop : a) {
+            if (!b.contains(prop)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Get all loaded blockstate names.
+     * @return 
+     */
+    public static List<String> getBlockStateNames() {
+        return new ArrayList<>(blockLibrary.keySet());
+    }
+    
+    /**
+     * Get all the possible block state properties for a block state name.
+     * @param blockStateName the name of the block state
+     * @return the block state possibilities
+     */
+    public static Map<String, List<BlockStateProperty>> getPossibleBlockStateProperties(String blockStateName) {
+        Map<String, List<BlockStateProperty>> possibilities = new HashMap<>();
+        List<BlockState> blockStates = blockLibrary.get(blockStateName);
+        for (BlockState blockState : blockStates) {
+            if (blockState.blockStateProperties == null) {
+                continue;
+            }
+            for (BlockStateProperty property : blockState.blockStateProperties) {
+                if (!possibilities.containsKey(property.NAME)) {
+                    possibilities.put(property.NAME, new ArrayList<>());
+                }
+                if (!possibilities.get(property.NAME).contains(property)) {
+                    possibilities.get(property.NAME).add(property);
+                }
+            }
+        }
+        return possibilities;
     }
     
     private static BlockState createBlockState(String name, BlockStateProperty[] blockStateProperties, LightingBehavior lightingBehavior) {

@@ -24,7 +24,7 @@ public class Texture {
 		this.image = image;
 	}
 	
-    private void initialize(){
+    public void initialize(){
         this.initialized = true;
         this.textureID = GL11.glGenTextures();
 		ByteBuffer textureData = imageToByteBuffer(image);

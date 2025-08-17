@@ -7,10 +7,17 @@ import atomicedit.backend.BlockState;
 import atomicedit.backend.ChunkSectionCoord;
 import atomicedit.backend.dimension.Dimension;
 import atomicedit.frontend.AtomicEditRenderer;
+import atomicedit.frontend.AtomicEditUi;
+import atomicedit.frontend.editor.EditorSystem;
+import atomicedit.frontend.editor.EditorType;
+import atomicedit.frontend.texture.UiTexture;
 import atomicedit.logging.Logger;
 import atomicedit.settings.AtomicEditSettings;
 import atomicedit.utils.VersionUtils;
 import imgui.ImGui;
+import imgui.ImVec2;
+import imgui.ImVec4;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import java.io.File;
 import java.util.List;
@@ -18,7 +25,6 @@ import java.util.concurrent.Semaphore;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 /**
  *
@@ -26,27 +32,9 @@ import org.joml.Vector4f;
  */
 public class AtomicEditGui {
     
-    public static final Vector4f PANEL_COLOR = new Vector4f(.2f, .2f, .2f, .8f);
-    //private static Label coordsLabel;
-    //private static SelectBox<Dimension> dimensionSelectBox;
     private static final Semaphore WORLD_SELECT_SEM = new Semaphore(1);
     
-    private static final int ICON_SIZE = 26;
-    private static final int CHAR_WIDTH = 7;
     private static final ImInt currDimItem = new ImInt();
-    /*
-    private static final ImageIcon SAVE_ICON = FileUtils.loadIcon("icons/save.png");
-    private static final ImageIcon LOAD_ICON = FileUtils.loadIcon("icons/load.png");
-    private static final ImageIcon UNDO_ICON = FileUtils.loadIcon("icons/undo.png");
-    private static final ImageIcon REDO_ICON = FileUtils.loadIcon("icons/redo.png");
-    
-    static {
-        SAVE_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
-        LOAD_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
-        UNDO_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
-        REDO_ICON.setSize(new Vector2f(ICON_SIZE, ICON_SIZE));
-    }
-    */
     
     private static final int DIMENSION_SELECT_HEIGHT = 6;
     
@@ -155,6 +143,36 @@ public class AtomicEditGui {
             ImGui.endMainMenuBar();
         }
         
+        //bottom mode select bar
+        int winFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoDecoration;
+        ImVec2 totalSize = AtomicEditUi.getWindowSize();
+        ImGui.setNextWindowPos(totalSize.x / 2, totalSize.y - 50, 0.5f, 1f);
+        ImGui.setNextWindowSize(588f, 122f);
+        if (ImGui.begin("###bottom_mode_bar", winFlags)) {
+            imageButton(UiTexture.AREA_SELECT_ICON, EditorType.AREA_SELECTION);
+            imageButton(UiTexture.BRUSH_ICON, EditorType.BRUSH_ACTION);
+            imageButton(UiTexture.SCHEMATIC_ICON, EditorType.SCHEMATIC_EDITOR);
+            imageButton(UiTexture.ENTITY_ICON, EditorType.ENTITY_EDITOR);
+            imageButton(UiTexture.BLOCK_ENTITY_ICON, EditorType.BLOCK_ENTITY_EDITOR);
+            ImGui.end();
+        }
+        
+    }
+    
+    private static void imageButton(UiTexture tex, EditorType editorType) {
+        final EditorType currEditorType = EditorSystem.getCurrentEditorType();
+        final ImVec4 backgroundColor = new ImVec4(.2f, .2f, .2f, .8f);
+        final ImVec4 tintColor = new ImVec4(1f, 1f, 1f, 1f);
+        final ImVec4 selTintColor = new ImVec4(.8f, .8f, .8f, 1f);
+        long texId = tex.getTexture().getTextureID();
+        ImVec2 size = new ImVec2(100, 100);
+        ImVec2 uv1 = new ImVec2(tex.getUvLow().x, tex.getUvLow().y);
+        ImVec2 uv2 = new ImVec2(tex.getUvHigh().x, tex.getUvHigh().y);
+        boolean selected = currEditorType == editorType;
+        if (ImGui.imageButton("###button_" + editorType, texId, size, uv1, uv2, backgroundColor, selected ? selTintColor : tintColor)) {
+            EditorSystem.setEditorType(editorType);
+        }
+        ImGui.sameLine();
     }
     
     private static String[] getDimensionNames(List<Dimension> dimentions) {

@@ -1,9 +1,11 @@
 package atomicedit.frontend;
 
 import atomicedit.backend.BackendController;
+import atomicedit.frontend.editor.EditorSystem;
 import atomicedit.frontend.ui.AtomicEditGui;
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import imgui.ImVec2;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -48,6 +50,7 @@ public class AtomicEditUi {
         
         //Do UI work
         AtomicEditGui.uiUpdate(renderer, backendController);
+        EditorSystem.updateUi();
         
         //Draw UI
         ImGui.render();
@@ -63,6 +66,10 @@ public class AtomicEditUi {
     
     public static boolean isUiFocused() {
         return imGuiIo.getWantCaptureKeyboard() || imGuiIo.getWantCaptureMouse();
+    }
+    
+    public static ImVec2 getWindowSize() {
+        return imGuiIo.getDisplaySize();
     }
     
 }

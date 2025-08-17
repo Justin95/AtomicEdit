@@ -4,6 +4,7 @@ package atomicedit.frontend;
 import atomicedit.backend.BackendController;
 import atomicedit.frontend.controls.MasterController;
 import atomicedit.frontend.editor.EditorSystem;
+import atomicedit.frontend.texture.UiTexture;
 import atomicedit.frontend.worldmaintinance.ChunkLoadingThread;
 import atomicedit.logging.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -41,6 +42,7 @@ public class AtomicEditFrontEnd {
     private void initialize(){
         this.keepRunning = true;
         renderer.initialize();
+        UiTexture.initialize();
         this.masterController = new MasterController(renderer);
         chunkLoadingThread.start();
         EditorSystem.initialize(renderer); //editor system must be initialized before gui
@@ -85,18 +87,22 @@ public class AtomicEditFrontEnd {
     
     private void mainLoop(){
         while(keepRunning){
-            renderer.pollInput();
-            masterController.renderUpdate();
-            
-            renderer.render();
-            
-            // render frame / GUI
-            AtomicEditUi.updateUi(renderer, backendController);
+            try {
+                renderer.pollInput();
+                masterController.renderUpdate();
 
-            EditorSystem.renderTick();
-            
-            renderer.swapBuffers();
-            renderer.sleep();
+                renderer.render();
+
+                // render frame / GUI
+                AtomicEditUi.updateUi(renderer, backendController);
+
+                EditorSystem.renderTick();
+
+                renderer.swapBuffers();
+                renderer.sleep();
+            } catch (Exception e) {
+                Logger.error("Uncaught error in render loop.", e);
+            }
         }
     }
     

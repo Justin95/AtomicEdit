@@ -10,10 +10,6 @@ def imguiVersion = "1.89.0"
 repositories {
     mavenCentral()
     jcenter()
-    //noise library for noise operation
-    maven {
-        url 'https://repo.spongepowered.org/repository/maven-public/'
-    }
 }
 
 java {
@@ -44,9 +40,6 @@ dependencies {
     
     //gson for some json parsing. TODO remove this
     implementation 'com.google.code.gson:gson:2.13.1'
-    
-    //noise library for noise operation
-    implementation 'org.spongepowered:noise:2.0.0-SNAPSHOT'
     
     //vector math
     implementation "org.joml:joml:1.10.5"

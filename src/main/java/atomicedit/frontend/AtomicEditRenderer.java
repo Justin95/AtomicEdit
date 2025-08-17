@@ -50,7 +50,6 @@ public class AtomicEditRenderer {
         this.shouldCursorBeVisible = true;
     }
     
-    //https://github.com/LiquidEngine/legui/blob/develop/src/main/java/org/liquidengine/legui/demo/SingleClassExample.java
     public void initialize(){
         //System.setProperty("joml.nounsafe", Boolean.TRUE.toString());
         //System.setProperty("java.awt.headless", Boolean.TRUE.toString());

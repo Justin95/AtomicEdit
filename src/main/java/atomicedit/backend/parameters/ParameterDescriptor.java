@@ -17,4 +17,16 @@ public abstract class ParameterDescriptor<T> {
         this.defaultValue = defaultValue;
     }
     
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof ParameterDescriptor)) {
+            return false;
+        }
+        ParameterDescriptor desc = (ParameterDescriptor) other;
+        return this.name.equals(desc.name) && this.parameterType == desc.parameterType;
+    }
+    
 }

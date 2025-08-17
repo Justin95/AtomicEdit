@@ -4,6 +4,7 @@ package atomicedit.backend.parameters;
 import atomicedit.backend.BlockState;
 import atomicedit.logging.Logger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,6 +17,14 @@ public class Parameters {
     
     public Parameters(){
         paramToValue = new HashMap<>();
+    }
+    
+    public static Parameters withDefaults(List<ParameterDescriptor> paramDescs) {
+        Parameters params = new Parameters();
+        for (ParameterDescriptor paramDesc : paramDescs) {
+            params.setParam(paramDesc, paramDesc.defaultValue);
+        }
+        return params;
     }
     
     public void setParam(ParameterDescriptor descriptor, Object value){

@@ -49,10 +49,19 @@ public enum OperationType {
     private final List<ParameterDescriptor> parameterDescription;
     private final OperationInstanceCreator opCreator;
     
+    private static final String[] operationNames;
+    
     OperationType(String displayName, List<ParameterDescriptor> opParamDescriptors, OperationInstanceCreator opCreator) {
         this.displayName = displayName;
         this.parameterDescription = opParamDescriptors;
         this.opCreator = opCreator;
+    }
+    
+    static {
+        operationNames = new String[OperationType.values().length];
+        for (int i = 0; i < operationNames.length; i++) {
+            operationNames[i] = values()[i].displayName;
+        }
     }
     
     /**
@@ -89,6 +98,10 @@ public enum OperationType {
     @Override
     public String toString() {
         return this.displayName;
+    }
+    
+    public static String[] getDisplayNames() {
+        return operationNames;
     }
     
 }

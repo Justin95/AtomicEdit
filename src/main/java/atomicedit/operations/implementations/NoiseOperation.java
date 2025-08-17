@@ -18,6 +18,8 @@ import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.backend.utils.GeneralUtils;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
+import atomicedit.utils.noise.Noise;
+import atomicedit.utils.noise.NoiseQuality;
 import atomicedit.volumes.Box;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
@@ -27,8 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import org.spongepowered.noise.Noise;
-import org.spongepowered.noise.NoiseQuality;
 
 /**
  * This operation assigns each block in the volume its distance from the nearest block not in the

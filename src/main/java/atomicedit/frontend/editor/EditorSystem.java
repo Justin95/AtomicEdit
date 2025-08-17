@@ -70,4 +70,10 @@ public class EditorSystem {
         }
     }
     
+    public static EditorType getCurrentEditorType() {
+        synchronized(EDITOR_LOCK) {
+            return editorType;
+        }
+    }
+    
 }

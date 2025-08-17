@@ -2,11 +2,10 @@
 package atomicedit.frontend.ui;
 
 import atomicedit.backend.brushes.BrushType;
-import atomicedit.backend.parameters.ParameterDescriptor;
-import atomicedit.backend.parameters.ParameterType;
 import atomicedit.backend.parameters.Parameters;
+import atomicedit.frontend.AtomicEditUi;
 import atomicedit.frontend.editor.BrushEditor;
-import atomicedit.logging.Logger;
+import atomicedit.frontend.ui.components.ParameterDescriptorGui;
 import atomicedit.operations.OperationType;
 import imgui.ImVec2;
 import imgui.ImGui;
@@ -20,8 +19,7 @@ import imgui.type.ImInt;
  */
 public class BrushGui {
     
-    private static final int GUI_WIDTH = 350;
-    private static final int GUI_HEIGHT = 800;
+    private static final int OPERATION_SELECT_HEIGHT = 6;
     private static final String[] BRUSH_NAMES;
     
     static {
@@ -32,59 +30,82 @@ public class BrushGui {
     }
     
     private final BrushEditor editor;
-    //private final List<Component> brushParamComponents;
     private BrushType brushType;
     private Parameters brushParameters;
-    //private final List<Component> opParamComponents;
-    private OperationType opType;
+    private OperationType operationType;
     private Parameters opParameters;
+    private ParameterDescriptorGui paramDescGui;
+    private final ImInt currOperationItem;
     
     public BrushGui(BrushEditor editor) {
         this.editor = editor;
-        //initialize();
+        this.brushType = BrushType.ELIPSE;
+        this.brushParameters = Parameters.withDefaults(brushType.getParameterDescriptors());
+        this.operationType = OperationType.SET_BLOCKS_OPERATION;
+        this.opParameters = Parameters.withDefaults(operationType.getOperationParameterDescription());
+        this.paramDescGui = new ParameterDescriptorGui();
+        this.currOperationItem = new ImInt();
     }
     
     public void updateUi() {
         
         //brush window
-        ImVec2 totalSize = new ImVec2();
-        ImGui.getMainViewport().getSize(totalSize);
+        ImVec2 totalSize = AtomicEditUi.getWindowSize();
         
         //put window on the right side middle
-        ImGui.setNextWindowPos(totalSize.x, totalSize.y / 2f, ImGuiCond.Appearing, 0.5f, 1f);
-        int flags = ImGuiWindowFlags.NoTitleBar
-            | ImGuiWindowFlags.NoResize
-            | ImGuiWindowFlags.NoFocusOnAppearing
-            | ImGuiWindowFlags.NoCollapse;
+        ImGui.setNextWindowSize(400, 800);
+        ImGui.setNextWindowPos(totalSize.x, totalSize.y / 2f, ImGuiCond.Appearing, 1f, .5f);
+        int flags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoDecoration;
         if (ImGui.begin("###brush_window", flags)) {
             ImInt currBrushIdx = new ImInt();
             if (ImGui.combo("Brush", currBrushIdx, BRUSH_NAMES, 5)) {
                 String brushName = BRUSH_NAMES[currBrushIdx.intValue()];
                 this.brushType = BrushType.fromName(brushName);
             }
-            for (ParameterDescriptor paramDesc : this.brushType.getParameterDescriptors()) {
-                switch (paramDesc.parameterType) {
-                    case ParameterType.BLOCK_SELECTOR -> {
-                        
-                    }
-                    case ParameterType.INT -> {
-                        
-                    }
-                    case ParameterType.FLOAT -> {
-                        
-                    }
-                    case ParameterType.BOOLEAN -> {
-                        
-                    }
-                    case ParameterType.STRING -> {
-                        
-                    }
-                }
+            ImGui.separator();
+            if (paramDescGui.updateUi(brushType.getParameterDescriptors(), brushParameters)) {
+                editor.setBrush(this.brushType.createInstance(), this.brushParameters);
             }
+            ImGui.end();
         }
         
         //operation window
-        
+        int winFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoDecoration;
+        ImGui.setNextWindowPos(0f, 100, 0f, 0f);
+        ImGui.setNextWindowSize(400f, 800f);
+        if(ImGui.begin("###area_select_options_gui", winFlags)){
+
+            // operation select box
+            {
+                String[] operationStrs = OperationType.getDisplayNames();
+                ImGui.setNextItemWidth(200); //temp solution
+                if (ImGui.combo("###operation_combo", currOperationItem, operationStrs, OPERATION_SELECT_HEIGHT)) {
+                    OperationType newOpType = this.operationType;
+                    final String newOpName = operationStrs[currOperationItem.intValue()];
+                    for (OperationType op : OperationType.values()) {
+                        if (op.getOperationName().equals(newOpName)) {
+                            newOpType = op;
+                            break;
+                        }
+                    }
+                    this.operationType = newOpType;
+                    this.opParameters = Parameters.withDefaults(operationType.getOperationParameterDescription());
+                }
+            }
+
+            // Do operation button
+            if (ImGui.button("Do Operation")) {
+                editor.doOperation(operationType, opParameters);
+            }
+
+            ImGui.separator();
+
+            //Parameters
+            paramDescGui.updateUi(operationType.getOperationParameterDescription(), opParameters);
+
+
+            ImGui.end();
+        }
         
     }
     
@@ -378,7 +399,7 @@ public class BrushGui {
     */
     
     public OperationType getOperationType() {
-        return this.opType;
+        return this.operationType;
     }
     
     public Parameters getOperationParameters() {
