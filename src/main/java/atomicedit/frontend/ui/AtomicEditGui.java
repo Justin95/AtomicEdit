@@ -163,7 +163,7 @@ public class AtomicEditGui {
         final EditorType currEditorType = EditorSystem.getCurrentEditorType();
         final ImVec4 backgroundColor = new ImVec4(.2f, .2f, .2f, .8f);
         final ImVec4 tintColor = new ImVec4(1f, 1f, 1f, 1f);
-        final ImVec4 selTintColor = new ImVec4(.8f, .8f, .8f, 1f);
+        final ImVec4 selTintColor = new ImVec4(.7f, .7f, .7f, 1f);
         long texId = tex.getTexture().getTextureID();
         ImVec2 size = new ImVec2(100, 100);
         ImVec2 uv1 = new ImVec2(tex.getUvLow().x, tex.getUvLow().y);

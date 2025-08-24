@@ -54,13 +54,14 @@ public class BrushGui {
         
         //put window on the right side middle
         ImGui.setNextWindowSize(400, 800);
-        ImGui.setNextWindowPos(totalSize.x, totalSize.y / 2f, ImGuiCond.Appearing, 1f, .5f);
+        ImGui.setNextWindowPos(totalSize.x, 100, ImGuiCond.Appearing, 1f, 0f);
         int flags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoDecoration;
         if (ImGui.begin("###brush_window", flags)) {
             ImInt currBrushIdx = new ImInt();
             if (ImGui.combo("Brush", currBrushIdx, BRUSH_NAMES, 5)) {
                 String brushName = BRUSH_NAMES[currBrushIdx.intValue()];
                 this.brushType = BrushType.fromName(brushName);
+                this.brushParameters = Parameters.withDefaults(brushType.getParameterDescriptors());
             }
             ImGui.separator();
             if (paramDescGui.updateUi(brushType.getParameterDescriptors(), brushParameters)) {

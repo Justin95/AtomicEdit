@@ -303,12 +303,24 @@ public class SchematicEditor implements Editor {
         this.processFlip = true;
     }
     
+    public int getRepeatTimes() {
+        return repeatTimes;
+    }
+    
     public void setRepeatTimes(int repeatTimes) {
         this.repeatTimes = repeatTimes;
     }
     
     public void setRepeatOffset(Vector3i repeatOffset) {
         this.repeatOffset = repeatOffset;
+    }
+    
+    public Vector3i getRepeatOffset() {
+        return repeatOffset;
+    }
+    
+    public boolean getBrushPlacement() {
+        return this.useBrushPlacement;
     }
     
     /**

@@ -3,7 +3,12 @@ package atomicedit.frontend.ui;
 
 import atomicedit.frontend.editor.SchematicEditor;
 import atomicedit.frontend.editor.SchematicEditor.EditorStatus;
+import imgui.ImGui;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImBoolean;
+import imgui.type.ImInt;
 import java.util.concurrent.locks.ReentrantLock;
+import org.joml.Vector3i;
 
 /**
  *
@@ -28,12 +33,118 @@ public class SchematicEditorGui {
     */
     
     private final SchematicEditor editor;
+    private boolean includeAir;
+    private int repeat;
     
     public SchematicEditorGui(SchematicEditor editor) {
         this.editor = editor;
+        this.includeAir = false;
+        this.repeat = 0;
     }
     
     public void updateUi(EditorStatus status) {
+        
+        int winFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoDecoration;
+        ImGui.setNextWindowPos(0f, 100, 0f, 0f);
+        ImGui.setNextWindowSize(400f, 800f);
+        if(ImGui.begin("###schematic_editor_gui", winFlags)) {
+            switch (status) {
+                case EditorStatus.SELECT -> {
+                    if (ImGui.button("Load")) {
+                        
+                    }
+                    ImGui.separator();
+                    ImBoolean includeAirBuff = new ImBoolean(includeAir);
+                    if (ImGui.checkbox("Include Air (Not yet implemented)", includeAirBuff)) {
+                        includeAir = includeAirBuff.get();
+                    }
+                    if (ImGui.button("Pickup")) {
+                        editor.pickupSchematic(includeAir);
+                    }
+                }
+                case EditorStatus.INITIAL_PLACE -> {
+                    if (ImGui.button("Save")) {
+                        
+                    }
+                    ImGui.separator();
+                    if (ImGui.button("Clear")) {
+                        editor.clearSchematic();
+                    }
+                    ImBoolean freePlaceBuff = new ImBoolean(editor.getBrushPlacement());
+                    if (ImGui.checkbox("Free Place", freePlaceBuff)) {
+                        editor.setBrushPlacement(freePlaceBuff.get());
+                    }
+                }
+                case EditorStatus.FINE_TUNING -> {
+                    if (ImGui.button("Cancel")) {
+                        editor.stepBack();
+                    }
+                    ImGui.separator();
+                    ImGui.text("Shift");
+                    //Shift X
+                    ImGui.text("X");
+                    ImGui.sameLine();
+                    if (ImGui.button("+###button_+x")) {
+                        editor.adjustOffset(new Vector3i(1,0,0));
+                    }
+                    ImGui.sameLine();
+                    if (ImGui.button("-###button_-x")) {
+                        editor.adjustOffset(new Vector3i(-1,0,0));
+                    }
+                    //Shift Y
+                    ImGui.text("Y");
+                    ImGui.sameLine();
+                    if (ImGui.button("+###button_+y")) {
+                        editor.adjustOffset(new Vector3i(0,1,0));
+                    }
+                    ImGui.sameLine();
+                    if (ImGui.button("-###button_-y")) {
+                        editor.adjustOffset(new Vector3i(0,-1,0));
+                    }
+                    //Shift Z
+                    ImGui.text("Z");
+                    ImGui.sameLine();
+                    if (ImGui.button("+###button_+z")) {
+                        editor.adjustOffset(new Vector3i(0,0,1));
+                    }
+                    ImGui.sameLine();
+                    if (ImGui.button("-###button_-z")) {
+                        editor.adjustOffset(new Vector3i(0,0,-1));
+                    }
+                    ImGui.separator();
+                    
+                    ImInt repeatBuff = new ImInt(editor.getRepeatTimes());
+                    if (ImGui.inputInt("Repeat###repeat_input", repeatBuff)) {
+                        editor.setRepeatTimes(Math.max(repeatBuff.intValue(), 0));
+                    }
+                    
+                    ImGui.text("Shift Repeat");
+                    //Shift X
+                    final Vector3i repeatOffset = editor.getRepeatOffset();
+                    ImInt offsetBuff = new ImInt();
+                    offsetBuff.set(repeatOffset.x);
+                    if (ImGui.inputInt("X Offset", offsetBuff)) {
+                        editor.setRepeatOffset(new Vector3i(offsetBuff.intValue(), repeatOffset.y, repeatOffset.z));
+                    }
+                    //Shift Y
+                    offsetBuff.set(repeatOffset.y);
+                    if (ImGui.inputInt("Y Offset", offsetBuff)) {
+                        editor.setRepeatOffset(new Vector3i(repeatOffset.x, offsetBuff.intValue(), repeatOffset.z));
+                    }
+                    //Shift Z
+                    offsetBuff.set(repeatOffset.z);
+                    if (ImGui.inputInt("Z Offset", offsetBuff)) {
+                        editor.setRepeatOffset(new Vector3i(repeatOffset.x, repeatOffset.y, offsetBuff.intValue()));
+                    }
+                    ImGui.separator();
+                    
+                    if (ImGui.button("Place")) {
+                        editor.placeSchematic();
+                    }
+                }
+            }
+            ImGui.end();
+        }
         
     }
     /*
