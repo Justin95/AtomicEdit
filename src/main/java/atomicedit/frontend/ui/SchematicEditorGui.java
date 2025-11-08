@@ -34,12 +34,10 @@ public class SchematicEditorGui {
     
     private final SchematicEditor editor;
     private boolean includeAir;
-    private int repeat;
     
     public SchematicEditorGui(SchematicEditor editor) {
         this.editor = editor;
         this.includeAir = false;
-        this.repeat = 0;
     }
     
     public void updateUi(EditorStatus status) {

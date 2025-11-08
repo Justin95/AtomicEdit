@@ -4,7 +4,12 @@ package atomicedit.frontend.editor;
 import atomicedit.AtomicEdit;
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockCoord;
+import atomicedit.backend.chunk.ChunkCoord;
+import atomicedit.backend.chunk.ChunkReader;
 import atomicedit.backend.entity.Entity;
+import atomicedit.backend.nbt.MalformedNbtTagException;
+import atomicedit.backend.nbt.NbtTag;
+import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.Renderable;
@@ -16,7 +21,10 @@ import atomicedit.operations.nbt.EditEntityOperation;
 import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
@@ -141,6 +149,37 @@ public class EntityEditor implements Editor {
         return editorWidget;
     }
     */
+    
+    public List<NbtTag> getEntitiesInSelection() {
+        BackendController backendController = AtomicEdit.getBackendController();
+        if (!backendController.hasWorld()) {
+            return null;
+        }
+        if (this.editorWidgetOpen) {
+            return null;
+        }
+        Vector3i pointA = this.editorPointer.getPointA();
+        Vector3i pointB = this.editorPointer.getPointB();
+        if(pointA == null || pointB == null){
+            return null; //Cannot do operation with no volume
+        }
+        Volume volume = Volume.getInstance(pointA, pointB);
+        BlockCoord smallestCoord = new BlockCoord(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
+        WorldVolume worldVolume = new WorldVolume(volume, smallestCoord);
+        List<NbtTag> nbtTags;
+        try {
+            Map<ChunkCoord, ChunkReader> chunks = backendController.getReadOnlyChunks(
+                worldVolume.getContainedChunkCoords(),
+                backendController.getActiveDimension()
+            );
+            Collection<Entity> entities = ChunkUtils.readEntitiesFromChunkReaders(chunks.values(), worldVolume);
+            nbtTags = entities.stream().map((entity) -> entity.getNbtData()).collect(Collectors.toList());
+        } catch (MalformedNbtTagException e) {
+            Logger.warning("Cannot edit Entity NBT due to exception.", e);
+            return null;
+        }
+        return nbtTags;
+    }
     
     public OperationResult doOperation(WorldVolume volume, List<Entity> changes, boolean replaceExisting) {
         this.editorWidgetOpen = false;

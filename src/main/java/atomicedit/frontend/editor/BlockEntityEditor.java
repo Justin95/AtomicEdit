@@ -2,7 +2,14 @@
 package atomicedit.frontend.editor;
 
 import atomicedit.AtomicEdit;
+import atomicedit.backend.BackendController;
+import atomicedit.backend.BlockCoord;
 import atomicedit.backend.blockentity.BlockEntity;
+import atomicedit.backend.chunk.ChunkCoord;
+import atomicedit.backend.chunk.ChunkReader;
+import atomicedit.backend.nbt.MalformedNbtTagException;
+import atomicedit.backend.nbt.NbtTag;
+import atomicedit.backend.utils.ChunkUtils;
 import atomicedit.frontend.AtomicEditRenderer;
 import atomicedit.frontend.render.RenderObject;
 import atomicedit.frontend.render.Renderable;
@@ -11,8 +18,12 @@ import atomicedit.logging.Logger;
 import atomicedit.operations.Operation;
 import atomicedit.operations.OperationResult;
 import atomicedit.operations.nbt.EditBlockEntityOperation;
+import atomicedit.volumes.Volume;
 import atomicedit.volumes.WorldVolume;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
@@ -38,7 +49,7 @@ public class BlockEntityEditor implements Editor {
     
     @Override
     public void initialize(){
-        this.gui = new BlockEntityEditorGui();
+        this.gui = new BlockEntityEditorGui(this);
         this.pointerRenderObject = EditorUtils.createEditorPointerRenderObject(editorPointer.getSelectorPoint());
         renderer.getRenderableStage().addRenderObject(pointerRenderObject);
     }
@@ -77,6 +88,36 @@ public class BlockEntityEditor implements Editor {
     private void mainClick(){
         synchronized(editorPointer){
             this.editorPointer.clickUpdate();
+        }
+    }
+    
+    public List<NbtTag> getBlockEntitesInSelection() {
+        BackendController backendController = AtomicEdit.getBackendController();
+        if (!backendController.hasWorld()) {
+            return null;
+        }
+        if (this.editorWidgetOpen) {
+            return null;
+        }
+        final Vector3i pointA = this.editorPointer.getPointA();
+        final Vector3i pointB = this.editorPointer.getPointB();
+        if(pointA == null || pointB == null){
+            return null; //Cannot do operation with no volume
+        }
+        Volume volume = Volume.getInstance(pointA, pointB);
+        BlockCoord smallestCoord = new BlockCoord(Math.min(pointA.x, pointB.x), Math.min(pointA.y, pointB.y), Math.min(pointA.z, pointB.z));
+        WorldVolume worldVolume = new WorldVolume(volume, smallestCoord);
+        
+        try {
+            Map<ChunkCoord, ChunkReader> chunks = backendController.getReadOnlyChunks(
+                worldVolume.getContainedChunkCoords(),
+                backendController.getActiveDimension()
+            );
+            Collection<BlockEntity> blockEntities = ChunkUtils.readBlockEntitiesFromChunkReaders(chunks.values(), worldVolume);
+            return blockEntities.stream().map((blockEntity) -> blockEntity.getNbtData()).collect(Collectors.toList());
+        } catch (MalformedNbtTagException e) {
+            Logger.warning("Cannot edit Block Entity NBT due to exception.", e);
+            return null;
         }
     }
     

@@ -1,7 +1,13 @@
 
 package atomicedit.frontend.ui;
 
+import atomicedit.backend.nbt.NbtTag;
 import atomicedit.frontend.editor.EntityEditor;
+import atomicedit.frontend.ui.components.NbtEditorGui;
+import imgui.ImGui;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImBoolean;
+import java.util.List;
 
 /**
  *
@@ -13,15 +19,37 @@ public class EntityEditorGui {
     private static final int GUI_HEIGHT = 800;
     
     private final EntityEditor editor;
-    private NbtEditorWidget editorWidget;
+    private NbtEditorGui editorWindow;
     
     public EntityEditorGui(EntityEditor editor) {
         this.editor = editor;
-        //initialize();
+        this.editorWindow = null;
     }
     
     public void updateUi() {
-        
+        int winFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoDecoration;
+        ImGui.setNextWindowPos(0f, 100, 0f, 0f);
+        ImGui.setNextWindowSize(400f, 800f);
+        if(ImGui.begin("###entity_editor_gui", winFlags)) {
+            if (ImGui.button("Edit Entities")) {
+                if (editorWindow == null) {
+                    List<NbtTag> entities = editor.getEntitiesInSelection();
+                    editorWindow = new NbtEditorGui(entities);
+                    
+                }
+            }
+            if (ImGui.button("Delete Entities")) {
+                editor.doDeleteOperation();
+            }
+            ImGui.end();
+        }
+        if (editorWindow != null) {
+            ImBoolean isOpen = new ImBoolean(true);
+            editorWindow.updateUi(isOpen);
+            if (!isOpen.get()) {
+                editorWindow = null;
+            }
+        }
     }
     
     /*
