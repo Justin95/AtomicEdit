@@ -37,7 +37,7 @@ public class LightingUtil {
                 lightingArea.setEdited(x, y, z, true);
             }
         });
-        for (int i = 15; i > 0; i--) {
+        for (int i = 15; i > 1; i--) {
             final int index = i;
             //iterate through each available light level from brightest to darkest
             iterator.forEach((x, y, z) -> {
@@ -101,7 +101,7 @@ public class LightingUtil {
             }
             lightingArea.setSkyLightAt(x, y, z, (byte)skyLight);
         });
-        for (int i = 15; i > 0; i--) {
+        for (int i = 15; i > 1; i--) {
             final int index = i;
             //iterate through each available light level from brightest to darkest
             iterator.forEach((x, y, z) -> {

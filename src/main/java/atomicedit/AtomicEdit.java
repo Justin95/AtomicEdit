@@ -3,7 +3,6 @@ package atomicedit;
 
 import atomicedit.backend.BackendController;
 import atomicedit.backend.BlockState;
-import atomicedit.backend.GcThread;
 import atomicedit.backend.LegacyBlockIdMap;
 import atomicedit.frontend.AtomicEditFrontEnd;
 import atomicedit.frontend.AtomicEditRenderer;
@@ -28,14 +27,12 @@ public class AtomicEdit {
     private static AeSettingValues settings;
     private static BackendController backendController;
     private AtomicEditRenderer renderer;
-    private final GcThread gcThread;
     
     private AtomicEdit() {
         initializeSettings();
         backendController = new BackendController();
         renderer = new AtomicEditRenderer();
         frontEnd = new AtomicEditFrontEnd(renderer, backendController);
-        gcThread = new GcThread();
     }
     
     public static AtomicEdit getInstance(){
@@ -51,22 +48,12 @@ public class AtomicEdit {
         BlockStateModelLookup.initialize();
         BlockState.postModelLoadingInitialization();
         LegacyBlockIdMap.initialize();
-        gcThread.start();
     }
     
-    private void cleanUp() {
-        gcThread.shutdown();
-        try {
-            gcThread.join();
-        } catch (InterruptedException e) {
-            //pass
-        }
-    }
     
     public void run(){
         initialize();
         frontEnd.run();
-        cleanUp();
     }
     
     public static AeSettingValues getSettings(){
